@@ -1,88 +1,136 @@
-import React from 'react';
-import { Trophy, Award, Star, Target, Calendar, Users } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { Trophy, Award, Star, Target, Calendar, Users, ChevronLeft, ChevronRight, Medal, Crown, Zap } from 'lucide-react';
 import GlassCard from './GlassCard';
 
 const Achievements: React.FC = () => {
-  const majorAchievements = [
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Achievement Gallery Images
+  const achievementGallery = [
     {
-      title: 'HOH 6.0 Excellence',
-      description: 'Outstanding performance in Hack of Hacks 6.0 with innovative solutions and technical excellence.',
-      icon: <Trophy className="w-8 h-8" />,
-      color: 'text-electric-blue',
-      year: '2024',
-      category: 'Competition'
+      id: 1,
+      title: 'HOH 6.0',
+      image: '/img9.jpeg',
+      description: 'Successfully organized HackOnHills-6.0.',
+      event: 'HOH 6.0',
+      year: '2025',
+      type: 'Competition Organized'
     },
     {
-      title: 'Nimbus Champions',
-      description: 'First place winners at Nimbus tech fest with our AI-powered StudySync application.',
-      icon: <Award className="w-8 h-8" />,
-      color: 'text-neon-magenta',
-      year: '2024',
-      category: 'Victory'
+      id: 2,
+      title: 'Team Recognition',
+      image: '/img12.jpeg',
+      description: 'Ceremony for our achievements',
+      event: 'College Awards',
+      year: '2025',
+      type: 'Recognition'
     },
     {
-      title: 'Hillfair Winners',
-      description: 'Grand prize winners at Hillfair for our environmental impact tracking solution.',
-      icon: <Star className="w-8 h-8" />,
-      color: 'text-vibrant-green',
-      year: '2024',
-      category: 'Innovation'
+      id: 3,
+      title: 'Innovation Award',
+      image: '/img5.jpeg',
+      description: 'Best Techno Innovation Team.',
+      event: 'Tech Innovation',
+      year: '2025',
+      type: 'Innovation'
+    },
+    {
+      id: 4,
+      title: 'Leadership Award',
+      image: '/img11.jpeg',
+      description: 'Organized standout tech initiatives.',
+      event: 'Leadership',
+      year: '2025',
+      type: 'Leadership'
     }
   ];
 
-  const stats = [
-    {
-      number: '25+',
-      label: 'Apps Developed',
-      icon: <Target className="w-6 h-6" />,
-      color: 'text-electric-blue'
-    },
-    {
-      number: '3',
-      label: 'Major Wins',
-      icon: <Trophy className="w-6 h-6" />,
-      color: 'text-neon-magenta'
-    },
-    {
-      number: '50K+',
-      label: 'Users Reached',
-      icon: <Users className="w-6 h-6" />,
-      color: 'text-vibrant-green'
-    },
-    {
-      number: '2',
-      label: 'Years Active',
-      icon: <Calendar className="w-6 h-6" />,
-      color: 'text-electric-blue'
-    }
-  ];
 
   const timeline = [
     {
-      year: '2023',
+      year: '2019',
       title: 'Team Formation',
       description: 'CodeCraft Collective was founded with a vision to excel in competitive programming and app development.',
       color: 'border-electric-blue'
     },
     {
-      year: '2023',
-      title: 'First Competition',
-      description: 'Participated in our first hackathon and secured a top 10 position, marking our entry into competitive coding.',
+      year: '2020',
+      title: 'HackOnHills Announced',
+      description: 'Announced our first hackathon and successfully organized it, marking our entry in finding solutions to real-world problems.',
       color: 'border-neon-magenta'
     },
     {
-      year: '2024',
-      title: 'Major Breakthrough',
-      description: 'Won our first major competition at Nimbus, establishing our reputation as a formidable development team.',
-      color: 'border-vibrant-green'
-    },
-    {
-      year: '2024',
+      year: '2025',
       title: 'Triple Crown',
       description: 'Achieved success in HOH 6.0, Nimbus, and Hillfair, cementing our position as elite developers.',
       color: 'border-electric-blue'
     }
   ];
+
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer) return;
+
+    let scrollAmount = 0;
+    const scrollStep = 0.8;
+    const scrollDelay = 40;
+    let isScrolling = true;
+
+    const autoScroll = () => {
+      if (scrollContainer && isScrolling) {
+        scrollAmount += scrollStep;
+        scrollContainer.scrollLeft = scrollAmount;
+
+        // Reset scroll when reaching the end
+        if (scrollAmount >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
+          scrollAmount = 0;
+        }
+      }
+    };
+
+    const interval = setInterval(autoScroll, scrollDelay);
+
+    // Pause auto-scroll on hover
+    const handleMouseEnter = () => { isScrolling = false; };
+    const handleMouseLeave = () => { isScrolling = true; };
+
+    scrollContainer.addEventListener('mouseenter', handleMouseEnter);
+    scrollContainer.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      clearInterval(interval);
+      if (scrollContainer) {
+        scrollContainer.removeEventListener('mouseenter', handleMouseEnter);
+        scrollContainer.removeEventListener('mouseleave', handleMouseLeave);
+      }
+    };
+  }, []);
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -350, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 350, behavior: 'smooth' });
+    }
+  };
+
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'Championship':
+      case 'Grand Prize':
+        return 'text-vibrant-green bg-vibrant-green/20 border-vibrant-green/30';
+      case 'Competition Win':
+        return 'text-electric-blue bg-electric-blue/20 border-electric-blue/30';
+      case 'Innovation':
+        return 'text-neon-magenta bg-neon-magenta/20 border-neon-magenta/30';
+      default:
+        return 'text-gray-400 bg-gray-400/20 border-gray-400/30';
+    }
+  };
 
   return (
     <section id="achievements" className="py-24 relative">
@@ -93,51 +141,110 @@ const Achievements: React.FC = () => {
             Our <span className="text-vibrant-green">Achievements</span>
           </h2>
           <p className="text-xl font-inter text-gray-300 max-w-3xl mx-auto">
-            Celebrating our journey of excellence, innovation, and competitive success 
+            Celebrating our journey of excellence, innovation, and competitive success
             in the world of app development and technology competitions.
           </p>
         </div>
 
-        {/* Major Achievements */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {majorAchievements.map((achievement, index) => (
-            <GlassCard key={index} className="p-8 text-center group">
-              <div className={`${achievement.color} mb-4 group-hover:scale-110 transition-transform duration-300 flex justify-center`}>
-                {achievement.icon}
-              </div>
-              <div className="flex justify-between items-center mb-3">
-                <span className={`text-xs font-jetbrains px-2 py-1 rounded-full bg-gray-400/20 text-gray-400`}>
-                  {achievement.category}
-                </span>
-                <span className="text-xs font-jetbrains text-gray-400">
-                  {achievement.year}
-                </span>
-              </div>
-              <h3 className="text-xl font-jetbrains font-semibold text-white mb-3 group-hover:text-electric-blue transition-colors duration-300">
-                {achievement.title}
+        {/* Achievement Gallery */}
+        <div className="relative mb-16">
+          <GlassCard className="p-8">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-2xl font-jetbrains font-semibold text-white">
+                Achievement <span className="text-electric-blue">Gallery</span>
               </h3>
-              <p className="text-gray-300 font-inter text-sm leading-relaxed">
-                {achievement.description}
-              </p>
-            </GlassCard>
-          ))}
-        </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={scrollLeft}
+                  className="p-2 bg-electric-blue/20 hover:bg-electric-blue/30 border border-electric-blue/30 rounded-lg transition-colors duration-300 group"
+                >
+                  <ChevronLeft className="w-5 h-5 text-electric-blue group-hover:scale-110 transition-transform duration-300" />
+                </button>
+                <button
+                  onClick={scrollRight}
+                  className="p-2 bg-electric-blue/20 hover:bg-electric-blue/30 border border-electric-blue/30 rounded-lg transition-colors duration-300 group"
+                >
+                  <ChevronRight className="w-5 h-5 text-electric-blue group-hover:scale-110 transition-transform duration-300" />
+                </button>
+              </div>
+            </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-          {stats.map((stat, index) => (
-            <GlassCard key={index} className="p-6 text-center group">
-              <div className={`${stat.color} mb-3 flex justify-center group-hover:scale-110 transition-transform duration-300`}>
-                {stat.icon}
+            {/* Scrolling Gallery */}
+            <div
+              ref={scrollRef}
+              className="flex space-x-6 overflow-x-auto scrollbar-hide pb-4"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {achievementGallery.map((achievement) => (
+                <div
+                  key={achievement.id}
+                  className="flex-shrink-0 w-80 group cursor-pointer"
+                >
+                  <div className="relative overflow-hidden rounded-xl border border-glass-border bg-cyber-dark/50 backdrop-blur-sm transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-electric-blue/20">
+                    {/* Achievement Image */}
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={achievement.image}
+                        alt={achievement.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-cyber-dark via-transparent to-transparent opacity-70"></div>
+
+                      {/* Achievement Type Badge */}
+                      <div className="absolute top-4 right-4">
+                        <div className={`px-3 py-1 rounded-full text-xs font-jetbrains border backdrop-blur-sm ${getTypeColor(achievement.type)}`}>
+                          {achievement.type}
+                        </div>
+                      </div>
+
+                      {/* Year Badge */}
+                      <div className="absolute top-4 left-4">
+                        <div className="bg-cyber-dark/70 backdrop-blur-sm rounded-lg px-3 py-1 border border-glass-border">
+                          <span className="text-electric-blue font-jetbrains text-xs">
+                            {achievement.year}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Glow Effect on Hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-electric-blue/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+
+                    {/* Achievement Details */}
+                    <div className="p-6">
+                      <h4 className="text-lg font-jetbrains font-semibold text-white mb-2 group-hover:text-electric-blue transition-colors duration-300">
+                        {achievement.title}
+                      </h4>
+
+                      <p className="text-gray-300 font-inter text-sm leading-relaxed mb-3">
+                        {achievement.description}
+                      </p>
+
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs font-jetbrains text-neon-magenta">
+                          {achievement.event}
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Zap className="w-3 h-3 text-vibrant-green" />
+                          <span className="text-xs font-jetbrains text-vibrant-green">
+                            Achievement
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Auto-scroll indicator */}
+            <div className="flex justify-center mt-6">
+              <div className="flex items-center space-x-2 text-gray-400 text-sm font-inter">
+                <div className="w-2 h-2 bg-electric-blue rounded-full animate-pulse"></div>
+                <span>Auto-scrolling gallery • Hover to pause</span>
               </div>
-              <div className="text-2xl font-jetbrains font-bold text-white mb-1">
-                {stat.number}
-              </div>
-              <div className="text-gray-400 font-inter text-sm">
-                {stat.label}
-              </div>
-            </GlassCard>
-          ))}
+            </div>
+          </GlassCard>
         </div>
 
         {/* Timeline */}
@@ -167,6 +274,19 @@ const Achievements: React.FC = () => {
           </div>
         </GlassCard>
       </div>
+
+      <style>{`
+       .scrollbar-hide::-webkit-scrollbar {
+       display: none;
+      }
+
+      .scrollbar-hide {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;     /* Firefox */
+      }
+    `}
+    </style>
+
     </section>
   );
 };

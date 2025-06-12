@@ -5,10 +5,10 @@ import GlassCard from './GlassCard';
 const Projects: React.FC = () => {
   const projects = [
     {
-      title: 'CampusConnect',
-      description: 'A comprehensive social platform connecting students across departments with event management, study groups, and resource sharing.',
-      image: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=600',
-      type: 'mobile',
+      title: 'HackOnHills-6.0',
+      description: 'A platform where all the participants got information about the hackathon HackOnHills-6.0 happened in April,2K25.',
+      image: '/img1.png',
+      type: 'app',
       status: 'Live',
       technologies: ['React Native', 'Firebase', 'Node.js', 'MongoDB'],
       event: 'HOH 6.0',
@@ -18,70 +18,31 @@ const Projects: React.FC = () => {
       }
     },
     {
-      title: 'StudySync',
-      description: 'AI-powered study companion that creates personalized learning schedules and tracks academic progress with smart notifications.',
-      image: 'https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg?auto=compress&cs=tinysrgb&w=600',
-      type: 'web',
-      status: 'Winner',
+      title: 'Hill-ffair 2K24',
+      description: 'A platform for our cultural event Hillffair 2K24.',
+      image: '/img2.png',
+      type: 'mobile',
+      status: 'Live',
       technologies: ['React', 'Python', 'TensorFlow', 'PostgreSQL'],
-      event: 'Nimbus',
+      event: 'Hill-ffair 2K24',
       links: {
-        live: '#',
+        live: 'https://play.google.com/store/apps/details?id=com.appteam.hillfair2k24&hl=en-US',
         github: '#'
       }
     },
     {
-      title: 'EcoTracker',
-      description: 'Environmental impact tracking app that gamifies sustainable living with carbon footprint monitoring and eco-challenges.',
-      image: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=600',
+      title: 'NIMBUS-2K25',
+      description: 'A platform for our technical event NIMBUS 2K25.',
+      image: '/img3.png',
       type: 'mobile',
-      status: 'Champion',
+      status: 'Live',
       technologies: ['Flutter', 'Dart', 'AWS', 'GraphQL'],
       event: 'Hillfair',
       links: {
-        live: '#',
+        live: 'https://play.google.com/store/apps/details?id=com.appteam.nimbus2k25&hl=en-US',
         github: '#'
       }
     },
-    {
-      title: 'CodeCollab',
-      description: 'Real-time collaborative coding platform with integrated video chat, code review tools, and project management features.',
-      image: 'https://images.pexels.com/photos/4164418/pexels-photo-4164418.jpeg?auto=compress&cs=tinysrgb&w=600',
-      type: 'web',
-      status: 'Development',
-      technologies: ['Vue.js', 'Socket.io', 'Docker', 'Redis'],
-      event: 'Internal',
-      links: {
-        live: '#',
-        github: '#'
-      }
-    },
-    {
-      title: 'HealthHub',
-      description: 'Telemedicine platform connecting students with healthcare providers, featuring appointment booking and health record management.',
-      image: 'https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg?auto=compress&cs=tinysrgb&w=600',
-      type: 'web',
-      status: 'Beta',
-      technologies: ['Next.js', 'Prisma', 'Stripe', 'WebRTC'],
-      event: 'HOH 6.0',
-      links: {
-        live: '#',
-        github: '#'
-      }
-    },
-    {
-      title: 'SmartLibrary',
-      description: 'Digital library management system with AI-powered book recommendations and automated inventory tracking.',
-      image: 'https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg?auto=compress&cs=tinysrgb&w=600',
-      type: 'web',
-      status: 'Live',
-      technologies: ['Angular', 'Spring Boot', 'MySQL', 'OpenAI'],
-      event: 'Nimbus',
-      links: {
-        live: '#',
-        github: '#'
-      }
-    }
   ];
 
   const getStatusColor = (status: string) => {
@@ -120,7 +81,7 @@ const Projects: React.FC = () => {
             Our <span className="text-neon-magenta">Projects</span>
           </h2>
           <p className="text-xl font-inter text-gray-300 max-w-3xl mx-auto">
-            Discover our innovative applications built for competitions and real-world impact. 
+            Discover our innovative applications built for competitions and real-world impact.
             Each project represents our commitment to excellence and cutting-edge development.
           </p>
         </div>
@@ -137,7 +98,7 @@ const Projects: React.FC = () => {
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-cyber-dark via-transparent to-transparent opacity-60"></div>
-                
+
                 {/* Project Type & Status */}
                 <div className="absolute top-4 left-4 flex space-x-2">
                   <div className="bg-electric-blue/20 backdrop-blur-sm rounded-lg p-2 border border-electric-blue/30">

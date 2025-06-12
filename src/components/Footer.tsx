@@ -32,16 +32,20 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-electric-blue to-neon-magenta rounded-lg flex items-center justify-center">
-                <Code2 className="w-5 h-5 text-cyber-dark" />
-              </div>
+            <div className="flex items-center space-x-2">
+            <div className="w-12 h-12 flex items-center justify-center">
+              <img
+                src="/AppTeam.png"
+                alt="Logo"
+                className="w-12 h-12 rounded-full"
+              />
+            </div>
               <span className="text-xl font-jetbrains font-bold text-white">
-                CodeCraft<span className="text-electric-blue">Collective</span>
+                AppTeam<span className="text-electric-blue">,NITH</span>
               </span>
             </div>
             <p className="text-gray-300 font-inter leading-relaxed max-w-md mb-6">
-              Elite college development team pushing the boundaries of innovation through 
+              Best Techno Innovation team of NITH, pushing the boundaries of innovation through 
               competitive programming, app development, and cutting-edge technology solutions.
             </p>
             

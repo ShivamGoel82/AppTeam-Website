@@ -31,15 +31,15 @@ const About: React.FC = () => {
   ];
 
   return (
-    <section id="about" className="py-24 relative">
+    <section id="about" className="py-15 relative">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-jetbrains font-bold text-white mb-6">
-            About <span className="text-electric-blue">CodeCraft</span>
+            About <span className="text-electric-blue">AppTeam</span>
           </h2>
           <p className="text-xl font-inter text-gray-300 max-w-3xl mx-auto">
-            We are an elite college development team dedicated to creating innovative mobile and web applications. 
+            We are the best techno innovation team of NITH dedicated to creating innovative mobile and web applications. 
             Our passion for technology drives us to compete in prestigious events and build solutions that matter.
           </p>
         </div>

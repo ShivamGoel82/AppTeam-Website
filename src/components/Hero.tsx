@@ -9,9 +9,9 @@ const Hero: React.FC = () => {
         <div className="text-center">
           {/* Main Heading */}
           <h1 className="text-5xl md:text-7xl font-jetbrains font-bold text-white mb-6 animate-fade-in">
-            Elite College
+            AppTeam
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-electric-blue via-neon-magenta to-vibrant-green">
-              Dev Team
+              Nit Hamirpur
             </span>
           </h1>
 
@@ -24,15 +24,11 @@ const Hero: React.FC = () => {
           {/* Stats */}
           <div className="flex flex-wrap justify-center gap-8 mb-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <div className="text-center">
-              <div className="text-3xl font-jetbrains font-bold text-electric-blue">25+</div>
-              <div className="text-gray-400 font-inter">Apps Deployed</div>
-            </div>
-            <div className="text-center">
               <div className="text-3xl font-jetbrains font-bold text-neon-magenta">3</div>
               <div className="text-gray-400 font-inter">Major Events</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-jetbrains font-bold text-vibrant-green">15</div>
+              <div className="text-3xl font-jetbrains font-bold text-vibrant-green">40+</div>
               <div className="text-gray-400 font-inter">Active Members</div>
             </div>
           </div>
@@ -40,13 +36,13 @@ const Hero: React.FC = () => {
           {/* Event Badges */}
           <div className="flex flex-wrap justify-center gap-4 mb-12 animate-fade-in" style={{ animationDelay: '0.5s' }}>
             <div className="px-4 py-2 bg-electric-blue/20 border border-electric-blue/30 rounded-full backdrop-blur-sm">
-              <span className="text-electric-blue font-jetbrains text-sm">HOH 6.0 Participants</span>
+              <span className="text-electric-blue font-jetbrains text-sm">HackOnHills</span>
             </div>
             <div className="px-4 py-2 bg-neon-magenta/20 border border-neon-magenta/30 rounded-full backdrop-blur-sm">
-              <span className="text-neon-magenta font-jetbrains text-sm">Nimbus Champions</span>
+              <span className="text-neon-magenta font-jetbrains text-sm">Nimbus</span>
             </div>
             <div className="px-4 py-2 bg-vibrant-green/20 border border-vibrant-green/30 rounded-full backdrop-blur-sm">
-              <span className="text-vibrant-green font-jetbrains text-sm">Hillfair Winners</span>
+              <span className="text-vibrant-green font-jetbrains text-sm">Hillfair</span>
             </div>
           </div>
 
