@@ -18,10 +18,10 @@ const Achievements: React.FC = () => {
     },
     {
       id: 2,
-      title: 'Team Recognition',
+      title: 'Our Team',
       image: '/img12.jpeg',
-      description: 'Ceremony for our achievements',
-      event: 'College Awards',
+      description: 'Our whole team in one frame.',
+      event: 'Photo shoot',
       year: '2025',
       type: 'Recognition'
     },

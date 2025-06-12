@@ -24,6 +24,10 @@ export default {
         'code-rain': 'codeRain 20s linear infinite',
         'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
         'rotate-slow': 'rotateSlow 20s linear infinite',
+
+        // Optional: shorter or lighter mobile versions
+        'float-mobile': 'floatMobile 3s ease-in-out infinite',
+        'code-rain-mobile': 'codeRainMobile 10s linear infinite',
       },
       keyframes: {
         float: {
@@ -53,6 +57,16 @@ export default {
         rotateSlow: {
           '0%': { transform: 'rotate(0deg)' },
           '100%': { transform: 'rotate(360deg)' },
+        },
+
+        // Mobile-friendly versions
+        floatMobile: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' }, // shorter float
+        },
+        codeRainMobile: {
+          '0%': { transform: 'translateY(-100vh)' },
+          '100%': { transform: 'translateY(60vh)' }, // less intense
         },
       },
       backdropBlur: {
