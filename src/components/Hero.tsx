@@ -1,0 +1,84 @@
+import React from 'react';
+import { ArrowRight, Trophy, Users, Zap } from 'lucide-react';
+import GlowButton from './GlowButton';
+
+const Hero: React.FC = () => {
+  return (
+    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <div className="container mx-auto px-6 z-10">
+        <div className="text-center">
+          {/* Main Heading */}
+          <h1 className="text-5xl md:text-7xl font-jetbrains font-bold text-white mb-6 animate-fade-in">
+            Elite College
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-electric-blue via-neon-magenta to-vibrant-green">
+              Dev Team
+            </span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-xl md:text-2xl font-inter text-gray-300 mb-8 max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            CodeCraft Collective - Where innovation meets execution. Building the future 
+            one app at a time through cutting-edge development and competitive excellence.
+          </p>
+
+          {/* Stats */}
+          <div className="flex flex-wrap justify-center gap-8 mb-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <div className="text-center">
+              <div className="text-3xl font-jetbrains font-bold text-electric-blue">25+</div>
+              <div className="text-gray-400 font-inter">Apps Deployed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-jetbrains font-bold text-neon-magenta">3</div>
+              <div className="text-gray-400 font-inter">Major Events</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-jetbrains font-bold text-vibrant-green">15</div>
+              <div className="text-gray-400 font-inter">Active Members</div>
+            </div>
+          </div>
+
+          {/* Event Badges */}
+          <div className="flex flex-wrap justify-center gap-4 mb-12 animate-fade-in" style={{ animationDelay: '0.5s' }}>
+            <div className="px-4 py-2 bg-electric-blue/20 border border-electric-blue/30 rounded-full backdrop-blur-sm">
+              <span className="text-electric-blue font-jetbrains text-sm">HOH 6.0 Participants</span>
+            </div>
+            <div className="px-4 py-2 bg-neon-magenta/20 border border-neon-magenta/30 rounded-full backdrop-blur-sm">
+              <span className="text-neon-magenta font-jetbrains text-sm">Nimbus Champions</span>
+            </div>
+            <div className="px-4 py-2 bg-vibrant-green/20 border border-vibrant-green/30 rounded-full backdrop-blur-sm">
+              <span className="text-vibrant-green font-jetbrains text-sm">Hillfair Winners</span>
+            </div>
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
+            <GlowButton className="group">
+              View Our Projects
+              <ArrowRight className="inline-block ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </GlowButton>
+            <GlowButton variant="secondary" className="group">
+              <Trophy className="inline-block mr-2 w-4 h-4" />
+              Our Achievements
+            </GlowButton>
+          </div>
+
+          {/* Floating Elements */}
+          <div className="absolute top-20 left-10 animate-float">
+            <div className="w-16 h-16 border border-electric-blue/30 rounded-lg rotate-45 backdrop-blur-sm"></div>
+          </div>
+          <div className="absolute top-40 right-20 animate-float" style={{ animationDelay: '2s' }}>
+            <Users className="w-8 h-8 text-neon-magenta/50" />
+          </div>
+          <div className="absolute bottom-40 left-20 animate-float" style={{ animationDelay: '4s' }}>
+            <div className="w-12 h-12 bg-gradient-to-br from-electric-blue/20 to-vibrant-green/20 rounded-full backdrop-blur-sm"></div>
+          </div>
+          <div className="absolute top-60 right-10 animate-pulse-glow">
+            <Zap className="w-6 h-6 text-vibrant-green/60" />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Hero;
