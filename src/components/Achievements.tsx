@@ -124,8 +124,10 @@ const Achievements: React.FC = () => {
       case 'Grand Prize':
         return 'text-vibrant-green bg-vibrant-green/20 border-vibrant-green/30';
       case 'Competition Win':
+      case 'Competition Organized':
         return 'text-electric-blue bg-electric-blue/20 border-electric-blue/30';
       case 'Innovation':
+      case 'Leadership':
         return 'text-neon-magenta bg-neon-magenta/20 border-neon-magenta/30';
       default:
         return 'text-gray-400 bg-gray-400/20 border-gray-400/30';
@@ -178,17 +180,18 @@ const Achievements: React.FC = () => {
               {achievementGallery.map((achievement) => (
                 <div
                   key={achievement.id}
-                  className="flex-shrink-0 w-80 group cursor-pointer"
+                  className="flex-shrink-0 w-96 group cursor-pointer"
                 >
                   <div className="relative overflow-hidden rounded-xl border border-glass-border bg-cyber-dark/50 backdrop-blur-sm transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-electric-blue/20">
-                    {/* Achievement Image */}
-                    <div className="relative h-48 overflow-hidden">
+                    {/* Achievement Image - Improved sizing */}
+                    <div className="relative h-72 overflow-hidden">
                       <img
                         src={achievement.image}
                         alt={achievement.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
+                        style={{ objectFit: 'cover' }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-cyber-dark via-transparent to-transparent opacity-70"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-cyber-dark/80 via-transparent to-transparent opacity-70"></div>
 
                       {/* Achievement Type Badge */}
                       <div className="absolute top-4 right-4">
@@ -212,21 +215,21 @@ const Achievements: React.FC = () => {
 
                     {/* Achievement Details */}
                     <div className="p-6">
-                      <h4 className="text-lg font-jetbrains font-semibold text-white mb-2 group-hover:text-electric-blue transition-colors duration-300">
+                      <h4 className="text-xl font-jetbrains font-semibold text-white mb-3 group-hover:text-electric-blue transition-colors duration-300">
                         {achievement.title}
                       </h4>
 
-                      <p className="text-gray-300 font-inter text-sm leading-relaxed mb-3">
+                      <p className="text-gray-300 font-inter text-sm leading-relaxed mb-4">
                         {achievement.description}
                       </p>
 
                       <div className="flex items-center justify-between">
-                        <div className="text-xs font-jetbrains text-neon-magenta">
+                        <div className="text-sm font-jetbrains text-neon-magenta">
                           {achievement.event}
                         </div>
                         <div className="flex items-center space-x-1">
-                          <Zap className="w-3 h-3 text-vibrant-green" />
-                          <span className="text-xs font-jetbrains text-vibrant-green">
+                          <Zap className="w-4 h-4 text-vibrant-green" />
+                          <span className="text-sm font-jetbrains text-vibrant-green">
                             Achievement
                           </span>
                         </div>
