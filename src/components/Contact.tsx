@@ -28,7 +28,7 @@ const Contact: React.FC = () => {
     {
       icon: <Mail className="w-6 h-6" />,
       title: 'Email Us',
-      content: 'hello@codecraftcollective.dev',
+      content: 'hello@appteam.nith.ac.in',
       color: 'text-electric-blue'
     },
     {
@@ -40,7 +40,7 @@ const Contact: React.FC = () => {
     {
       icon: <MapPin className="w-6 h-6" />,
       title: 'Find Us',
-      content: 'Computer Science Department, Main Campus',
+      content: 'F5, Old LH',
       color: 'text-vibrant-green'
     }
   ];

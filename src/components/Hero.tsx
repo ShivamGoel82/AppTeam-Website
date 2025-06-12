@@ -27,7 +27,7 @@ const Hero: React.FC = () => {
 
           {/* Subtitle */}
           <p className="text-lg sm:text-xl md:text-2xl font-inter text-gray-300 mb-8 max-w-3xl mx-auto animate-fade-in relative z-30 px-4" style={{ animationDelay: '0.2s' }}>
-            CodeCraft Collective - Where innovation meets execution. Building the future 
+            AppTeam - Where innovation meets execution. Building the future 
             one app at a time through cutting-edge development and competitive excellence.
           </p>
 

@@ -116,7 +116,7 @@ const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="border-t border-glass-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 font-inter text-sm">
-            © {currentYear} CodeCraft Collective. Built with passion and code.
+            © {currentYear} AppTeam,NITH. Built with passion and code.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a href="#" className="text-gray-400 font-inter text-sm hover:text-electric-blue transition-colors duration-300">
