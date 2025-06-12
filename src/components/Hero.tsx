@@ -3,6 +3,16 @@ import { ArrowRight, Trophy, Users, Zap } from 'lucide-react';
 import GlowButton from './GlowButton';
 
 const Hero: React.FC = () => {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="container mx-auto px-6 z-20 relative">
@@ -48,11 +58,18 @@ const Hero: React.FC = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in relative z-30 px-4" style={{ animationDelay: '0.6s' }}>
-            <GlowButton className="group text-sm sm:text-base">
+            <GlowButton 
+              className="group text-sm sm:text-base"
+              onClick={() => scrollToSection('projects')}
+            >
               View Our Projects
               <ArrowRight className="inline-block ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
             </GlowButton>
-            <GlowButton variant="secondary" className="group text-sm sm:text-base">
+            <GlowButton 
+              variant="secondary" 
+              className="group text-sm sm:text-base"
+              onClick={() => scrollToSection('achievements')}
+            >
               <Trophy className="inline-block mr-2 w-4 h-4" />
               Our Achievements
             </GlowButton>
