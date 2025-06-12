@@ -8,7 +8,8 @@ const CodeRain: React.FC = () => {
     if (!container) return;
 
     const codeChars = ['0', '1', '{', '}', '<', '>', '/', '\\', '(', ')', '[', ']', '=', '+', '-', '*', '&', '%', '$', '#', '@'];
-    const columns = Math.floor(window.innerWidth / 20);
+    const isMobile = window.innerWidth < 768;
+    const columns = Math.floor(window.innerWidth / (isMobile ? 30 : 20));
     const drops: number[] = [];
 
     // Initialize drops
@@ -19,8 +20,8 @@ const CodeRain: React.FC = () => {
     const createRainDrop = (x: number) => {
       const drop = document.createElement('div');
       drop.textContent = codeChars[Math.floor(Math.random() * codeChars.length)];
-      drop.className = 'absolute text-electric-blue font-jetbrains text-sm opacity-60 animate-code-rain';
-      drop.style.left = `${x * 20}px`;
+      drop.className = `absolute text-electric-blue font-jetbrains ${isMobile ? 'text-xs opacity-30' : 'text-sm opacity-60'} animate-code-rain`;
+      drop.style.left = `${x * (isMobile ? 30 : 20)}px`;
       drop.style.top = '-20px';
       container.appendChild(drop);
 
@@ -28,16 +29,16 @@ const CodeRain: React.FC = () => {
         if (container.contains(drop)) {
           container.removeChild(drop);
         }
-      }, 20000);
+      }, isMobile ? 15000 : 20000);
     };
 
     const interval = setInterval(() => {
       for (let i = 0; i < columns; i++) {
-        if (Math.random() > 0.98) {
+        if (Math.random() > (isMobile ? 0.995 : 0.98)) {
           createRainDrop(i);
         }
       }
-    }, 100);
+    }, isMobile ? 200 : 100);
 
     return () => clearInterval(interval);
   }, []);

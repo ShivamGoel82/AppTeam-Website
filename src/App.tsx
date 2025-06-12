@@ -13,11 +13,13 @@ import CodeRain from './components/CodeRain';
 function App() {
   return (
     <div className="min-h-screen bg-cyber-dark text-white overflow-x-hidden">
-      {/* Animated Backgrounds */}
-      <AnimatedBackground />
-      <CodeRain />
+      {/* Animated Backgrounds - Lower z-index */}
+      <div className="fixed inset-0 z-0">
+        <AnimatedBackground />
+        <CodeRain />
+      </div>
       
-      {/* Main Content */}
+      {/* Main Content - Higher z-index */}
       <div className="relative z-10">
         <Header />
         <Hero />

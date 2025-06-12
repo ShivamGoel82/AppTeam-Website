@@ -14,15 +14,15 @@ const AnimatedBackground: React.FC = () => {
     canvas.height = window.innerHeight;
 
     const nodes: { x: number; y: number; vx: number; vy: number }[] = [];
-    const nodeCount = 50;
+    const nodeCount = window.innerWidth < 768 ? 25 : 50; // Reduce nodes on mobile
 
     // Initialize nodes
     for (let i = 0; i < nodeCount; i++) {
       nodes.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
+        vx: (Math.random() - 0.5) * 0.3, // Slower movement on mobile
+        vy: (Math.random() - 0.5) * 0.3,
       });
     }
 
@@ -39,20 +39,23 @@ const AnimatedBackground: React.FC = () => {
         if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
         if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
 
-        // Draw node
-        ctx.fillStyle = 'rgba(0, 191, 255, 0.3)';
+        // Draw node with reduced opacity on mobile
+        const opacity = window.innerWidth < 768 ? 0.15 : 0.3;
+        ctx.fillStyle = `rgba(0, 191, 255, ${opacity})`;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, window.innerWidth < 768 ? 1.5 : 2, 0, Math.PI * 2);
         ctx.fill();
 
-        // Draw connections
+        // Draw connections with reduced opacity
         nodes.slice(i + 1).forEach((otherNode) => {
           const dx = node.x - otherNode.x;
           const dy = node.y - otherNode.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
+          const maxDistance = window.innerWidth < 768 ? 80 : 100;
 
-          if (distance < 100) {
-            ctx.strokeStyle = `rgba(0, 191, 255, ${0.2 * (1 - distance / 100)})`;
+          if (distance < maxDistance) {
+            const connectionOpacity = window.innerWidth < 768 ? 0.1 : 0.2;
+            ctx.strokeStyle = `rgba(0, 191, 255, ${connectionOpacity * (1 - distance / maxDistance)})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);
