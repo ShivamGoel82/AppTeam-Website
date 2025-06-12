@@ -5,10 +5,10 @@ import GlassCard from './GlassCard';
 const Team: React.FC = () => {
   const teamMembers = [
     {
-      name: 'Arjun Sharma',
-      role: 'Team Lead & Full-Stack Developer',
-      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400',
-      bio: 'Computer Science senior with expertise in React, Node.js, and cloud architecture. Led our team to victory at Nimbus 2024.',
+      name: 'Pratyush Pragyey',
+      role: 'Team Lead & Full-Stack MERN Developer',
+      image: 'pratyush pragyey.jpg',
+      bio: 'Expertise in MERN, and currenly learning dev Ops. Led our team to successfully organize HOH-6.0',
       skills: ['React', 'Node.js', 'AWS', 'MongoDB'],
       icon: <Code className="w-5 h-5" />,
       social: {
@@ -18,10 +18,10 @@ const Team: React.FC = () => {
       }
     },
     {
-      name: 'Priya Patel',
+      name: 'Ishaan Yadav',
       role: 'UI/UX Designer & Frontend Dev',
-      image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400',
-      bio: 'Design enthusiast and frontend specialist. Creates stunning user experiences that have won multiple design awards.',
+      image: 'ishaan yadav.jpg',
+      bio: 'Design enthusiast and frontend specialist. Creates stunning user experiences.',
       skills: ['Figma', 'React', 'Tailwind', 'Framer'],
       icon: <Palette className="w-5 h-5" />,
       social: {
@@ -31,10 +31,10 @@ const Team: React.FC = () => {
       }
     },
     {
-      name: 'Rahul Kumar',
-      role: 'AI/ML Specialist',
-      image: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=400',
-      bio: 'Machine learning expert and data science enthusiast. Developed the AI algorithms that power our award-winning apps.',
+      name: 'Aryan Raghav',
+      role: 'DSA Expert & AI/ML enthusiast',
+      image: 'image.png',
+      bio: 'Solving complex problems with code. Exploring intelligence with AI.',
       skills: ['Python', 'TensorFlow', 'PyTorch', 'OpenAI'],
       icon: <Brain className="w-5 h-5" />,
       social: {
@@ -43,45 +43,45 @@ const Team: React.FC = () => {
         twitter: '#'
       }
     },
-    {
-      name: 'Sneha Gupta',
-      role: 'Mobile App Developer',
-      image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=400',
-      bio: 'Flutter and React Native expert. Built cross-platform apps that have reached over 50K users across app stores.',
-      skills: ['Flutter', 'React Native', 'Dart', 'Firebase'],
-      icon: <Shield className="w-5 h-5" />,
-      social: {
-        github: '#',
-        linkedin: '#',
-        twitter: '#'
-      }
-    },
-    {
-      name: 'Vikash Singh',
-      role: 'Backend Developer',
-      image: 'https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&w=400',
-      bio: 'Backend architecture specialist with expertise in scalable systems. Ensures our apps can handle massive user loads.',
-      skills: ['Java', 'Spring Boot', 'Docker', 'Kubernetes'],
-      icon: <Code className="w-5 h-5" />,
-      social: {
-        github: '#',
-        linkedin: '#',
-        twitter: '#'
-      }
-    },
-    {
-      name: 'Ananya Reddy',
-      role: 'DevOps & Cloud Engineer',
-      image: 'https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=400',
-      bio: 'Cloud infrastructure expert and DevOps specialist. Manages our deployment pipelines and ensures 99.9% uptime.',
-      skills: ['AWS', 'Docker', 'Jenkins', 'Terraform'],
-      icon: <Shield className="w-5 h-5" />,
-      social: {
-        github: '#',
-        linkedin: '#',
-        twitter: '#'
-      }
-    }
+    // {
+    //   name: 'Avinash Garla',
+    //   role: 'Mobile App Developer',
+    //   image: 'Avinash.jpeg',
+    //   bio: 'Flutter and GoLang Backend Developer, Built cross-platform apps.',
+    //   skills: ['Flutter', 'React Native', 'Dart', 'Firebase'],
+    //   icon: <Shield className="w-5 h-5" />,
+    //   social: {
+    //     github: '#',
+    //     linkedin: '#',
+    //     twitter: '#'
+    //   }
+    // },
+    // {
+    //   name: 'Vikash Singh',
+    //   role: 'Backend Developer',
+    //   image: 'https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&w=400',
+    //   bio: 'Backend architecture specialist with expertise in scalable systems. Ensures our apps can handle massive user loads.',
+    //   skills: ['Java', 'Spring Boot', 'Docker', 'Kubernetes'],
+    //   icon: <Code className="w-5 h-5" />,
+    //   social: {
+    //     github: '#',
+    //     linkedin: '#',
+    //     twitter: '#'
+    //   }
+    // },
+    // {
+    //   name: 'Ananya Reddy',
+    //   role: 'DevOps & Cloud Engineer',
+    //   image: 'https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=400',
+    //   bio: 'Cloud infrastructure expert and DevOps specialist. Manages our deployment pipelines and ensures 99.9% uptime.',
+    //   skills: ['AWS', 'Docker', 'Jenkins', 'Terraform'],
+    //   icon: <Shield className="w-5 h-5" />,
+    //   social: {
+    //     github: '#',
+    //     linkedin: '#',
+    //     twitter: '#'
+    //   }
+    // }
   ];
 
   return (

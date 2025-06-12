@@ -6,7 +6,7 @@ const Projects: React.FC = () => {
   const projects = [
     {
       title: 'HackOnHills-6.0',
-      description: 'A platform where all the participants got information about the hackathon HackOnHills-6.0 happened in April,2K25.',
+      description: 'Info platform for HackOnHills 6.0 held in April 2K25.',
       image: '/img1.png',
       type: 'app',
       status: 'Live',
@@ -19,12 +19,12 @@ const Projects: React.FC = () => {
     },
     {
       title: 'Hill-ffair 2K24',
-      description: 'A platform for our cultural event Hillffair 2K24.',
+      description: 'Platform for our cultural fest Hillffair 2K24.',
       image: '/img2.png',
       type: 'mobile',
       status: 'Live',
       technologies: ['React', 'Python', 'TensorFlow', 'PostgreSQL'],
-      event: 'Hill-ffair 2K24',
+      event: 'Hillfair',
       links: {
         live: 'https://play.google.com/store/apps/details?id=com.appteam.hillfair2k24&hl=en-US',
         github: '#'
@@ -32,7 +32,7 @@ const Projects: React.FC = () => {
     },
     {
       title: 'NIMBUS-2K25',
-      description: 'A platform for our technical event NIMBUS 2K25.',
+      description: 'Platform for our technical event NIMBUS 2K25.',
       image: '/img3.png',
       type: 'mobile',
       status: 'Live',
@@ -91,11 +91,11 @@ const Projects: React.FC = () => {
           {projects.map((project, index) => (
             <GlassCard key={index} className="overflow-hidden group">
               {/* Project Image */}
-              <div className="relative h-64 overflow-hidden">
+              <div className="relative h-100 overflow-hidden flex justify-center items-center bg-black">
                 <img
                   src={project.image}
                   alt={project.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-contain object-center transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-cyber-dark via-transparent to-transparent opacity-60"></div>
 
@@ -127,12 +127,16 @@ const Projects: React.FC = () => {
                   <a
                     href={project.links.live}
                     className="bg-electric-blue/20 backdrop-blur-sm rounded-lg p-2 border border-electric-blue/30 hover:bg-electric-blue/30 transition-colors duration-300"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <ExternalLink className="w-4 h-4 text-electric-blue" />
                   </a>
                   <a
                     href={project.links.github}
                     className="bg-electric-blue/20 backdrop-blur-sm rounded-lg p-2 border border-electric-blue/30 hover:bg-electric-blue/30 transition-colors duration-300"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <Github className="w-4 h-4 text-electric-blue" />
                   </a>

@@ -120,12 +120,8 @@ const Achievements: React.FC = () => {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'Championship':
-      case 'Grand Prize':
-        return 'text-vibrant-green bg-vibrant-green/20 border-vibrant-green/30';
-      case 'Competition Win':
       case 'Competition Organized':
-        return 'text-electric-blue bg-electric-blue/20 border-electric-blue/30';
+      case 'Recognition':
       case 'Innovation':
       case 'Leadership':
         return 'text-neon-magenta bg-neon-magenta/20 border-neon-magenta/30';
@@ -226,12 +222,6 @@ const Achievements: React.FC = () => {
                       <div className="flex items-center justify-between">
                         <div className="text-sm font-jetbrains text-neon-magenta">
                           {achievement.event}
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Zap className="w-4 h-4 text-vibrant-green" />
-                          <span className="text-sm font-jetbrains text-vibrant-green">
-                            Achievement
-                          </span>
                         </div>
                       </div>
                     </div>
