@@ -1,268 +1,355 @@
-import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, MessageCircle, Users, Calendar, CheckCircle } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Trophy, Award, Star, Target, Calendar, Users, ChevronLeft, ChevronRight, Medal, Crown, Zap } from 'lucide-react';
 import GlassCard from './GlassCard';
-import GlowButton from './GlowButton';
 
-const Contact: React.FC = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+const Achievements: React.FC = () => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      // Simulate form submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Here you would typically send the form data to your backend
-      console.log('Form submitted:', formData);
-      
-      setSubmitStatus('success');
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    } catch (error) {
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
-      setTimeout(() => setSubmitStatus('idle'), 3000);
-    }
-  };
-
-  const contactInfo = [
+  // Achievement Gallery Images
+  const achievementGallery = [
     {
-      icon: <Mail className="w-6 h-6" />,
-      title: 'Email Us',
-      content: 'hello@appteam.nith.ac.in',
-      color: 'text-electric-blue',
-      href: 'mailto:hello@appteam.nith.ac.in'
+      id: 1,
+      title: 'HOH 6.0',
+      image: '/img9.jpeg',
+      description: 'Successfully organized HackOnHills-6.0.',
+      event: 'HOH 6.0',
+      year: '2025',
+      type: 'Competition Organized'
     },
     {
-      icon: <Phone className="w-6 h-6" />,
-      title: 'Call Us',
-      content: '+91 98765 43210',
-      color: 'text-neon-magenta',
-      href: 'tel:+919876543210'
+      id: 2,
+      title: 'Our Team',
+      image: '/img12.jpeg',
+      description: 'Our whole team in one frame.',
+      event: 'Photo shoot',
+      year: '2025',
+      type: 'Recognition'
     },
     {
-      icon: <MapPin className="w-6 h-6" />,
-      title: 'Find Us',
-      content: 'F5, Old LH, NIT Hamirpur',
-      color: 'text-vibrant-green',
-      href: 'https://maps.google.com/?q=NIT+Hamirpur'
+      id: 3,
+      title: 'Innovation Award',
+      image: '/img5.jpeg',
+      description: 'Best Techno Innovation Team.',
+      event: 'Tech Innovation',
+      year: '2025',
+      type: 'Innovation'
+    },
+    {
+      id: 4,
+      title: 'Leadership Award',
+      image: '/img11.jpeg',
+      description: 'Organized standout tech initiatives.',
+      event: 'Leadership',
+      year: '2025',
+      type: 'Leadership'
     }
   ];
 
-  const opportunities = [
+  const timeline = [
     {
-      icon: <Users className="w-6 h-6" />,
-      title: 'Join Our Team',
-      description: 'Looking for passionate developers to join our elite team. Open positions for all skill levels.',
-      color: 'text-electric-blue'
+      year: '2019',
+      title: 'Team Formation',
+      description: 'CodeCraft Collective was founded with a vision to excel in competitive programming and app development.',
+      color: 'border-electric-blue'
     },
     {
-      icon: <MessageCircle className="w-6 h-6" />,
-      title: 'Collaborate',
-      description: 'Interested in collaborating on a project? We love working with other innovative teams.',
-      color: 'text-neon-magenta'
+      year: '2020',
+      title: 'HackOnHills Announced',
+      description: 'Announced our first hackathon and successfully organized it, marking our entry in finding solutions to real-world problems.',
+      color: 'border-neon-magenta'
     },
     {
-      icon: <Calendar className="w-6 h-6" />,
-      title: 'Workshop Requests',
-      description: 'Want us to conduct a workshop or tech talk at your event? We\'d be happy to share our knowledge.',
-      color: 'text-vibrant-green'
+      year: '2025',
+      title: 'Triple Crown',
+      description: 'Achieved success in HOH 6.0, Nimbus, and Hillfair, cementing our position as elite developers.',
+      color: 'border-electric-blue'
     }
   ];
+
+  // Detect mobile and setup auto-scroll
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Auto-scroll functionality
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer) return;
+
+    let scrollAmount = 0;
+    const scrollStep = isMobile ? 0.5 : 0.8;
+    const scrollDelay = isMobile ? 80 : 50;
+
+    const autoScroll = () => {
+      if (scrollContainer && isAutoScrolling) {
+        scrollAmount += scrollStep;
+        scrollContainer.scrollLeft = scrollAmount;
+
+        // Reset scroll when reaching the end
+        if (scrollAmount >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
+          scrollAmount = 0;
+        }
+      }
+    };
+
+    const interval = setInterval(autoScroll, scrollDelay);
+
+    // Event handlers
+    const handleInteractionStart = () => setIsAutoScrolling(false);
+    const handleInteractionEnd = () => {
+      setTimeout(() => setIsAutoScrolling(true), 3000);
+    };
+
+    // Add event listeners
+    scrollContainer.addEventListener('mouseenter', handleInteractionStart);
+    scrollContainer.addEventListener('mouseleave', handleInteractionEnd);
+    scrollContainer.addEventListener('touchstart', handleInteractionStart);
+    scrollContainer.addEventListener('touchend', handleInteractionEnd);
+    scrollContainer.addEventListener('scroll', handleInteractionStart);
+
+    return () => {
+      clearInterval(interval);
+      if (scrollContainer) {
+        scrollContainer.removeEventListener('mouseenter', handleInteractionStart);
+        scrollContainer.removeEventListener('mouseleave', handleInteractionEnd);
+        scrollContainer.removeEventListener('touchstart', handleInteractionStart);
+        scrollContainer.removeEventListener('touchend', handleInteractionEnd);
+        scrollContainer.removeEventListener('scroll', handleInteractionStart);
+      }
+    };
+  }, [isAutoScrolling, isMobile]);
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      const scrollAmount = isMobile ? 300 : 400;
+      scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      const scrollAmount = isMobile ? 300 : 400;
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'Competition Organized':
+      case 'Recognition':
+      case 'Innovation':
+      case 'Leadership':
+        return 'text-neon-magenta bg-neon-magenta/20 border-neon-magenta/30';
+      default:
+        return 'text-gray-400 bg-gray-400/20 border-gray-400/30';
+    }
+  };
 
   return (
-    <section id="contact" className="py-16 md:py-24 relative">
+    <section id="achievements" className="py-16 md:py-24 relative">
       <div className="container mx-auto px-4 md:px-6">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-jetbrains font-bold text-white mb-4 md:mb-6">
-            Get In <span className="text-electric-blue">Touch</span>
+            Our <span className="text-vibrant-green">Achievements</span>
           </h2>
           <p className="text-base md:text-xl font-inter text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Ready to collaborate, join our team, or discuss your next big idea? 
-            We're always excited to connect with fellow innovators and tech enthusiasts.
+            Celebrating our journey of excellence, innovation, and competitive success
+            in the world of app development and technology competitions.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
-          {/* Contact Form */}
-          <GlassCard className="p-6 md:p-8">
-            <h3 className="text-xl md:text-2xl font-jetbrains font-semibold text-white mb-6">
-              Send Us a Message
-            </h3>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-jetbrains font-medium text-gray-300 mb-2">
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 bg-cyber-gray/50 border border-glass-border rounded-lg text-white font-inter placeholder-gray-400 focus:outline-none focus:border-electric-blue focus:ring-1 focus:ring-electric-blue transition-colors duration-300"
-                  placeholder="Enter your full name"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-jetbrains font-medium text-gray-300 mb-2">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 bg-cyber-gray/50 border border-glass-border rounded-lg text-white font-inter placeholder-gray-400 focus:outline-none focus:border-electric-blue focus:ring-1 focus:ring-electric-blue transition-colors duration-300"
-                  placeholder="your.email@example.com"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="subject" className="block text-sm font-jetbrains font-medium text-gray-300 mb-2">
-                  Subject
-                </label>
-                <select
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-cyber-gray/50 border border-glass-border rounded-lg text-white font-inter focus:outline-none focus:border-electric-blue focus:ring-1 focus:ring-electric-blue transition-colors duration-300"
-                >
-                  <option value="">Select a subject</option>
-                  <option value="collaboration">Collaboration Opportunity</option>
-                  <option value="join-team">Join Our Team</option>
-                  <option value="workshop">Workshop Request</option>
-                  <option value="general">General Inquiry</option>
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="message" className="block text-sm font-jetbrains font-medium text-gray-300 mb-2">
-                  Message *
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleInputChange}
-                  required
-                  rows={5}
-                  className="w-full px-4 py-3 bg-cyber-gray/50 border border-glass-border rounded-lg text-white font-inter placeholder-gray-400 focus:outline-none focus:border-electric-blue focus:ring-1 focus:ring-electric-blue transition-colors duration-300 resize-none"
-                  placeholder="Tell us about your idea, question, or how we can help..."
-                />
-              </div>
-
-              <GlowButton 
-                className="w-full justify-center relative"
-                onClick={handleSubmit}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Sending...
-                  </>
-                ) : submitStatus === 'success' ? (
-                  <>
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Message Sent!
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-4 h-4 mr-2" />
-                    Send Message
-                  </>
-                )}
-              </GlowButton>
-
-              {submitStatus === 'success' && (
-                <div className="text-center text-vibrant-green text-sm font-inter">
-                  Thank you! We'll get back to you soon.
-                </div>
-              )}
-              {submitStatus === 'error' && (
-                <div className="text-center text-red-400 text-sm font-inter">
-                  Something went wrong. Please try again.
-                </div>
-              )}
-            </form>
-          </GlassCard>
-
-          {/* Contact Information & Opportunities */}
-          <div className="space-y-6 md:space-y-8">
-            {/* Contact Info Cards */}
-            {contactInfo.map((info, index) => (
-              <GlassCard key={index} className="p-6 hover:scale-105 transition-transform duration-300">
-                <a 
-                  href={info.href}
-                  className="flex items-center space-x-4 group"
-                  target={info.href.startsWith('http') ? '_blank' : undefined}
-                  rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                >
-                  <div className={`${info.color} group-hover:scale-110 transition-transform duration-300`}>
-                    {info.icon}
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-jetbrains font-semibold text-white group-hover:text-electric-blue transition-colors duration-300">
-                      {info.title}
-                    </h4>
-                    <p className="text-gray-300 font-inter">
-                      {info.content}
-                    </p>
-                  </div>
-                </a>
-              </GlassCard>
-            ))}
-
-            {/* Opportunities */}
-            <div className="space-y-6">
-              <h3 className="text-xl font-jetbrains font-semibold text-white">
-                Opportunities
+        {/* Achievement Gallery */}
+        <div className="relative mb-12 md:mb-16">
+          <GlassCard className="p-4 md:p-8">
+            {/* Gallery Header */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 md:mb-8 gap-4">
+              <h3 className="text-xl md:text-2xl font-jetbrains font-semibold text-white">
+                Achievement <span className="text-electric-blue">Gallery</span>
               </h3>
-              {opportunities.map((opportunity, index) => (
-                <GlassCard key={index} className="p-6">
-                  <div className="flex items-start space-x-4">
-                    <div className={`${opportunity.color} mt-1 flex-shrink-0`}>
-                      {opportunity.icon}
+              <div className="flex space-x-2">
+                <button
+                  onClick={scrollLeft}
+                  className="p-2 md:p-3 bg-electric-blue/20 hover:bg-electric-blue/30 active:bg-electric-blue/40 border border-electric-blue/30 rounded-lg transition-all duration-200 group touch-manipulation"
+                  aria-label="Scroll left"
+                >
+                  <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-electric-blue group-hover:scale-110 transition-transform duration-200" />
+                </button>
+                <button
+                  onClick={scrollRight}
+                  className="p-2 md:p-3 bg-electric-blue/20 hover:bg-electric-blue/30 active:bg-electric-blue/40 border border-electric-blue/30 rounded-lg transition-all duration-200 group touch-manipulation"
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-electric-blue group-hover:scale-110 transition-transform duration-200" />
+                </button>
+              </div>
+            </div>
+
+            {/* Scrolling Gallery */}
+            <div
+              ref={scrollRef}
+              className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
+              style={{ 
+                scrollbarWidth: 'none', 
+                msOverflowStyle: 'none',
+                WebkitOverflowScrolling: 'touch'
+              }}
+            >
+              {achievementGallery.map((achievement) => (
+                <div
+                  key={achievement.id}
+                  className="flex-shrink-0 w-80 sm:w-96 group cursor-pointer"
+                >
+                  <div className="relative overflow-hidden rounded-xl border border-glass-border bg-cyber-dark/50 backdrop-blur-sm transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-lg group-hover:shadow-electric-blue/20">
+                    {/* Achievement Image */}
+                    <div className="relative h-56 sm:h-64 md:h-72 overflow-hidden">
+                      <img
+                        src={achievement.image}
+                        alt={achievement.title}
+                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-cyber-dark/80 via-transparent to-transparent opacity-70"></div>
+
+                      {/* Achievement Type Badge */}
+                      <div className="absolute top-3 md:top-4 right-3 md:right-4">
+                        <div className={`px-2 md:px-3 py-1 rounded-full text-xs font-jetbrains border backdrop-blur-sm ${getTypeColor(achievement.type)}`}>
+                          <span className="hidden sm:inline">{achievement.type}</span>
+                          <span className="sm:hidden">{achievement.type.split(' ')[0]}</span>
+                        </div>
+                      </div>
+
+                      {/* Year Badge */}
+                      <div className="absolute top-3 md:top-4 left-3 md:left-4">
+                        <div className="bg-cyber-dark/70 backdrop-blur-sm rounded-lg px-2 md:px-3 py-1 border border-glass-border">
+                          <span className="text-electric-blue font-jetbrains text-xs">
+                            {achievement.year}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Glow Effect on Hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-electric-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
-                    <div>
-                      <h4 className="text-lg font-jetbrains font-semibold text-white mb-2">
-                        {opportunity.title}
+
+                    {/* Achievement Details */}
+                    <div className="p-4 md:p-6">
+                      <h4 className="text-lg md:text-xl font-jetbrains font-semibold text-white mb-2 md:mb-3 group-hover:text-electric-blue transition-colors duration-300 line-clamp-1">
+                        {achievement.title}
                       </h4>
-                      <p className="text-gray-300 font-inter text-sm leading-relaxed">
-                        {opportunity.description}
+
+                      <p className="text-gray-300 font-inter text-sm leading-relaxed mb-3 md:mb-4 line-clamp-2">
+                        {achievement.description}
                       </p>
+
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm font-jetbrains text-neon-magenta truncate">
+                          {achievement.event}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </GlassCard>
+                </div>
               ))}
             </div>
-          </div>
+
+            {/* Auto-scroll indicator */}
+            <div className="flex justify-center mt-4 md:mt-6">
+              <div className="flex items-center space-x-2 text-gray-400 text-xs md:text-sm font-inter">
+                <div className={`w-2 h-2 bg-electric-blue rounded-full ${isAutoScrolling ? 'animate-pulse' : 'opacity-50'}`}></div>
+                <span className="hidden sm:inline">
+                  {isAutoScrolling ? 'Auto-scrolling gallery • Touch to pause' : 'Auto-scroll paused • Will resume shortly'}
+                </span>
+                <span className="sm:hidden">
+                  {isAutoScrolling ? 'Auto-scrolling' : 'Paused'}
+                </span>
+              </div>
+            </div>
+          </GlassCard>
         </div>
+
+        {/* Timeline */}
+        <GlassCard className="p-6 md:p-8">
+          <h3 className="text-xl md:text-2xl font-jetbrains font-semibold text-white mb-6 md:mb-8 text-center">
+            Our <span className="text-electric-blue">Journey</span>
+          </h3>
+          <div className="space-y-6 md:space-y-8">
+            {timeline.map((event, index) => (
+              <div key={index} className="flex items-start space-x-3 md:space-x-4">
+                <div className={`w-3 h-3 md:w-4 md:h-4 rounded-full border-2 ${event.color} bg-cyber-dark mt-2 flex-shrink-0`}></div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                    <span className="text-base md:text-lg font-jetbrains font-semibold text-white">
+                      {event.title}
+                    </span>
+                    <span className="text-sm font-jetbrains text-gray-400 bg-cyber-gray/50 px-2 py-1 rounded w-fit">
+                      {event.year}
+                    </span>
+                  </div>
+                  <p className="text-gray-300 font-inter leading-relaxed text-sm md:text-base">
+                    {event.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
       </div>
+
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+
+        .scroll-smooth {
+          scroll-behavior: smooth;
+        }
+
+        .touch-manipulation {
+          touch-action: manipulation;
+        }
+
+        .line-clamp-1 {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        /* Enhanced mobile scrolling */
+        @media (max-width: 768px) {
+          .scrollbar-hide {
+            scroll-snap-type: x proximity;
+            -webkit-overflow-scrolling: touch;
+          }
+          
+          .scrollbar-hide > div {
+            scroll-snap-align: start;
+          }
+        }
+      `}</style>
     </section>
   );
 };
 
-export default Contact;
+export default Achievements;
