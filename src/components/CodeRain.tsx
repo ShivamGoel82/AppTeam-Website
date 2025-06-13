@@ -9,7 +9,7 @@ const CodeRain: React.FC = () => {
 
     const codeChars = ['0', '1', '{', '}', '<', '>', '/', '\\', '(', ')', '[', ']', '=', '+', '-', '*', '&', '%', '$', '#', '@'];
     const isMobile = window.innerWidth < 768;
-    const columns = Math.floor(window.innerWidth / (isMobile ? 30 : 20));
+    const columns = Math.floor(window.innerWidth / (isMobile ? 40 : 25));
     const drops: number[] = [];
 
     // Initialize drops
@@ -20,25 +20,34 @@ const CodeRain: React.FC = () => {
     const createRainDrop = (x: number) => {
       const drop = document.createElement('div');
       drop.textContent = codeChars[Math.floor(Math.random() * codeChars.length)];
-      drop.className = `absolute text-electric-blue font-jetbrains ${isMobile ? 'text-xs opacity-30' : 'text-sm opacity-60'} animate-code-rain`;
-      drop.style.left = `${x * (isMobile ? 30 : 20)}px`;
+      drop.className = `absolute text-electric-blue font-jetbrains pointer-events-none select-none ${
+        isMobile 
+          ? 'text-xs opacity-20 animate-code-rain-mobile' 
+          : 'text-sm opacity-40 animate-code-rain'
+      }`;
+      drop.style.left = `${x * (isMobile ? 40 : 25)}px`;
       drop.style.top = '-20px';
+      drop.style.willChange = 'transform';
       container.appendChild(drop);
 
+      // Remove drop after animation
       setTimeout(() => {
         if (container.contains(drop)) {
           container.removeChild(drop);
         }
-      }, isMobile ? 15000 : 20000);
+      }, isMobile ? 12000 : 18000);
     };
 
     const interval = setInterval(() => {
+      // Reduce frequency on mobile for better performance
+      const frequency = isMobile ? 0.992 : 0.985;
+      
       for (let i = 0; i < columns; i++) {
-        if (Math.random() > (isMobile ? 0.995 : 0.98)) {
+        if (Math.random() > frequency) {
           createRainDrop(i);
         }
       }
-    }, isMobile ? 200 : 100);
+    }, isMobile ? 300 : 150);
 
     return () => clearInterval(interval);
   }, []);

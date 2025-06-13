@@ -21,13 +21,10 @@ export default {
         'glow': 'glow 2s ease-in-out infinite alternate',
         'slide-down': 'slideDown 0.5s ease-out',
         'fade-in': 'fadeIn 0.6s ease-out',
-        'code-rain': 'codeRain 20s linear infinite',
+        'code-rain': 'codeRain 18s linear infinite',
+        'code-rain-mobile': 'codeRainMobile 12s linear infinite',
         'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
         'rotate-slow': 'rotateSlow 20s linear infinite',
-
-        // Optional: shorter or lighter mobile versions
-        'float-mobile': 'floatMobile 3s ease-in-out infinite',
-        'code-rain-mobile': 'codeRainMobile 10s linear infinite',
       },
       keyframes: {
         float: {
@@ -47,8 +44,16 @@ export default {
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         codeRain: {
-          '0%': { transform: 'translateY(-100vh)' },
-          '100%': { transform: 'translateY(100vh)' },
+          '0%': { transform: 'translateY(-100vh)', opacity: '0' },
+          '10%': { opacity: '1' },
+          '90%': { opacity: '1' },
+          '100%': { transform: 'translateY(100vh)', opacity: '0' },
+        },
+        codeRainMobile: {
+          '0%': { transform: 'translateY(-100vh)', opacity: '0' },
+          '15%': { opacity: '1' },
+          '85%': { opacity: '1' },
+          '100%': { transform: 'translateY(100vh)', opacity: '0' },
         },
         pulseGlow: {
           '0%, 100%': { boxShadow: '0 0 20px rgba(255, 20, 147, 0.3)' },
@@ -58,16 +63,6 @@ export default {
           '0%': { transform: 'rotate(0deg)' },
           '100%': { transform: 'rotate(360deg)' },
         },
-
-        // Mobile-friendly versions
-        floatMobile: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-10px)' }, // shorter float
-        },
-        codeRainMobile: {
-          '0%': { transform: 'translateY(-100vh)' },
-          '100%': { transform: 'translateY(60vh)' }, // less intense
-        },
       },
       backdropBlur: {
         'xs': '2px',
@@ -76,3 +71,4 @@ export default {
   },
   plugins: [],
 };
+</parameter>

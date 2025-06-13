@@ -1,9 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Trophy, Award, Star, Target, Calendar, Users, ChevronLeft, ChevronRight, Medal, Crown, Zap } from 'lucide-react';
 import GlassCard from './GlassCard';
 
 const Achievements: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Achievement Gallery Images
   const achievementGallery = [
@@ -66,17 +68,28 @@ const Achievements: React.FC = () => {
     }
   ];
 
+  // Detect mobile and setup auto-scroll
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Auto-scroll functionality
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
 
     let scrollAmount = 0;
-    const scrollStep = window.innerWidth < 768 ? 0.4 : 0.8; // Slower on mobile
-    const scrollDelay = window.innerWidth < 768 ? 60 : 40; // Slower on mobile
-    let isScrolling = true;
+    const scrollStep = isMobile ? 0.5 : 0.8;
+    const scrollDelay = isMobile ? 80 : 50;
 
     const autoScroll = () => {
-      if (scrollContainer && isScrolling) {
+      if (scrollContainer && isAutoScrolling) {
         scrollAmount += scrollStep;
         scrollContainer.scrollLeft = scrollAmount;
 
@@ -89,40 +102,41 @@ const Achievements: React.FC = () => {
 
     const interval = setInterval(autoScroll, scrollDelay);
 
-    // Pause auto-scroll on hover/touch
-    const handleMouseEnter = () => { isScrolling = false; };
-    const handleMouseLeave = () => { isScrolling = true; };
-    const handleTouchStart = () => { isScrolling = false; };
-    const handleTouchEnd = () => { 
-      setTimeout(() => { isScrolling = true; }, 2000); // Resume after 2 seconds
+    // Event handlers
+    const handleInteractionStart = () => setIsAutoScrolling(false);
+    const handleInteractionEnd = () => {
+      setTimeout(() => setIsAutoScrolling(true), 3000);
     };
 
-    scrollContainer.addEventListener('mouseenter', handleMouseEnter);
-    scrollContainer.addEventListener('mouseleave', handleMouseLeave);
-    scrollContainer.addEventListener('touchstart', handleTouchStart);
-    scrollContainer.addEventListener('touchend', handleTouchEnd);
+    // Add event listeners
+    scrollContainer.addEventListener('mouseenter', handleInteractionStart);
+    scrollContainer.addEventListener('mouseleave', handleInteractionEnd);
+    scrollContainer.addEventListener('touchstart', handleInteractionStart);
+    scrollContainer.addEventListener('touchend', handleInteractionEnd);
+    scrollContainer.addEventListener('scroll', handleInteractionStart);
 
     return () => {
       clearInterval(interval);
       if (scrollContainer) {
-        scrollContainer.removeEventListener('mouseenter', handleMouseEnter);
-        scrollContainer.removeEventListener('mouseleave', handleMouseLeave);
-        scrollContainer.removeEventListener('touchstart', handleTouchStart);
-        scrollContainer.removeEventListener('touchend', handleTouchEnd);
+        scrollContainer.removeEventListener('mouseenter', handleInteractionStart);
+        scrollContainer.removeEventListener('mouseleave', handleInteractionEnd);
+        scrollContainer.removeEventListener('touchstart', handleInteractionStart);
+        scrollContainer.removeEventListener('touchend', handleInteractionEnd);
+        scrollContainer.removeEventListener('scroll', handleInteractionStart);
       }
     };
-  }, []);
+  }, [isAutoScrolling, isMobile]);
 
   const scrollLeft = () => {
     if (scrollRef.current) {
-      const scrollAmount = window.innerWidth < 768 ? 280 : 350;
+      const scrollAmount = isMobile ? 300 : 400;
       scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
     }
   };
 
   const scrollRight = () => {
     if (scrollRef.current) {
-      const scrollAmount = window.innerWidth < 768 ? 280 : 350;
+      const scrollAmount = isMobile ? 300 : 400;
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
@@ -147,7 +161,7 @@ const Achievements: React.FC = () => {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-jetbrains font-bold text-white mb-4 md:mb-6">
             Our <span className="text-vibrant-green">Achievements</span>
           </h2>
-          <p className="text-lg md:text-xl font-inter text-gray-300 max-w-3xl mx-auto px-4">
+          <p className="text-base md:text-xl font-inter text-gray-300 max-w-3xl mx-auto leading-relaxed">
             Celebrating our journey of excellence, innovation, and competitive success
             in the world of app development and technology competitions.
           </p>
@@ -156,24 +170,25 @@ const Achievements: React.FC = () => {
         {/* Achievement Gallery */}
         <div className="relative mb-12 md:mb-16">
           <GlassCard className="p-4 md:p-8">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 md:mb-8 space-y-4 md:space-y-0">
+            {/* Gallery Header */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 md:mb-8 gap-4">
               <h3 className="text-xl md:text-2xl font-jetbrains font-semibold text-white">
                 Achievement <span className="text-electric-blue">Gallery</span>
               </h3>
               <div className="flex space-x-2">
                 <button
                   onClick={scrollLeft}
-                  className="p-2 md:p-3 bg-electric-blue/20 hover:bg-electric-blue/30 border border-electric-blue/30 rounded-lg transition-all duration-300 group active:scale-95"
+                  className="p-2 md:p-3 bg-electric-blue/20 hover:bg-electric-blue/30 active:bg-electric-blue/40 border border-electric-blue/30 rounded-lg transition-all duration-200 group touch-manipulation"
                   aria-label="Scroll left"
                 >
-                  <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-electric-blue group-hover:scale-110 transition-transform duration-300" />
+                  <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-electric-blue group-hover:scale-110 transition-transform duration-200" />
                 </button>
                 <button
                   onClick={scrollRight}
-                  className="p-2 md:p-3 bg-electric-blue/20 hover:bg-electric-blue/30 border border-electric-blue/30 rounded-lg transition-all duration-300 group active:scale-95"
+                  className="p-2 md:p-3 bg-electric-blue/20 hover:bg-electric-blue/30 active:bg-electric-blue/40 border border-electric-blue/30 rounded-lg transition-all duration-200 group touch-manipulation"
                   aria-label="Scroll right"
                 >
-                  <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-electric-blue group-hover:scale-110 transition-transform duration-300" />
+                  <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-electric-blue group-hover:scale-110 transition-transform duration-200" />
                 </button>
               </div>
             </div>
@@ -181,25 +196,25 @@ const Achievements: React.FC = () => {
             {/* Scrolling Gallery */}
             <div
               ref={scrollRef}
-              className="flex space-x-4 md:space-x-6 overflow-x-auto scrollbar-hide pb-4"
+              className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
               style={{ 
                 scrollbarWidth: 'none', 
                 msOverflowStyle: 'none',
-                scrollBehavior: 'smooth'
+                WebkitOverflowScrolling: 'touch'
               }}
             >
               {achievementGallery.map((achievement) => (
                 <div
                   key={achievement.id}
-                  className="flex-shrink-0 w-72 md:w-96 group cursor-pointer"
+                  className="flex-shrink-0 w-80 sm:w-96 group cursor-pointer"
                 >
-                  <div className="relative overflow-hidden rounded-xl border border-glass-border bg-cyber-dark/50 backdrop-blur-sm transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-electric-blue/20">
+                  <div className="relative overflow-hidden rounded-xl border border-glass-border bg-cyber-dark/50 backdrop-blur-sm transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-lg group-hover:shadow-electric-blue/20">
                     {/* Achievement Image */}
-                    <div className="relative h-48 md:h-72 overflow-hidden">
+                    <div className="relative h-56 sm:h-64 md:h-72 overflow-hidden">
                       <img
                         src={achievement.image}
                         alt={achievement.title}
-                        className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
+                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-cyber-dark/80 via-transparent to-transparent opacity-70"></div>
@@ -207,7 +222,8 @@ const Achievements: React.FC = () => {
                       {/* Achievement Type Badge */}
                       <div className="absolute top-3 md:top-4 right-3 md:right-4">
                         <div className={`px-2 md:px-3 py-1 rounded-full text-xs font-jetbrains border backdrop-blur-sm ${getTypeColor(achievement.type)}`}>
-                          {achievement.type}
+                          <span className="hidden sm:inline">{achievement.type}</span>
+                          <span className="sm:hidden">{achievement.type.split(' ')[0]}</span>
                         </div>
                       </div>
 
@@ -221,21 +237,21 @@ const Achievements: React.FC = () => {
                       </div>
 
                       {/* Glow Effect on Hover */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-electric-blue/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-electric-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
 
                     {/* Achievement Details */}
                     <div className="p-4 md:p-6">
-                      <h4 className="text-lg md:text-xl font-jetbrains font-semibold text-white mb-2 md:mb-3 group-hover:text-electric-blue transition-colors duration-300">
+                      <h4 className="text-lg md:text-xl font-jetbrains font-semibold text-white mb-2 md:mb-3 group-hover:text-electric-blue transition-colors duration-300 line-clamp-1">
                         {achievement.title}
                       </h4>
 
-                      <p className="text-gray-300 font-inter text-sm leading-relaxed mb-3 md:mb-4">
+                      <p className="text-gray-300 font-inter text-sm leading-relaxed mb-3 md:mb-4 line-clamp-2">
                         {achievement.description}
                       </p>
 
                       <div className="flex items-center justify-between">
-                        <div className="text-sm font-jetbrains text-neon-magenta">
+                        <div className="text-sm font-jetbrains text-neon-magenta truncate">
                           {achievement.event}
                         </div>
                       </div>
@@ -248,9 +264,13 @@ const Achievements: React.FC = () => {
             {/* Auto-scroll indicator */}
             <div className="flex justify-center mt-4 md:mt-6">
               <div className="flex items-center space-x-2 text-gray-400 text-xs md:text-sm font-inter">
-                <div className="w-2 h-2 bg-electric-blue rounded-full animate-pulse"></div>
-                <span className="hidden md:inline">Auto-scrolling gallery • Hover to pause</span>
-                <span className="md:hidden">Auto-scrolling • Touch to pause</span>
+                <div className={`w-2 h-2 bg-electric-blue rounded-full ${isAutoScrolling ? 'animate-pulse' : 'opacity-50'}`}></div>
+                <span className="hidden sm:inline">
+                  {isAutoScrolling ? 'Auto-scrolling gallery • Touch to pause' : 'Auto-scroll paused • Will resume shortly'}
+                </span>
+                <span className="sm:hidden">
+                  {isAutoScrolling ? 'Auto-scrolling' : 'Paused'}
+                </span>
               </div>
             </div>
           </GlassCard>
@@ -266,7 +286,7 @@ const Achievements: React.FC = () => {
               <div key={index} className="flex items-start space-x-3 md:space-x-4">
                 <div className={`w-3 h-3 md:w-4 md:h-4 rounded-full border-2 ${event.color} bg-cyber-dark mt-2 flex-shrink-0`}></div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex flex-col md:flex-row md:items-center space-y-1 md:space-y-0 md:space-x-3 mb-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
                     <span className="text-base md:text-lg font-jetbrains font-semibold text-white">
                       {event.title}
                     </span>
@@ -290,14 +310,37 @@ const Achievements: React.FC = () => {
         }
 
         .scrollbar-hide {
-          -ms-overflow-style: none;  /* IE and Edge */
-          scrollbar-width: none;     /* Firefox */
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
 
-        /* Smooth scrolling for touch devices */
+        .scroll-smooth {
+          scroll-behavior: smooth;
+        }
+
+        .touch-manipulation {
+          touch-action: manipulation;
+        }
+
+        .line-clamp-1 {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        /* Enhanced mobile scrolling */
         @media (max-width: 768px) {
           .scrollbar-hide {
-            scroll-snap-type: x mandatory;
+            scroll-snap-type: x proximity;
+            -webkit-overflow-scrolling: touch;
           }
           
           .scrollbar-hide > div {

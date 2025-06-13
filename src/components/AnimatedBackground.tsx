@@ -10,24 +10,32 @@ const AnimatedBackground: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    resizeCanvas();
 
     const nodes: { x: number; y: number; vx: number; vy: number }[] = [];
-    const nodeCount = window.innerWidth < 768 ? 25 : 50; // Reduce nodes on mobile
+    const isMobile = window.innerWidth < 768;
+    const nodeCount = isMobile ? 20 : 40; // Fewer nodes on mobile for better performance
 
     // Initialize nodes
     for (let i = 0; i < nodeCount; i++) {
       nodes.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3, // Slower movement on mobile
-        vy: (Math.random() - 0.5) * 0.3,
+        vx: (Math.random() - 0.5) * (isMobile ? 0.2 : 0.4),
+        vy: (Math.random() - 0.5) * (isMobile ? 0.2 : 0.4),
       });
     }
 
+    let animationId: number;
+
     const animate = () => {
-      ctx.fillStyle = 'rgba(17, 24, 39, 0.1)';
+      // Clear with slight trail effect for smoother animation
+      ctx.fillStyle = 'rgba(17, 24, 39, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       nodes.forEach((node, i) => {
@@ -35,28 +43,36 @@ const AnimatedBackground: React.FC = () => {
         node.x += node.vx;
         node.y += node.vy;
 
-        // Bounce off edges
-        if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
-        if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+        // Bounce off edges with some padding
+        if (node.x < 0 || node.x > canvas.width) {
+          node.vx *= -1;
+          node.x = Math.max(0, Math.min(canvas.width, node.x));
+        }
+        if (node.y < 0 || node.y > canvas.height) {
+          node.vy *= -1;
+          node.y = Math.max(0, Math.min(canvas.height, node.y));
+        }
 
-        // Draw node with reduced opacity on mobile
-        const opacity = window.innerWidth < 768 ? 0.15 : 0.3;
-        ctx.fillStyle = `rgba(0, 191, 255, ${opacity})`;
+        // Draw node
+        const nodeOpacity = isMobile ? 0.2 : 0.4;
+        const nodeSize = isMobile ? 1 : 1.5;
+        
+        ctx.fillStyle = `rgba(0, 191, 255, ${nodeOpacity})`;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, window.innerWidth < 768 ? 1.5 : 2, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, nodeSize, 0, Math.PI * 2);
         ctx.fill();
 
-        // Draw connections with reduced opacity
+        // Draw connections
         nodes.slice(i + 1).forEach((otherNode) => {
           const dx = node.x - otherNode.x;
           const dy = node.y - otherNode.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const maxDistance = window.innerWidth < 768 ? 80 : 100;
+          const maxDistance = isMobile ? 100 : 120;
 
           if (distance < maxDistance) {
-            const connectionOpacity = window.innerWidth < 768 ? 0.1 : 0.2;
-            ctx.strokeStyle = `rgba(0, 191, 255, ${connectionOpacity * (1 - distance / maxDistance)})`;
-            ctx.lineWidth = 1;
+            const connectionOpacity = (isMobile ? 0.1 : 0.2) * (1 - distance / maxDistance);
+            ctx.strokeStyle = `rgba(0, 191, 255, ${connectionOpacity})`;
+            ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);
             ctx.lineTo(otherNode.x, otherNode.y);
@@ -65,18 +81,23 @@ const AnimatedBackground: React.FC = () => {
         });
       });
 
-      requestAnimationFrame(animate);
+      animationId = requestAnimationFrame(animate);
     };
 
     animate();
 
     const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      resizeCanvas();
     };
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
   }, []);
 
   return (
