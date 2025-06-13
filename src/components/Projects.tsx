@@ -87,17 +87,22 @@ const Projects: React.FC = () => {
         </div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
           {projects.map((project, index) => (
-            <GlassCard key={index} className="overflow-hidden group">
+            <GlassCard key={index} className="overflow-hidden group flex flex-col">
               {/* Project Image */}
-              <div className="relative h-100 overflow-hidden flex justify-center items-center bg-black">
+              <div className="relative h-80 overflow-hidden bg-gradient-to-br from-cyber-dark to-cyber-gray/50 flex items-center justify-center p-4">
                 <img
                   src={project.image}
                   alt={project.title}
-                  className="w-full h-full object-contain object-center transition-transform duration-500"
+                  className="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                  style={{ 
+                    filter: 'drop-shadow(0 10px 20px rgba(0, 191, 255, 0.2))',
+                  }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-cyber-dark via-transparent to-transparent opacity-60"></div>
+                
+                {/* Subtle overlay for better contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-cyber-dark/20 via-transparent to-transparent"></div>
 
                 {/* Project Type & Status */}
                 <div className="absolute top-4 left-4 flex space-x-2">
@@ -117,7 +122,7 @@ const Projects: React.FC = () => {
 
                 {/* Event Badge */}
                 <div className="absolute top-4 right-4">
-                  <div className={`px-3 py-1 bg-cyber-dark/50 backdrop-blur-sm rounded-full text-xs font-jetbrains border border-glass-border ${getEventColor(project.event)}`}>
+                  <div className={`px-3 py-1 bg-cyber-dark/70 backdrop-blur-sm rounded-full text-xs font-jetbrains border border-glass-border ${getEventColor(project.event)}`}>
                     {project.event}
                   </div>
                 </div>
@@ -141,19 +146,22 @@ const Projects: React.FC = () => {
                     <Github className="w-4 h-4 text-electric-blue" />
                   </a>
                 </div>
+
+                {/* Decorative glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-t from-electric-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
 
               {/* Project Info */}
-              <div className="p-6">
+              <div className="p-6 flex-1 flex flex-col">
                 <h3 className="text-xl font-jetbrains font-semibold text-white mb-3 group-hover:text-electric-blue transition-colors duration-300">
                   {project.title}
                 </h3>
-                <p className="text-gray-300 font-inter leading-relaxed mb-4">
+                <p className="text-gray-300 font-inter leading-relaxed mb-4 flex-1">
                   {project.description}
                 </p>
 
                 {/* Technologies */}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 mt-auto">
                   {project.technologies.map((tech, techIndex) => (
                     <span
                       key={techIndex}
