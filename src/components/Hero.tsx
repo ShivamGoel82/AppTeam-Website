@@ -18,7 +18,7 @@ const Hero: React.FC = () => {
       <div className="container mx-auto px-6 z-20 relative">
         <div className="text-center">
           {/* Main Heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-jetbrains font-bold text-white mb-6 animate-fade-in relative z-30">
+          <h1 className="break-words leading-tight pt-8 text-3xl sm:text-4xl md:text-7xl font-jetbrains font-bold text-white mb-6 animate-fade-in relative z-30">
             AppTeam
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-electric-blue via-neon-magenta to-vibrant-green">
               Nit Hamirpur

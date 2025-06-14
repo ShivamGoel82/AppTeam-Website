@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import GlassCard from './GlassCard';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useEffect, useRef, useState } from "react";
+import GlassCard from "./GlassCard";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Achievements: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -13,40 +13,40 @@ const Achievements: React.FC = () => {
   const achievementGallery = [
     {
       id: 1,
-      title: 'HOH 6.0',
-      image: '/img9.jpeg',
-      description: 'Successfully organized HackOnHills-6.0.',
-      event: 'HOH 6.0',
-      year: '2025',
-      type: 'Competition Organized'
+      title: "HOH 6.0",
+      image: "/img9.jpeg",
+      description: "Successfully organized HackOnHills-6.0.",
+      event: "HOH 6.0",
+      year: "2025",
+      type: "Competition Organized",
     },
     {
       id: 2,
-      title: 'Our Team',
-      image: '/img12.jpeg',
-      description: 'Our whole team in one frame.',
-      event: 'Photo shoot',
-      year: '2025',
-      type: 'Recognition'
+      title: "Our Team",
+      image: "/img12.jpeg",
+      description: "Our whole team in one frame.",
+      event: "Photo shoot",
+      year: "2025",
+      type: "Recognition",
     },
     {
       id: 3,
-      title: 'Innovation Award',
-      image: '/img5.jpeg',
-      description: 'Best Techno Innovation Team.',
-      event: 'Tech Innovation',
-      year: '2025',
-      type: 'Innovation'
+      title: "Innovation Award",
+      image: "/img5.jpeg",
+      description: "Best Techno Innovation Team.",
+      event: "Tech Innovation",
+      year: "2025",
+      type: "Innovation",
     },
     {
       id: 4,
-      title: 'Leadership Award',
-      image: '/img11.jpeg',
-      description: 'Organized standout tech initiatives.',
-      event: 'Leadership',
-      year: '2025',
-      type: 'Leadership'
-    }
+      title: "Leadership Award",
+      image: "/img11.jpeg",
+      description: "Organized standout tech initiatives.",
+      event: "Leadership",
+      year: "2025",
+      type: "Leadership",
+    },
   ];
 
   // Duplicate gallery for seamless looping
@@ -56,8 +56,8 @@ const Achievements: React.FC = () => {
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Clean up on unmount
@@ -69,23 +69,38 @@ const Achievements: React.FC = () => {
   }, []);
 
   // Smooth, robust, seamless auto-scroll with loop
+  // Smooth, robust, seamless auto-scroll with loop
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer || !isAutoScrolling) return;
 
     if (animationRef.current) cancelAnimationFrame(animationRef.current);
 
-    const card = scrollContainer.querySelector('div.flex-shrink-0') as HTMLElement;
-    const cardWidth = card ? card.offsetWidth + 16 : 400; // 16px gap
-    const scrollStep = isMobile ? cardWidth * 0.08 : 12; // Fast and smooth
+    const card = scrollContainer.querySelector(
+      "div.flex-shrink-0"
+    ) as HTMLElement;
+    const cardWidth = card ? card.offsetWidth + 16 : 400;
 
-    function autoScroll() {
+    // ✅ Lower scroll speed for mobile (to avoid lag)
+    const scrollStep = isMobile ? 1 : 2; // smaller = smoother on mobile
+
+    let lastTimestamp = 0;
+    const frameDelay = isMobile ? 12 : 8; // ~60-120fps
+
+    function autoScroll(timestamp: number) {
       if (!scrollContainer) return;
-      scrollContainer.scrollLeft += scrollStep;
 
-      // If we've scrolled past the first set, reset instantly to the start of the first set
-      if (scrollContainer.scrollLeft >= cardWidth * achievementGallery.length) {
-        scrollContainer.scrollLeft = 0;
+      if (timestamp - lastTimestamp > frameDelay) {
+        scrollContainer.scrollLeft += scrollStep;
+
+        if (
+          scrollContainer.scrollLeft >=
+          cardWidth * achievementGallery.length
+        ) {
+          scrollContainer.scrollLeft -= cardWidth * achievementGallery.length;
+        }
+
+        lastTimestamp = timestamp;
       }
 
       animationRef.current = requestAnimationFrame(autoScroll);
@@ -106,7 +121,10 @@ const Achievements: React.FC = () => {
 
   const handleResume = () => {
     if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
-    pauseTimeoutRef.current = window.setTimeout(() => setIsAutoScrolling(true), 1500);
+    pauseTimeoutRef.current = window.setTimeout(
+      () => setIsAutoScrolling(true),
+      1500
+    );
   };
 
   // Attach event listeners for pause/resume
@@ -118,21 +136,25 @@ const Achievements: React.FC = () => {
     if (isMobile) {
       const onTouchStart = () => handlePause();
       const onTouchEnd = () => handleResume();
-      scrollContainer.addEventListener('touchstart', onTouchStart, { passive: true });
-      scrollContainer.addEventListener('touchend', onTouchEnd, { passive: true });
+      scrollContainer.addEventListener("touchstart", onTouchStart, {
+        passive: true,
+      });
+      scrollContainer.addEventListener("touchend", onTouchEnd, {
+        passive: true,
+      });
       return () => {
-        scrollContainer.removeEventListener('touchstart', onTouchStart);
-        scrollContainer.removeEventListener('touchend', onTouchEnd);
+        scrollContainer.removeEventListener("touchstart", onTouchStart);
+        scrollContainer.removeEventListener("touchend", onTouchEnd);
       };
     } else {
       // On desktop, pause on mouseenter and resume on mouseleave
       const onMouseEnter = () => handlePause();
       const onMouseLeave = () => handleResume();
-      scrollContainer.addEventListener('mouseenter', onMouseEnter);
-      scrollContainer.addEventListener('mouseleave', onMouseLeave);
+      scrollContainer.addEventListener("mouseenter", onMouseEnter);
+      scrollContainer.addEventListener("mouseleave", onMouseLeave);
       return () => {
-        scrollContainer.removeEventListener('mouseenter', onMouseEnter);
-        scrollContainer.removeEventListener('mouseleave', onMouseLeave);
+        scrollContainer.removeEventListener("mouseenter", onMouseEnter);
+        scrollContainer.removeEventListener("mouseleave", onMouseLeave);
       };
     }
   }, [isMobile]);
@@ -140,12 +162,18 @@ const Achievements: React.FC = () => {
   // Navigation buttons: scroll by one card, and if at end, reset
   const scrollLeft = () => {
     if (scrollRef.current) {
-      const card = scrollRef.current.querySelector('div.flex-shrink-0') as HTMLElement;
+      const card = scrollRef.current.querySelector(
+        "div.flex-shrink-0"
+      ) as HTMLElement;
       const scrollAmount = card ? card.offsetWidth + 16 : 400;
+      const maxScroll = card.offsetWidth * achievementGallery.length;
+
+      // 🔁 Loop backward
       if (scrollRef.current.scrollLeft <= 0) {
-        scrollRef.current.scrollLeft = card.offsetWidth * achievementGallery.length;
+        scrollRef.current.scrollLeft += maxScroll;
       }
-      scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+
+      scrollRef.current.scrollBy({ left: -scrollAmount, behavior: "smooth" });
       handlePause();
       handleResume();
     }
@@ -153,13 +181,16 @@ const Achievements: React.FC = () => {
 
   const scrollRight = () => {
     if (scrollRef.current) {
-      const card = scrollRef.current.querySelector('div.flex-shrink-0') as HTMLElement;
+      const card = scrollRef.current.querySelector(
+        "div.flex-shrink-0"
+      ) as HTMLElement;
       const scrollAmount = card ? card.offsetWidth + 16 : 400;
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
       setTimeout(() => {
         if (
           scrollRef.current &&
-          scrollRef.current.scrollLeft >= card.offsetWidth * achievementGallery.length
+          scrollRef.current.scrollLeft >=
+            card.offsetWidth * achievementGallery.length
         ) {
           scrollRef.current.scrollLeft = 0;
         }
@@ -171,35 +202,38 @@ const Achievements: React.FC = () => {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'Competition Organized':
-      case 'Recognition':
-      case 'Innovation':
-      case 'Leadership':
-        return 'text-neon-magenta bg-neon-magenta/20 border-neon-magenta/30';
+      case "Competition Organized":
+      case "Recognition":
+      case "Innovation":
+      case "Leadership":
+        return "text-neon-magenta bg-neon-magenta/20 border-neon-magenta/30";
       default:
-        return 'text-gray-400 bg-gray-400/20 border-gray-400/30';
+        return "text-gray-400 bg-gray-400/20 border-gray-400/30";
     }
   };
 
   const timeline = [
     {
-      year: '2019',
-      title: 'Team Formation',
-      description: 'CodeCraft Collective was founded with a vision to excel in competitive programming and app development.',
-      color: 'border-electric-blue'
+      year: "2019",
+      title: "Team Formation",
+      description:
+        "CodeCraft Collective was founded with a vision to excel in competitive programming and app development.",
+      color: "border-electric-blue",
     },
     {
-      year: '2020',
-      title: 'HackOnHills Announced',
-      description: 'Announced our first hackathon and successfully organized it, marking our entry in finding solutions to real-world problems.',
-      color: 'border-neon-magenta'
+      year: "2020",
+      title: "HackOnHills Announced",
+      description:
+        "Announced our first hackathon and successfully organized it, marking our entry in finding solutions to real-world problems.",
+      color: "border-neon-magenta",
     },
     {
-      year: '2025',
-      title: 'Triple Crown',
-      description: 'Achieved success in HOH 6.0, Nimbus, and Hillfair, cementing our position as elite developers.',
-      color: 'border-electric-blue'
-    }
+      year: "2025",
+      title: "Triple Crown",
+      description:
+        "Achieved success in HOH 6.0, Nimbus, and Hillfair, cementing our position as elite developers.",
+      color: "border-electric-blue",
+    },
   ];
 
   return (
@@ -211,8 +245,8 @@ const Achievements: React.FC = () => {
             Our <span className="text-vibrant-green">Achievements</span>
           </h2>
           <p className="text-base md:text-xl font-inter text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Celebrating our journey of excellence, innovation, and competitive success
-            in the world of app development and technology competitions.
+            Celebrating our journey of excellence, innovation, and competitive
+            success in the world of app development and technology competitions.
           </p>
         </div>
 
@@ -247,14 +281,14 @@ const Achievements: React.FC = () => {
               ref={scrollRef}
               className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
               style={{
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                WebkitOverflowScrolling: 'touch'
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                WebkitOverflowScrolling: "touch",
               }}
             >
               {duplicatedGallery.map((achievement, idx) => (
                 <div
-                  key={achievement.id + '-' + idx}
+                  key={achievement.id + "-" + idx}
                   className="flex-shrink-0 w-80 sm:w-96 group cursor-pointer"
                 >
                   <div className="relative overflow-hidden rounded-xl border border-glass-border bg-cyber-dark/50 backdrop-blur-sm transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-lg group-hover:shadow-electric-blue/20">
@@ -270,9 +304,17 @@ const Achievements: React.FC = () => {
 
                       {/* Achievement Type Badge */}
                       <div className="absolute top-3 md:top-4 right-3 md:right-4">
-                        <div className={`px-2 md:px-3 py-1 rounded-full text-xs font-jetbrains border backdrop-blur-sm ${getTypeColor(achievement.type)}`}>
-                          <span className="hidden sm:inline">{achievement.type}</span>
-                          <span className="sm:hidden">{achievement.type.split(' ')[0]}</span>
+                        <div
+                          className={`px-2 md:px-3 py-1 rounded-full text-xs font-jetbrains border backdrop-blur-sm ${getTypeColor(
+                            achievement.type
+                          )}`}
+                        >
+                          <span className="hidden sm:inline">
+                            {achievement.type}
+                          </span>
+                          <span className="sm:hidden">
+                            {achievement.type.split(" ")[0]}
+                          </span>
                         </div>
                       </div>
 
@@ -313,12 +355,18 @@ const Achievements: React.FC = () => {
             {/* Auto-scroll indicator */}
             <div className="flex justify-center mt-4 md:mt-6">
               <div className="flex items-center space-x-2 text-gray-400 text-xs md:text-sm font-inter">
-                <div className={`w-2 h-2 bg-electric-blue rounded-full transition-all duration-300 ${isAutoScrolling ? 'animate-pulse scale-110' : 'opacity-50'}`}></div>
+                <div
+                  className={`w-2 h-2 bg-electric-blue rounded-full transition-all duration-300 ${
+                    isAutoScrolling ? "animate-pulse scale-110" : "opacity-50"
+                  }`}
+                ></div>
                 <span className="hidden sm:inline">
-                  {isAutoScrolling ? 'Auto-scrolling gallery • Hover to pause' : 'Auto-scroll paused • Will resume shortly'}
+                  {isAutoScrolling
+                    ? "Auto-scrolling gallery • Hover to pause"
+                    : "Auto-scroll paused • Will resume shortly"}
                 </span>
                 <span className="sm:hidden">
-                  {isAutoScrolling ? 'Auto-scrolling' : 'Paused'}
+                  {isAutoScrolling ? "Auto-scrolling" : "Paused"}
                 </span>
               </div>
             </div>
@@ -332,8 +380,13 @@ const Achievements: React.FC = () => {
           </h3>
           <div className="space-y-6 md:space-y-8">
             {timeline.map((event, index) => (
-              <div key={index} className="flex items-start space-x-3 md:space-x-4">
-                <div className={`w-3 h-3 md:w-4 md:h-4 rounded-full border-2 ${event.color} bg-cyber-dark mt-2 flex-shrink-0`}></div>
+              <div
+                key={index}
+                className="flex items-start space-x-3 md:space-x-4"
+              >
+                <div
+                  className={`w-3 h-3 md:w-4 md:h-4 rounded-full border-2 ${event.color} bg-cyber-dark mt-2 flex-shrink-0`}
+                ></div>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
                     <span className="text-base md:text-lg font-jetbrains font-semibold text-white">
