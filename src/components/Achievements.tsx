@@ -106,7 +106,7 @@ const Achievements: React.FC = () => {
 
   const handleResume = () => {
     if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
-    pauseTimeoutRef.current = window.setTimeout(() => setIsAutoScrolling(true), 2000);
+    pauseTimeoutRef.current = window.setTimeout(() => setIsAutoScrolling(true), 1500);
   };
 
   // Attach event listeners for pause/resume
@@ -114,23 +114,27 @@ const Achievements: React.FC = () => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
 
+    // On mobile, only pause on touchstart and resume on touchend
     if (isMobile) {
-      scrollContainer.addEventListener('touchstart', handlePause, { passive: true });
-      scrollContainer.addEventListener('touchend', handleResume, { passive: true });
+      const onTouchStart = () => handlePause();
+      const onTouchEnd = () => handleResume();
+      scrollContainer.addEventListener('touchstart', onTouchStart, { passive: true });
+      scrollContainer.addEventListener('touchend', onTouchEnd, { passive: true });
+      return () => {
+        scrollContainer.removeEventListener('touchstart', onTouchStart);
+        scrollContainer.removeEventListener('touchend', onTouchEnd);
+      };
     } else {
-      scrollContainer.addEventListener('mouseenter', handlePause);
-      scrollContainer.addEventListener('mouseleave', handleResume);
+      // On desktop, pause on mouseenter and resume on mouseleave
+      const onMouseEnter = () => handlePause();
+      const onMouseLeave = () => handleResume();
+      scrollContainer.addEventListener('mouseenter', onMouseEnter);
+      scrollContainer.addEventListener('mouseleave', onMouseLeave);
+      return () => {
+        scrollContainer.removeEventListener('mouseenter', onMouseEnter);
+        scrollContainer.removeEventListener('mouseleave', onMouseLeave);
+      };
     }
-
-    return () => {
-      if (isMobile) {
-        scrollContainer.removeEventListener('touchstart', handlePause);
-        scrollContainer.removeEventListener('touchend', handleResume);
-      } else {
-        scrollContainer.removeEventListener('mouseenter', handlePause);
-        scrollContainer.removeEventListener('mouseleave', handleResume);
-      }
-    };
   }, [isMobile]);
 
   // Navigation buttons: scroll by one card, and if at end, reset
@@ -348,49 +352,6 @@ const Achievements: React.FC = () => {
           </div>
         </GlassCard>
       </div>
-
-      <style>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-
-        .scroll-smooth {
-          scroll-behavior: smooth;
-        }
-
-        .touch-manipulation {
-          touch-action: manipulation;
-        }
-
-        .line-clamp-1 {
-          display: -webkit-box;
-          -webkit-line-clamp: 1;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        @media (max-width: 768px) {
-          .scrollbar-hide {
-            scroll-snap-type: x proximity;
-            -webkit-overflow-scrolling: touch;
-          }
-          .scrollbar-hide > div {
-            scroll-snap-align: start;
-          }
-        }
-      `}</style>
     </section>
   );
 };
