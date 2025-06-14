@@ -70,9 +70,4 @@ export default {
     },
   },
   plugins: [],
-<<<<<<< HEAD
 };
-</parameter>
-=======
-};
->>>>>>> 8a32247 (some updates)

@@ -4,11 +4,10 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Achievements: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  // FIX: Use number for browser timers, not NodeJS.Timeout
-  const autoScrollIntervalRef = useRef<number | null>(null);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const pauseTimeoutRef = useRef<number | null>(null);
+  const animationRef = useRef<number | null>(null);
 
   // Achievement Gallery Images
   const achievementGallery = [
@@ -53,6 +52,131 @@ const Achievements: React.FC = () => {
   // Duplicate gallery for seamless looping
   const duplicatedGallery = [...achievementGallery, ...achievementGallery];
 
+  // Detect mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    };
+  }, []);
+
+  // Smooth, robust, seamless auto-scroll with loop
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer || !isAutoScrolling) return;
+
+    if (animationRef.current) cancelAnimationFrame(animationRef.current);
+
+    const card = scrollContainer.querySelector('div.flex-shrink-0') as HTMLElement;
+    const cardWidth = card ? card.offsetWidth + 16 : 400; // 16px gap
+    const scrollStep = isMobile ? cardWidth * 0.08 : 12; // Fast and smooth
+
+    function autoScroll() {
+      if (!scrollContainer) return;
+      scrollContainer.scrollLeft += scrollStep;
+
+      // If we've scrolled past the first set, reset instantly to the start of the first set
+      if (scrollContainer.scrollLeft >= cardWidth * achievementGallery.length) {
+        scrollContainer.scrollLeft = 0;
+      }
+
+      animationRef.current = requestAnimationFrame(autoScroll);
+    }
+
+    animationRef.current = requestAnimationFrame(autoScroll);
+
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+  }, [isAutoScrolling, isMobile, achievementGallery.length]);
+
+  // Pause/resume handlers
+  const handlePause = () => {
+    setIsAutoScrolling(false);
+    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+  };
+
+  const handleResume = () => {
+    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    pauseTimeoutRef.current = window.setTimeout(() => setIsAutoScrolling(true), 2000);
+  };
+
+  // Attach event listeners for pause/resume
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer) return;
+
+    if (isMobile) {
+      scrollContainer.addEventListener('touchstart', handlePause, { passive: true });
+      scrollContainer.addEventListener('touchend', handleResume, { passive: true });
+    } else {
+      scrollContainer.addEventListener('mouseenter', handlePause);
+      scrollContainer.addEventListener('mouseleave', handleResume);
+    }
+
+    return () => {
+      if (isMobile) {
+        scrollContainer.removeEventListener('touchstart', handlePause);
+        scrollContainer.removeEventListener('touchend', handleResume);
+      } else {
+        scrollContainer.removeEventListener('mouseenter', handlePause);
+        scrollContainer.removeEventListener('mouseleave', handleResume);
+      }
+    };
+  }, [isMobile]);
+
+  // Navigation buttons: scroll by one card, and if at end, reset
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      const card = scrollRef.current.querySelector('div.flex-shrink-0') as HTMLElement;
+      const scrollAmount = card ? card.offsetWidth + 16 : 400;
+      if (scrollRef.current.scrollLeft <= 0) {
+        scrollRef.current.scrollLeft = card.offsetWidth * achievementGallery.length;
+      }
+      scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      handlePause();
+      handleResume();
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      const card = scrollRef.current.querySelector('div.flex-shrink-0') as HTMLElement;
+      const scrollAmount = card ? card.offsetWidth + 16 : 400;
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      setTimeout(() => {
+        if (
+          scrollRef.current &&
+          scrollRef.current.scrollLeft >= card.offsetWidth * achievementGallery.length
+        ) {
+          scrollRef.current.scrollLeft = 0;
+        }
+      }, 400);
+      handlePause();
+      handleResume();
+    }
+  };
+
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'Competition Organized':
+      case 'Recognition':
+      case 'Innovation':
+      case 'Leadership':
+        return 'text-neon-magenta bg-neon-magenta/20 border-neon-magenta/30';
+      default:
+        return 'text-gray-400 bg-gray-400/20 border-gray-400/30';
+    }
+  };
+
   const timeline = [
     {
       year: '2019',
@@ -73,149 +197,6 @@ const Achievements: React.FC = () => {
       color: 'border-electric-blue'
     }
   ];
-
-  // Detect mobile and setup auto-scroll
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Clear timeouts on unmount
-  useEffect(() => {
-    return () => {
-      if (autoScrollIntervalRef.current) {
-        clearInterval(autoScrollIntervalRef.current);
-      }
-      if (pauseTimeoutRef.current) {
-        clearTimeout(pauseTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Auto-scroll functionality (with seamless looping)
-  useEffect(() => {
-    const scrollContainer = scrollRef.current;
-    if (!scrollContainer) return;
-
-    if (autoScrollIntervalRef.current) {
-      clearInterval(autoScrollIntervalRef.current);
-    }
-
-    const card = scrollContainer.querySelector('div.flex-shrink-0') as HTMLElement;
-    const cardWidth = card ? card.offsetWidth + 16 : 400; // 16px gap
-    const scrollStep = isMobile ? cardWidth * 0.08 : 12;
-    const scrollDelay = 16; // ~60fps
-
-    if (isAutoScrolling) {
-      autoScrollIntervalRef.current = window.setInterval(() => {
-        if (scrollContainer) {
-          scrollContainer.scrollLeft += scrollStep;
-          // If we've scrolled past the first set, reset instantly to the start of the first set
-          if (scrollContainer.scrollLeft >= cardWidth * achievementGallery.length) {
-            scrollContainer.scrollLeft = 0;
-          }
-        }
-      }, scrollDelay);
-    }
-
-    return () => {
-      if (autoScrollIntervalRef.current) {
-        clearInterval(autoScrollIntervalRef.current);
-      }
-    };
-  }, [isAutoScrolling, isMobile, achievementGallery.length]);
-
-  // Event handlers
-  const handleInteractionStart = () => {
-    setIsAutoScrolling(false);
-    if (pauseTimeoutRef.current) {
-      clearTimeout(pauseTimeoutRef.current);
-    }
-  };
-
-  const handleInteractionEnd = () => {
-    if (pauseTimeoutRef.current) {
-      clearTimeout(pauseTimeoutRef.current);
-    }
-    pauseTimeoutRef.current = window.setTimeout(() => {
-      setIsAutoScrolling(true);
-    }, 3000);
-  };
-
-  // Setup event listeners
-  useEffect(() => {
-    const scrollContainer = scrollRef.current;
-    if (!scrollContainer) return;
-
-    // Mouse events for desktop
-    scrollContainer.addEventListener('mouseenter', handleInteractionStart);
-    scrollContainer.addEventListener('mouseleave', handleInteractionEnd);
-
-    // Touch events for mobile
-    scrollContainer.addEventListener('touchstart', handleInteractionStart, { passive: true });
-    scrollContainer.addEventListener('touchend', handleInteractionEnd, { passive: true });
-
-    // Scroll events
-    scrollContainer.addEventListener('scroll', handleInteractionStart, { passive: true });
-
-    return () => {
-      if (scrollContainer) {
-        scrollContainer.removeEventListener('mouseenter', handleInteractionStart);
-        scrollContainer.removeEventListener('mouseleave', handleInteractionEnd);
-        scrollContainer.removeEventListener('touchstart', handleInteractionStart);
-        scrollContainer.removeEventListener('touchend', handleInteractionEnd);
-        scrollContainer.removeEventListener('scroll', handleInteractionStart);
-      }
-    };
-  }, []);
-
-  const scrollLeft = () => {
-    if (scrollRef.current) {
-      const card = scrollRef.current.querySelector('div.flex-shrink-0') as HTMLElement;
-      const scrollAmount = card ? card.offsetWidth + 16 : 400;
-      if (scrollRef.current.scrollLeft <= 0) {
-        scrollRef.current.scrollLeft = card.offsetWidth * achievementGallery.length;
-      }
-      scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-      handleInteractionStart();
-      handleInteractionEnd();
-    }
-  };
-
-  const scrollRight = () => {
-    if (scrollRef.current) {
-      const card = scrollRef.current.querySelector('div.flex-shrink-0') as HTMLElement;
-      const scrollAmount = card ? card.offsetWidth + 16 : 400;
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      setTimeout(() => {
-        if (
-          scrollRef.current &&
-          scrollRef.current.scrollLeft >= card.offsetWidth * achievementGallery.length
-        ) {
-          scrollRef.current.scrollLeft = 0;
-        }
-      }, 400);
-      handleInteractionStart();
-      handleInteractionEnd();
-    }
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'Competition Organized':
-      case 'Recognition':
-      case 'Innovation':
-      case 'Leadership':
-        return 'text-neon-magenta bg-neon-magenta/20 border-neon-magenta/30';
-      default:
-        return 'text-gray-400 bg-gray-400/20 border-gray-400/30';
-    }
-  };
 
   return (
     <section id="achievements" className="py-16 md:py-24 relative">
@@ -400,13 +381,11 @@ const Achievements: React.FC = () => {
           overflow: hidden;
         }
 
-        /* Enhanced mobile scrolling */
         @media (max-width: 768px) {
           .scrollbar-hide {
             scroll-snap-type: x proximity;
             -webkit-overflow-scrolling: touch;
           }
-
           .scrollbar-hide > div {
             scroll-snap-align: start;
           }
