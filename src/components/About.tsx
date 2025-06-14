@@ -40,7 +40,7 @@ const About: React.FC = () => {
           </h2>
           <p className="text-xl font-inter text-gray-300 max-w-3xl mx-auto">
             We are the best techno innovation team of NITH dedicated to creating innovative mobile and web applications. 
-            Our passion for technology drives us to compete in prestigious events and build solutions that matter.
+            App Team is a team of NITH which designs official android applications for both Cultural and Technical Annual fest of NITH to represent college. Through app we inform all our users about the ongoing and upcoming events of these Fests and conduct various online events like quiz, newsfeed etc through app itself.
           </p>
         </div>
 

@@ -37,7 +37,7 @@ const Projects: React.FC = () => {
       type: 'mobile',
       status: 'Live',
       technologies: ['Flutter', 'Dart', 'AWS', 'GraphQL'],
-      event: 'Hillfair',
+      event: 'Nimbus',
       links: {
         live: 'https://play.google.com/store/apps/details?id=com.appteam.nimbus2k25&hl=en-US',
         github: '#'

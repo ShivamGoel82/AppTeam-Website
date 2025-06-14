@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Trophy, Award, Star, Target, Calendar, Users, ChevronLeft, ChevronRight, Medal, Crown, Zap } from 'lucide-react';
 import GlassCard from './GlassCard';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Achievements: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // FIX: Use number for browser timers, not NodeJS.Timeout
+  const autoScrollIntervalRef = useRef<number | null>(null);
+  const pauseTimeoutRef = useRef<number | null>(null);
 
   // Achievement Gallery Images
   const achievementGallery = [
@@ -48,6 +49,9 @@ const Achievements: React.FC = () => {
       type: 'Leadership'
     }
   ];
+
+  // Duplicate gallery for seamless looping
+  const duplicatedGallery = [...achievementGallery, ...achievementGallery];
 
   const timeline = [
     {
@@ -93,51 +97,38 @@ const Achievements: React.FC = () => {
     };
   }, []);
 
-  // Auto-scroll functionality
+  // Auto-scroll functionality (with seamless looping)
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
 
-    const startAutoScroll = () => {
-      if (autoScrollIntervalRef.current) {
-        clearInterval(autoScrollIntervalRef.current);
-      }
+    if (autoScrollIntervalRef.current) {
+      clearInterval(autoScrollIntervalRef.current);
+    }
 
-      let scrollAmount = scrollContainer.scrollLeft;
-      const scrollStep = isMobile ? 0.8 : 1.2;
-      const scrollDelay = isMobile ? 60 : 40;
+    const card = scrollContainer.querySelector('div.flex-shrink-0') as HTMLElement;
+    const cardWidth = card ? card.offsetWidth + 16 : 400; // 16px gap
+    const scrollStep = isMobile ? cardWidth * 0.08 : 12;
+    const scrollDelay = 16; // ~60fps
 
-      autoScrollIntervalRef.current = setInterval(() => {
-        if (scrollContainer && isAutoScrolling) {
-          scrollAmount += scrollStep;
-          scrollContainer.scrollLeft = scrollAmount;
-
-          // Reset scroll when reaching the end
-          if (scrollAmount >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
-            scrollAmount = 0;
+    if (isAutoScrolling) {
+      autoScrollIntervalRef.current = window.setInterval(() => {
+        if (scrollContainer) {
+          scrollContainer.scrollLeft += scrollStep;
+          // If we've scrolled past the first set, reset instantly to the start of the first set
+          if (scrollContainer.scrollLeft >= cardWidth * achievementGallery.length) {
             scrollContainer.scrollLeft = 0;
           }
         }
       }, scrollDelay);
-    };
-
-    const stopAutoScroll = () => {
-      if (autoScrollIntervalRef.current) {
-        clearInterval(autoScrollIntervalRef.current);
-        autoScrollIntervalRef.current = null;
-      }
-    };
-
-    if (isAutoScrolling) {
-      startAutoScroll();
-    } else {
-      stopAutoScroll();
     }
 
     return () => {
-      stopAutoScroll();
+      if (autoScrollIntervalRef.current) {
+        clearInterval(autoScrollIntervalRef.current);
+      }
     };
-  }, [isAutoScrolling, isMobile]);
+  }, [isAutoScrolling, isMobile, achievementGallery.length]);
 
   // Event handlers
   const handleInteractionStart = () => {
@@ -151,7 +142,7 @@ const Achievements: React.FC = () => {
     if (pauseTimeoutRef.current) {
       clearTimeout(pauseTimeoutRef.current);
     }
-    pauseTimeoutRef.current = setTimeout(() => {
+    pauseTimeoutRef.current = window.setTimeout(() => {
       setIsAutoScrolling(true);
     }, 3000);
   };
@@ -164,11 +155,11 @@ const Achievements: React.FC = () => {
     // Mouse events for desktop
     scrollContainer.addEventListener('mouseenter', handleInteractionStart);
     scrollContainer.addEventListener('mouseleave', handleInteractionEnd);
-    
+
     // Touch events for mobile
     scrollContainer.addEventListener('touchstart', handleInteractionStart, { passive: true });
     scrollContainer.addEventListener('touchend', handleInteractionEnd, { passive: true });
-    
+
     // Scroll events
     scrollContainer.addEventListener('scroll', handleInteractionStart, { passive: true });
 
@@ -185,17 +176,32 @@ const Achievements: React.FC = () => {
 
   const scrollLeft = () => {
     if (scrollRef.current) {
-      const scrollAmount = isMobile ? 300 : 400;
+      const card = scrollRef.current.querySelector('div.flex-shrink-0') as HTMLElement;
+      const scrollAmount = card ? card.offsetWidth + 16 : 400;
+      if (scrollRef.current.scrollLeft <= 0) {
+        scrollRef.current.scrollLeft = card.offsetWidth * achievementGallery.length;
+      }
       scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
       handleInteractionStart();
+      handleInteractionEnd();
     }
   };
 
   const scrollRight = () => {
     if (scrollRef.current) {
-      const scrollAmount = isMobile ? 300 : 400;
+      const card = scrollRef.current.querySelector('div.flex-shrink-0') as HTMLElement;
+      const scrollAmount = card ? card.offsetWidth + 16 : 400;
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      setTimeout(() => {
+        if (
+          scrollRef.current &&
+          scrollRef.current.scrollLeft >= card.offsetWidth * achievementGallery.length
+        ) {
+          scrollRef.current.scrollLeft = 0;
+        }
+      }, 400);
       handleInteractionStart();
+      handleInteractionEnd();
     }
   };
 
@@ -255,15 +261,15 @@ const Achievements: React.FC = () => {
             <div
               ref={scrollRef}
               className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
-              style={{ 
-                scrollbarWidth: 'none', 
+              style={{
+                scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
                 WebkitOverflowScrolling: 'touch'
               }}
             >
-              {achievementGallery.map((achievement) => (
+              {duplicatedGallery.map((achievement, idx) => (
                 <div
-                  key={achievement.id}
+                  key={achievement.id + '-' + idx}
                   className="flex-shrink-0 w-80 sm:w-96 group cursor-pointer"
                 >
                   <div className="relative overflow-hidden rounded-xl border border-glass-border bg-cyber-dark/50 backdrop-blur-sm transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-lg group-hover:shadow-electric-blue/20">
@@ -400,7 +406,7 @@ const Achievements: React.FC = () => {
             scroll-snap-type: x proximity;
             -webkit-overflow-scrolling: touch;
           }
-          
+
           .scrollbar-hide > div {
             scroll-snap-align: start;
           }
