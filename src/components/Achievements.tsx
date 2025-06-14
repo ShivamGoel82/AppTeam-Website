@@ -6,6 +6,8 @@ const Achievements: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Achievement Gallery Images
   const achievementGallery = [
@@ -79,44 +81,98 @@ const Achievements: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Clear timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (autoScrollIntervalRef.current) {
+        clearInterval(autoScrollIntervalRef.current);
+      }
+      if (pauseTimeoutRef.current) {
+        clearTimeout(pauseTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Auto-scroll functionality
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
 
-    let scrollAmount = 0;
-    const scrollStep = isMobile ? 0.5 : 0.8;
-    const scrollDelay = isMobile ? 80 : 50;
+    const startAutoScroll = () => {
+      if (autoScrollIntervalRef.current) {
+        clearInterval(autoScrollIntervalRef.current);
+      }
 
-    const autoScroll = () => {
-      if (scrollContainer && isAutoScrolling) {
-        scrollAmount += scrollStep;
-        scrollContainer.scrollLeft = scrollAmount;
+      let scrollAmount = scrollContainer.scrollLeft;
+      const scrollStep = isMobile ? 0.8 : 1.2;
+      const scrollDelay = isMobile ? 60 : 40;
 
-        // Reset scroll when reaching the end
-        if (scrollAmount >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
-          scrollAmount = 0;
+      autoScrollIntervalRef.current = setInterval(() => {
+        if (scrollContainer && isAutoScrolling) {
+          scrollAmount += scrollStep;
+          scrollContainer.scrollLeft = scrollAmount;
+
+          // Reset scroll when reaching the end
+          if (scrollAmount >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
+            scrollAmount = 0;
+            scrollContainer.scrollLeft = 0;
+          }
         }
+      }, scrollDelay);
+    };
+
+    const stopAutoScroll = () => {
+      if (autoScrollIntervalRef.current) {
+        clearInterval(autoScrollIntervalRef.current);
+        autoScrollIntervalRef.current = null;
       }
     };
 
-    const interval = setInterval(autoScroll, scrollDelay);
-
-    // Event handlers
-    const handleInteractionStart = () => setIsAutoScrolling(false);
-    const handleInteractionEnd = () => {
-      setTimeout(() => setIsAutoScrolling(true), 3000);
-    };
-
-    // Add event listeners
-    scrollContainer.addEventListener('mouseenter', handleInteractionStart);
-    scrollContainer.addEventListener('mouseleave', handleInteractionEnd);
-    scrollContainer.addEventListener('touchstart', handleInteractionStart);
-    scrollContainer.addEventListener('touchend', handleInteractionEnd);
-    scrollContainer.addEventListener('scroll', handleInteractionStart);
+    if (isAutoScrolling) {
+      startAutoScroll();
+    } else {
+      stopAutoScroll();
+    }
 
     return () => {
-      clearInterval(interval);
+      stopAutoScroll();
+    };
+  }, [isAutoScrolling, isMobile]);
+
+  // Event handlers
+  const handleInteractionStart = () => {
+    setIsAutoScrolling(false);
+    if (pauseTimeoutRef.current) {
+      clearTimeout(pauseTimeoutRef.current);
+    }
+  };
+
+  const handleInteractionEnd = () => {
+    if (pauseTimeoutRef.current) {
+      clearTimeout(pauseTimeoutRef.current);
+    }
+    pauseTimeoutRef.current = setTimeout(() => {
+      setIsAutoScrolling(true);
+    }, 3000);
+  };
+
+  // Setup event listeners
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer) return;
+
+    // Mouse events for desktop
+    scrollContainer.addEventListener('mouseenter', handleInteractionStart);
+    scrollContainer.addEventListener('mouseleave', handleInteractionEnd);
+    
+    // Touch events for mobile
+    scrollContainer.addEventListener('touchstart', handleInteractionStart, { passive: true });
+    scrollContainer.addEventListener('touchend', handleInteractionEnd, { passive: true });
+    
+    // Scroll events
+    scrollContainer.addEventListener('scroll', handleInteractionStart, { passive: true });
+
+    return () => {
       if (scrollContainer) {
         scrollContainer.removeEventListener('mouseenter', handleInteractionStart);
         scrollContainer.removeEventListener('mouseleave', handleInteractionEnd);
@@ -125,12 +181,13 @@ const Achievements: React.FC = () => {
         scrollContainer.removeEventListener('scroll', handleInteractionStart);
       }
     };
-  }, [isAutoScrolling, isMobile]);
+  }, []);
 
   const scrollLeft = () => {
     if (scrollRef.current) {
       const scrollAmount = isMobile ? 300 : 400;
       scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      handleInteractionStart();
     }
   };
 
@@ -138,6 +195,7 @@ const Achievements: React.FC = () => {
     if (scrollRef.current) {
       const scrollAmount = isMobile ? 300 : 400;
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      handleInteractionStart();
     }
   };
 
@@ -264,9 +322,9 @@ const Achievements: React.FC = () => {
             {/* Auto-scroll indicator */}
             <div className="flex justify-center mt-4 md:mt-6">
               <div className="flex items-center space-x-2 text-gray-400 text-xs md:text-sm font-inter">
-                <div className={`w-2 h-2 bg-electric-blue rounded-full ${isAutoScrolling ? 'animate-pulse' : 'opacity-50'}`}></div>
+                <div className={`w-2 h-2 bg-electric-blue rounded-full transition-all duration-300 ${isAutoScrolling ? 'animate-pulse scale-110' : 'opacity-50'}`}></div>
                 <span className="hidden sm:inline">
-                  {isAutoScrolling ? 'Auto-scrolling gallery • Touch to pause' : 'Auto-scroll paused • Will resume shortly'}
+                  {isAutoScrolling ? 'Auto-scrolling gallery • Hover to pause' : 'Auto-scroll paused • Will resume shortly'}
                 </span>
                 <span className="sm:hidden">
                   {isAutoScrolling ? 'Auto-scrolling' : 'Paused'}

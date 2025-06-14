@@ -1,355 +1,227 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Trophy, Award, Star, Target, Calendar, Users, ChevronLeft, ChevronRight, Medal, Crown, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, Phone, MapPin, Send, Github, Linkedin, Twitter, Instagram } from 'lucide-react';
 import GlassCard from './GlassCard';
+import GlowButton from './GlowButton';
 
-const Achievements: React.FC = () => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
+const Contact: React.FC = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
 
-  // Achievement Gallery Images
-  const achievementGallery = [
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission here
+    console.log('Form submitted:', formData);
+  };
+
+  const contactInfo = [
     {
-      id: 1,
-      title: 'HOH 6.0',
-      image: '/img9.jpeg',
-      description: 'Successfully organized HackOnHills-6.0.',
-      event: 'HOH 6.0',
-      year: '2025',
-      type: 'Competition Organized'
+      icon: <Mail className="w-6 h-6" />,
+      title: 'Email',
+      details: 'appteam@nith.ac.in',
+      link: 'mailto:appteam@nith.ac.in'
     },
     {
-      id: 2,
-      title: 'Our Team',
-      image: '/img12.jpeg',
-      description: 'Our whole team in one frame.',
-      event: 'Photo shoot',
-      year: '2025',
-      type: 'Recognition'
+      icon: <Phone className="w-6 h-6" />,
+      title: 'Phone',
+      details: '+91 98765 43210',
+      link: 'tel:+919876543210'
     },
     {
-      id: 3,
-      title: 'Innovation Award',
-      image: '/img5.jpeg',
-      description: 'Best Techno Innovation Team.',
-      event: 'Tech Innovation',
-      year: '2025',
-      type: 'Innovation'
-    },
-    {
-      id: 4,
-      title: 'Leadership Award',
-      image: '/img11.jpeg',
-      description: 'Organized standout tech initiatives.',
-      event: 'Leadership',
-      year: '2025',
-      type: 'Leadership'
+      icon: <MapPin className="w-6 h-6" />,
+      title: 'Location',
+      details: 'NIT Hamirpur, Himachal Pradesh',
+      link: '#'
     }
   ];
 
-  const timeline = [
-    {
-      year: '2019',
-      title: 'Team Formation',
-      description: 'CodeCraft Collective was founded with a vision to excel in competitive programming and app development.',
-      color: 'border-electric-blue'
-    },
-    {
-      year: '2020',
-      title: 'HackOnHills Announced',
-      description: 'Announced our first hackathon and successfully organized it, marking our entry in finding solutions to real-world problems.',
-      color: 'border-neon-magenta'
-    },
-    {
-      year: '2025',
-      title: 'Triple Crown',
-      description: 'Achieved success in HOH 6.0, Nimbus, and Hillfair, cementing our position as elite developers.',
-      color: 'border-electric-blue'
-    }
+  const socialLinks = [
+    { icon: <Github className="w-5 h-5" />, href: '#', label: 'GitHub', color: 'hover:text-electric-blue' },
+    { icon: <Linkedin className="w-5 h-5" />, href: '#', label: 'LinkedIn', color: 'hover:text-electric-blue' },
+    { icon: <Twitter className="w-5 h-5" />, href: '#', label: 'Twitter', color: 'hover:text-electric-blue' },
+    { icon: <Instagram className="w-5 h-5" />, href: '#', label: 'Instagram', color: 'hover:text-neon-magenta' },
   ];
-
-  // Detect mobile and setup auto-scroll
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Auto-scroll functionality
-  useEffect(() => {
-    const scrollContainer = scrollRef.current;
-    if (!scrollContainer) return;
-
-    let scrollAmount = 0;
-    const scrollStep = isMobile ? 0.5 : 0.8;
-    const scrollDelay = isMobile ? 80 : 50;
-
-    const autoScroll = () => {
-      if (scrollContainer && isAutoScrolling) {
-        scrollAmount += scrollStep;
-        scrollContainer.scrollLeft = scrollAmount;
-
-        // Reset scroll when reaching the end
-        if (scrollAmount >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
-          scrollAmount = 0;
-        }
-      }
-    };
-
-    const interval = setInterval(autoScroll, scrollDelay);
-
-    // Event handlers
-    const handleInteractionStart = () => setIsAutoScrolling(false);
-    const handleInteractionEnd = () => {
-      setTimeout(() => setIsAutoScrolling(true), 3000);
-    };
-
-    // Add event listeners
-    scrollContainer.addEventListener('mouseenter', handleInteractionStart);
-    scrollContainer.addEventListener('mouseleave', handleInteractionEnd);
-    scrollContainer.addEventListener('touchstart', handleInteractionStart);
-    scrollContainer.addEventListener('touchend', handleInteractionEnd);
-    scrollContainer.addEventListener('scroll', handleInteractionStart);
-
-    return () => {
-      clearInterval(interval);
-      if (scrollContainer) {
-        scrollContainer.removeEventListener('mouseenter', handleInteractionStart);
-        scrollContainer.removeEventListener('mouseleave', handleInteractionEnd);
-        scrollContainer.removeEventListener('touchstart', handleInteractionStart);
-        scrollContainer.removeEventListener('touchend', handleInteractionEnd);
-        scrollContainer.removeEventListener('scroll', handleInteractionStart);
-      }
-    };
-  }, [isAutoScrolling, isMobile]);
-
-  const scrollLeft = () => {
-    if (scrollRef.current) {
-      const scrollAmount = isMobile ? 300 : 400;
-      scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    }
-  };
-
-  const scrollRight = () => {
-    if (scrollRef.current) {
-      const scrollAmount = isMobile ? 300 : 400;
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'Competition Organized':
-      case 'Recognition':
-      case 'Innovation':
-      case 'Leadership':
-        return 'text-neon-magenta bg-neon-magenta/20 border-neon-magenta/30';
-      default:
-        return 'text-gray-400 bg-gray-400/20 border-gray-400/30';
-    }
-  };
 
   return (
-    <section id="achievements" className="py-16 md:py-24 relative">
+    <section id="contact" className="py-16 md:py-24 relative">
       <div className="container mx-auto px-4 md:px-6">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-jetbrains font-bold text-white mb-4 md:mb-6">
-            Our <span className="text-vibrant-green">Achievements</span>
+            Get In <span className="text-electric-blue">Touch</span>
           </h2>
           <p className="text-base md:text-xl font-inter text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Celebrating our journey of excellence, innovation, and competitive success
-            in the world of app development and technology competitions.
+            Ready to collaborate or have questions about our projects? We'd love to hear from you.
+            Let's build something amazing together.
           </p>
         </div>
 
-        {/* Achievement Gallery */}
-        <div className="relative mb-12 md:mb-16">
-          <GlassCard className="p-4 md:p-8">
-            {/* Gallery Header */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 md:mb-8 gap-4">
-              <h3 className="text-xl md:text-2xl font-jetbrains font-semibold text-white">
-                Achievement <span className="text-electric-blue">Gallery</span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+          {/* Contact Information */}
+          <div className="space-y-6 md:space-y-8">
+            <GlassCard className="p-6 md:p-8">
+              <h3 className="text-xl md:text-2xl font-jetbrains font-semibold text-white mb-6 md:mb-8">
+                Contact <span className="text-neon-magenta">Information</span>
               </h3>
-              <div className="flex space-x-2">
-                <button
-                  onClick={scrollLeft}
-                  className="p-2 md:p-3 bg-electric-blue/20 hover:bg-electric-blue/30 active:bg-electric-blue/40 border border-electric-blue/30 rounded-lg transition-all duration-200 group touch-manipulation"
-                  aria-label="Scroll left"
-                >
-                  <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-electric-blue group-hover:scale-110 transition-transform duration-200" />
-                </button>
-                <button
-                  onClick={scrollRight}
-                  className="p-2 md:p-3 bg-electric-blue/20 hover:bg-electric-blue/30 active:bg-electric-blue/40 border border-electric-blue/30 rounded-lg transition-all duration-200 group touch-manipulation"
-                  aria-label="Scroll right"
-                >
-                  <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-electric-blue group-hover:scale-110 transition-transform duration-200" />
-                </button>
-              </div>
-            </div>
-
-            {/* Scrolling Gallery */}
-            <div
-              ref={scrollRef}
-              className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
-              style={{ 
-                scrollbarWidth: 'none', 
-                msOverflowStyle: 'none',
-                WebkitOverflowScrolling: 'touch'
-              }}
-            >
-              {achievementGallery.map((achievement) => (
-                <div
-                  key={achievement.id}
-                  className="flex-shrink-0 w-80 sm:w-96 group cursor-pointer"
-                >
-                  <div className="relative overflow-hidden rounded-xl border border-glass-border bg-cyber-dark/50 backdrop-blur-sm transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-lg group-hover:shadow-electric-blue/20">
-                    {/* Achievement Image */}
-                    <div className="relative h-56 sm:h-64 md:h-72 overflow-hidden">
-                      <img
-                        src={achievement.image}
-                        alt={achievement.title}
-                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-cyber-dark/80 via-transparent to-transparent opacity-70"></div>
-
-                      {/* Achievement Type Badge */}
-                      <div className="absolute top-3 md:top-4 right-3 md:right-4">
-                        <div className={`px-2 md:px-3 py-1 rounded-full text-xs font-jetbrains border backdrop-blur-sm ${getTypeColor(achievement.type)}`}>
-                          <span className="hidden sm:inline">{achievement.type}</span>
-                          <span className="sm:hidden">{achievement.type.split(' ')[0]}</span>
-                        </div>
-                      </div>
-
-                      {/* Year Badge */}
-                      <div className="absolute top-3 md:top-4 left-3 md:left-4">
-                        <div className="bg-cyber-dark/70 backdrop-blur-sm rounded-lg px-2 md:px-3 py-1 border border-glass-border">
-                          <span className="text-electric-blue font-jetbrains text-xs">
-                            {achievement.year}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Glow Effect on Hover */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-electric-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              
+              <div className="space-y-6">
+                {contactInfo.map((info, index) => (
+                  <a
+                    key={index}
+                    href={info.link}
+                    className="flex items-start space-x-4 p-4 rounded-lg hover:bg-electric-blue/10 transition-colors duration-300 group"
+                  >
+                    <div className="text-electric-blue group-hover:scale-110 transition-transform duration-300 mt-1">
+                      {info.icon}
                     </div>
-
-                    {/* Achievement Details */}
-                    <div className="p-4 md:p-6">
-                      <h4 className="text-lg md:text-xl font-jetbrains font-semibold text-white mb-2 md:mb-3 group-hover:text-electric-blue transition-colors duration-300 line-clamp-1">
-                        {achievement.title}
+                    <div>
+                      <h4 className="text-white font-jetbrains font-medium mb-1 group-hover:text-electric-blue transition-colors duration-300">
+                        {info.title}
                       </h4>
-
-                      <p className="text-gray-300 font-inter text-sm leading-relaxed mb-3 md:mb-4 line-clamp-2">
-                        {achievement.description}
+                      <p className="text-gray-300 font-inter text-sm md:text-base">
+                        {info.details}
                       </p>
-
-                      <div className="flex items-center justify-between">
-                        <div className="text-sm font-jetbrains text-neon-magenta truncate">
-                          {achievement.event}
-                        </div>
-                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Auto-scroll indicator */}
-            <div className="flex justify-center mt-4 md:mt-6">
-              <div className="flex items-center space-x-2 text-gray-400 text-xs md:text-sm font-inter">
-                <div className={`w-2 h-2 bg-electric-blue rounded-full ${isAutoScrolling ? 'animate-pulse' : 'opacity-50'}`}></div>
-                <span className="hidden sm:inline">
-                  {isAutoScrolling ? 'Auto-scrolling gallery • Touch to pause' : 'Auto-scroll paused • Will resume shortly'}
-                </span>
-                <span className="sm:hidden">
-                  {isAutoScrolling ? 'Auto-scrolling' : 'Paused'}
-                </span>
+                  </a>
+                ))}
               </div>
-            </div>
+
+              {/* Social Links */}
+              <div className="mt-8 pt-6 border-t border-glass-border">
+                <h4 className="text-white font-jetbrains font-medium mb-4">Follow Us</h4>
+                <div className="flex space-x-4">
+                  {socialLinks.map((social, index) => (
+                    <a
+                      key={index}
+                      href={social.href}
+                      aria-label={social.label}
+                      className={`text-gray-400 ${social.color} transition-colors duration-300 transform hover:scale-110`}
+                    >
+                      {social.icon}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </GlassCard>
+
+            {/* Quick Info */}
+            <GlassCard className="p-6 md:p-8">
+              <h3 className="text-lg md:text-xl font-jetbrains font-semibold text-white mb-4">
+                Why <span className="text-vibrant-green">Work With Us?</span>
+              </h3>
+              <ul className="space-y-3 text-gray-300 font-inter text-sm md:text-base">
+                <li className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-electric-blue rounded-full"></div>
+                  <span>Proven track record in competitive programming</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-neon-magenta rounded-full"></div>
+                  <span>Experience with cutting-edge technologies</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-vibrant-green rounded-full"></div>
+                  <span>Dedicated to delivering exceptional results</span>
+                </li>
+              </ul>
+            </GlassCard>
+          </div>
+
+          {/* Contact Form */}
+          <GlassCard className="p-6 md:p-8">
+            <h3 className="text-xl md:text-2xl font-jetbrains font-semibold text-white mb-6 md:mb-8">
+              Send Us a <span className="text-electric-blue">Message</span>
+            </h3>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-jetbrains text-gray-300 mb-2">
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 bg-cyber-dark/50 border border-glass-border rounded-lg text-white font-inter placeholder-gray-400 focus:border-electric-blue focus:outline-none focus:ring-2 focus:ring-electric-blue/20 transition-colors duration-300"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-jetbrains text-gray-300 mb-2">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 bg-cyber-dark/50 border border-glass-border rounded-lg text-white font-inter placeholder-gray-400 focus:border-electric-blue focus:outline-none focus:ring-2 focus:ring-electric-blue/20 transition-colors duration-300"
+                    placeholder="your.email@example.com"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="subject" className="block text-sm font-jetbrains text-gray-300 mb-2">
+                  Subject *
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-3 bg-cyber-dark/50 border border-glass-border rounded-lg text-white font-inter placeholder-gray-400 focus:border-electric-blue focus:outline-none focus:ring-2 focus:ring-electric-blue/20 transition-colors duration-300"
+                  placeholder="What's this about?"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="message" className="block text-sm font-jetbrains text-gray-300 mb-2">
+                  Message *
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  required
+                  rows={6}
+                  className="w-full px-4 py-3 bg-cyber-dark/50 border border-glass-border rounded-lg text-white font-inter placeholder-gray-400 focus:border-electric-blue focus:outline-none focus:ring-2 focus:ring-electric-blue/20 transition-colors duration-300 resize-vertical"
+                  placeholder="Tell us about your project or question..."
+                />
+              </div>
+
+              <GlowButton 
+                className="w-full group text-sm md:text-base"
+                onClick={() => {}}
+              >
+                <Send className="inline-block mr-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                Send Message
+              </GlowButton>
+            </form>
           </GlassCard>
         </div>
-
-        {/* Timeline */}
-        <GlassCard className="p-6 md:p-8">
-          <h3 className="text-xl md:text-2xl font-jetbrains font-semibold text-white mb-6 md:mb-8 text-center">
-            Our <span className="text-electric-blue">Journey</span>
-          </h3>
-          <div className="space-y-6 md:space-y-8">
-            {timeline.map((event, index) => (
-              <div key={index} className="flex items-start space-x-3 md:space-x-4">
-                <div className={`w-3 h-3 md:w-4 md:h-4 rounded-full border-2 ${event.color} bg-cyber-dark mt-2 flex-shrink-0`}></div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                    <span className="text-base md:text-lg font-jetbrains font-semibold text-white">
-                      {event.title}
-                    </span>
-                    <span className="text-sm font-jetbrains text-gray-400 bg-cyber-gray/50 px-2 py-1 rounded w-fit">
-                      {event.year}
-                    </span>
-                  </div>
-                  <p className="text-gray-300 font-inter leading-relaxed text-sm md:text-base">
-                    {event.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </GlassCard>
       </div>
-
-      <style>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-
-        .scroll-smooth {
-          scroll-behavior: smooth;
-        }
-
-        .touch-manipulation {
-          touch-action: manipulation;
-        }
-
-        .line-clamp-1 {
-          display: -webkit-box;
-          -webkit-line-clamp: 1;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        /* Enhanced mobile scrolling */
-        @media (max-width: 768px) {
-          .scrollbar-hide {
-            scroll-snap-type: x proximity;
-            -webkit-overflow-scrolling: touch;
-          }
-          
-          .scrollbar-hide > div {
-            scroll-snap-align: start;
-          }
-        }
-      `}</style>
     </section>
   );
 };
 
-export default Achievements;
+export default Contact;
