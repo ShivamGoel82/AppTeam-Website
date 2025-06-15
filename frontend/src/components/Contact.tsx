@@ -31,13 +31,15 @@ const Contact: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('https://appteam-backend.onrender.com/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
       });
+
+
 
       if (response.ok) {
         const data = await response.json();
@@ -200,7 +202,7 @@ const Contact: React.FC = () => {
                   placeholder="Tell us about your project or question..."
                 />
               </div>
-              <GlowButton className="w-full group text-sm md:text-base" onClick={() => {}}>
+              <GlowButton className="w-full group text-sm md:text-base" onClick={() => { }}>
                 <Send className="inline-block mr-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                 Send Message
               </GlowButton>
@@ -211,11 +213,10 @@ const Contact: React.FC = () => {
 
       {toast && (
         <div
-          className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-xl font-inter text-sm md:text-base animate-fade-in-up ${
-            toast.type === 'success'
-              ? 'bg-green-600/20 text-green-300 border border-green-500'
-              : 'bg-red-600/20 text-red-300 border border-red-500'
-          }`}
+          className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-xl font-inter text-sm md:text-base animate-fade-in-up ${toast.type === 'success'
+            ? 'bg-green-600/20 text-green-300 border border-green-500'
+            : 'bg-red-600/20 text-red-300 border border-red-500'
+            }`}
           style={{ backdropFilter: 'blur(10px)', animation: 'fadeInUp 0.3s ease-out' }}
         >
           {toast.message}
