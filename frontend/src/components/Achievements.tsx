@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import GlassCard from "./GlassCard";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Camera, Calendar, MapPin, Users } from "lucide-react";
 
 const Achievements: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const galleryScrollRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
+  const [activeGalleryTab, setActiveGalleryTab] = useState('all');
   const pauseTimeoutRef = useRef<number | null>(null);
   const animationRef = useRef<number | null>(null);
 
@@ -19,6 +21,7 @@ const Achievements: React.FC = () => {
       event: "HOH 6.0",
       year: "2025",
       type: "Competition Organized",
+      category: "events"
     },
     {
       id: 2,
@@ -28,6 +31,7 @@ const Achievements: React.FC = () => {
       event: "Photo shoot",
       year: "2025",
       type: "Recognition",
+      category: "team"
     },
     {
       id: 3,
@@ -37,6 +41,7 @@ const Achievements: React.FC = () => {
       event: "Tech Innovation",
       year: "2025",
       type: "Innovation",
+      category: "awards"
     },
     {
       id: 4,
@@ -46,8 +51,66 @@ const Achievements: React.FC = () => {
       event: "Leadership",
       year: "2025",
       type: "Leadership",
-    },
+      category: "awards"
+    }
   ];
+
+  // Gallery memories
+  const galleryMemories = [
+    {
+      id: 1,
+      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (1).jpeg",
+      title: "Team Building Session",
+      description: "Fun team building activities and bonding",
+      category: "team",
+      date: "2025"
+    },
+    {
+      id: 2,
+      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (3).jpeg",
+      title: "Workshop Moments",
+      description: "Learning and sharing knowledge together",
+      category: "events",
+      date: "2025"
+    },
+    {
+      id: 3,
+      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (4).jpeg",
+      title: "Celebration Time",
+      description: "Celebrating our achievements and milestones",
+      category: "celebrations",
+      date: "2025"
+    },
+    {
+      id: 4,
+      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (6).jpeg",
+      title: "Project Showcase",
+      description: "Presenting our innovative projects",
+      category: "projects",
+      date: "2025"
+    },
+    {
+      id: 5,
+      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (7).jpeg",
+      title: "Coding Sessions",
+      description: "Collaborative coding and problem solving",
+      category: "coding",
+      date: "2025"
+    }
+  ];
+
+  const galleryCategories = [
+    { id: 'all', label: 'All Memories', icon: <Camera className="w-4 h-4" /> },
+    { id: 'team', label: 'Team', icon: <Users className="w-4 h-4" /> },
+    { id: 'events', label: 'Events', icon: <Calendar className="w-4 h-4" /> },
+    { id: 'projects', label: 'Projects', icon: <MapPin className="w-4 h-4" /> },
+    { id: 'celebrations', label: 'Celebrations', icon: <Camera className="w-4 h-4" /> },
+    { id: 'coding', label: 'Coding', icon: <Camera className="w-4 h-4" /> }
+  ];
+
+  const filteredGalleryMemories = activeGalleryTab === 'all' 
+    ? galleryMemories 
+    : galleryMemories.filter(memory => memory.category === activeGalleryTab);
 
   // Duplicate gallery for seamless looping
   const duplicatedGallery = [...achievementGallery, ...achievementGallery];
@@ -198,15 +261,15 @@ const Achievements: React.FC = () => {
   const getTypeColor = (type: string) => {
     switch (type) {
       case "Competition Organized":
-        return "text-black bg-accent-blue/10 border-black";
+        return "text-white bg-accent-primary/20 border-accent-primary/30";
       case "Recognition":
-        return "text-black bg-accent-blue/10 border-black";
+        return "text-white bg-accent-secondary/20 border-accent-secondary/30";
       case "Innovation":
-        return "text-black bg-accent-blue/10 border-black";
+        return "text-white bg-accent-tertiary/20 border-accent-tertiary/30";
       case "Leadership":
-        return "text-accent-blue bg-black/70 border-accent-blue";
+        return "text-white bg-accent-success/20 border-accent-success/30";
       default:
-        return "text-black bg-accent-blue/10 border-black";
+        return "text-white bg-neutral-500/20 border-neutral-500/30";
     }
   };
 
@@ -216,21 +279,21 @@ const Achievements: React.FC = () => {
       title: "Team Formation",
       description:
         "AppTeam was founded with a vision to excel in competitive programming and app development.",
-      color: "border-accent-blue",
+      color: "border-accent-primary",
     },
     {
       year: "2020",
       title: "HackOnHills Announced",
       description:
         "Announced our first hackathon and successfully organized it, marking our entry in finding solutions to real-world problems.",
-      color: "border-accent-purple",
+      color: "border-accent-secondary",
     },
     {
       year: "2025",
       title: "Triple Crown",
       description:
         "Achieved success in HOH 6.0, Nimbus, and Hillfair, cementing our position as elite developers.",
-      color: "border-accent-teal",
+      color: "border-accent-tertiary",
     },
   ];
 
@@ -239,10 +302,10 @@ const Achievements: React.FC = () => {
       <div className="container mx-auto px-4 md:px-6">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-space font-bold text-white mb-4 md:mb-6">
-            Our <span className="text-accent-teal">Achievements</span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-space font-bold text-primary-text mb-4 md:mb-6">
+            Our <span className="text-accent-tertiary">Achievements</span>
           </h2>
-          <p className="text-base md:text-xl font-inter text-neutral-medium max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base md:text-xl font-inter text-secondary-text max-w-3xl mx-auto leading-relaxed">
             Celebrating our journey of excellence, innovation, and competitive
             success in the world of app development and technology competitions.
           </p>
@@ -253,23 +316,23 @@ const Achievements: React.FC = () => {
           <GlassCard className="p-4 md:p-8">
             {/* Gallery Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 md:mb-8 gap-4">
-              <h3 className="text-xl md:text-2xl font-space font-semibold text-white">
-                Achievement <span className="text-accent-blue">Gallery</span>
+              <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text">
+                Achievement <span className="text-accent-primary">Gallery</span>
               </h3>
               <div className="flex space-x-2">
                 <button
                   onClick={scrollLeft}
-                  className="p-2 md:p-3 bg-accent-blue/10 hover:bg-accent-blue/20 active:bg-accent-blue/30 border border-accent-blue/30 rounded-lg transition-all duration-200 group touch-manipulation"
+                  className="p-2 md:p-3 bg-accent-primary/10 hover:bg-accent-primary/20 active:bg-accent-primary/30 border border-accent-primary/30 rounded-lg transition-all duration-200 group touch-manipulation"
                   aria-label="Scroll left"
                 >
-                  <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-accent-blue group-hover:scale-110 transition-transform duration-200" />
+                  <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-accent-primary group-hover:scale-110 transition-transform duration-200" />
                 </button>
                 <button
                   onClick={scrollRight}
-                  className="p-2 md:p-3 bg-accent-blue/10 hover:bg-accent-blue/20 active:bg-accent-blue/30 border border-accent-blue/30 rounded-lg transition-all duration-200 group touch-manipulation"
+                  className="p-2 md:p-3 bg-accent-primary/10 hover:bg-accent-primary/20 active:bg-accent-primary/30 border border-accent-primary/30 rounded-lg transition-all duration-200 group touch-manipulation"
                   aria-label="Scroll right"
                 >
-                  <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-accent-blue group-hover:scale-110 transition-transform duration-200" />
+                  <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-accent-primary group-hover:scale-110 transition-transform duration-200" />
                 </button>
               </div>
             </div>
@@ -289,7 +352,7 @@ const Achievements: React.FC = () => {
                   key={achievement.id + "-" + idx}
                   className="flex-shrink-0 w-80 sm:w-96 group cursor-pointer"
                 >
-                  <div className="relative overflow-hidden rounded-xl border border-glass-border bg-secondary-dark/50 backdrop-blur-sm transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-lg group-hover:shadow-accent-blue/10">
+                  <div className="relative overflow-hidden rounded-xl border border-glass-border bg-secondary-dark/50 backdrop-blur-sm transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-lg group-hover:shadow-accent-primary/10">
                     {/* Achievement Image */}
                     <div className="relative h-56 sm:h-64 md:h-72 overflow-hidden">
                       <img
@@ -318,29 +381,29 @@ const Achievements: React.FC = () => {
 
                       {/* Year Badge */}
                       <div className="absolute top-3 md:top-4 left-3 md:left-4">
-                        <div className="bg-accent-blue/80 backdrop-blur-sm rounded-lg px-2 md:px-3 py-1 border border-glass-border">
-                          <span className="text-black font-inter text-xs">
+                        <div className="bg-accent-primary/80 backdrop-blur-sm rounded-lg px-2 md:px-3 py-1 border border-glass-border">
+                          <span className="text-white font-inter text-xs">
                             {achievement.year}
                           </span>
                         </div>
                       </div>
 
                       {/* Glow Effect on Hover */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-accent-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-accent-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
 
                     {/* Achievement Details */}
                     <div className="p-4 md:p-6">
-                      <h4 className="text-lg md:text-xl font-space font-semibold text-white mb-2 md:mb-3 group-hover:text-accent-blue transition-colors duration-300 line-clamp-1">
+                      <h4 className="text-lg md:text-xl font-space font-semibold text-primary-text mb-2 md:mb-3 group-hover:text-accent-primary transition-colors duration-300 line-clamp-1">
                         {achievement.title}
                       </h4>
 
-                      <p className="text-neutral-medium font-inter text-sm leading-relaxed mb-3 md:mb-4 line-clamp-2">
+                      <p className="text-secondary-text font-inter text-sm leading-relaxed mb-3 md:mb-4 line-clamp-2">
                         {achievement.description}
                       </p>
 
                       <div className="flex items-center justify-between">
-                        <div className="text-sm font-inter text-accent-purple truncate">
+                        <div className="text-sm font-inter text-accent-secondary truncate">
                           {achievement.event}
                         </div>
                       </div>
@@ -352,9 +415,9 @@ const Achievements: React.FC = () => {
 
             {/* Auto-scroll indicator */}
             <div className="flex justify-center mt-4 md:mt-6">
-              <div className="flex items-center space-x-2 text-neutral-medium text-xs md:text-sm font-inter">
+              <div className="flex items-center space-x-2 text-secondary-text text-xs md:text-sm font-inter">
                 <div
-                  className={`w-2 h-2 bg-accent-blue rounded-full transition-all duration-300 ${
+                  className={`w-2 h-2 bg-accent-primary rounded-full transition-all duration-300 ${
                     isAutoScrolling ? "animate-pulse scale-110" : "opacity-50"
                   }`}
                 ></div>
@@ -371,10 +434,76 @@ const Achievements: React.FC = () => {
           </GlassCard>
         </div>
 
+        {/* Gallery Section */}
+        <div className="mb-12 md:mb-16">
+          <GlassCard className="p-6 md:p-8">
+            <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-6 text-center">
+              Our <span className="text-accent-primary">Memories</span>
+            </h3>
+
+            {/* Gallery Categories */}
+            <div className="flex flex-wrap justify-center gap-2 mb-8">
+              {galleryCategories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setActiveGalleryTab(category.id)}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-inter text-sm transition-all duration-300 ${
+                    activeGalleryTab === category.id
+                      ? 'bg-accent-primary text-white'
+                      : 'bg-glass-white text-secondary-text hover:bg-hover-bg'
+                  }`}
+                >
+                  {category.icon}
+                  <span>{category.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Gallery Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {filteredGalleryMemories.map((memory) => (
+                <div
+                  key={memory.id}
+                  className="group cursor-pointer overflow-hidden rounded-lg border border-glass-border bg-secondary-dark/30 hover:border-accent-primary/30 transition-all duration-300"
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={memory.image}
+                      alt={memory.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                    {/* Overlay Info */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                      <h4 className="text-white font-space font-semibold text-sm mb-1">
+                        {memory.title}
+                      </h4>
+                      <p className="text-neutral-200 font-inter text-xs">
+                        {memory.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filteredGalleryMemories.length === 0 && (
+              <div className="text-center py-12">
+                <Camera className="w-12 h-12 text-muted-text mx-auto mb-4" />
+                <p className="text-secondary-text font-inter">
+                  No memories found in this category yet.
+                </p>
+              </div>
+            )}
+          </GlassCard>
+        </div>
+
         {/* Timeline */}
         <GlassCard className="p-6 md:p-8">
-          <h3 className="text-xl md:text-2xl font-space font-semibold text-white mb-6 md:mb-8 text-center">
-            Our <span className="text-accent-blue">Journey</span>
+          <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-6 md:mb-8 text-center">
+            Our <span className="text-accent-primary">Journey</span>
           </h3>
           <div className="space-y-6 md:space-y-8">
             {timeline.map((event, index) => (
@@ -387,14 +516,14 @@ const Achievements: React.FC = () => {
                 ></div>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                    <span className="text-base md:text-lg font-space font-semibold text-white">
+                    <span className="text-base md:text-lg font-space font-semibold text-primary-text">
                       {event.title}
                     </span>
-                    <span className="text-sm font-inter text-neutral-medium bg-secondary-dark/50 px-2 py-1 rounded w-fit">
+                    <span className="text-sm font-inter text-secondary-text bg-secondary-dark/50 px-2 py-1 rounded w-fit">
                       {event.year}
                     </span>
                   </div>
-                  <p className="text-neutral-medium font-inter leading-relaxed text-sm md:text-base">
+                  <p className="text-secondary-text font-inter leading-relaxed text-sm md:text-base">
                     {event.description}
                   </p>
                 </div>

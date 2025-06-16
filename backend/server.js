@@ -50,6 +50,7 @@ connectDB();
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/team', require('./routes/team'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/members', require('./routes/members'));
 
 // Health check
 app.get('/api/health', (req, res) => {

@@ -6,6 +6,7 @@ interface GlowButtonProps {
   variant?: 'primary' | 'secondary';
   className?: string;
   disabled?: boolean;
+  type?: 'button' | 'submit' | 'reset';
 }
 
 const GlowButton: React.FC<GlowButtonProps> = ({ 
@@ -13,31 +14,35 @@ const GlowButton: React.FC<GlowButtonProps> = ({
   onClick, 
   variant = 'primary',
   className = '',
-  disabled = false
+  disabled = false,
+  type = 'button'
 }) => {
   const baseClasses = `
-    px-8 py-4 rounded-lg font-inter font-medium text-sm
+    px-6 py-3 rounded-lg font-inter font-medium text-sm
     transition-all duration-300 ease-out
     transform hover:scale-105 active:scale-95
     border disabled:opacity-50 disabled:cursor-not-allowed
-    disabled:hover:scale-100
+    disabled:hover:scale-100 focus:outline-none focus:ring-2 focus:ring-offset-2
   `;
 
   const variantClasses = {
     primary: `
-      bg-accent-blue text-white border-accent-blue
-      hover:bg-accent-blue/90 hover:shadow-lg hover:shadow-accent-blue/30
-      active:bg-accent-blue/80 disabled:hover:bg-accent-blue
+      bg-accent-primary text-white border-accent-primary
+      hover:bg-accent-primary/90 hover:shadow-lg hover:shadow-accent-primary/30
+      active:bg-accent-primary/80 disabled:hover:bg-accent-primary
+      focus:ring-accent-primary/50 focus:ring-offset-primary-dark
     `,
     secondary: `
-      bg-transparent text-accent-blue border-accent-blue
-      hover:bg-accent-blue/10 hover:shadow-lg hover:shadow-accent-blue/20
-      active:bg-accent-blue/5 disabled:hover:bg-transparent
+      bg-transparent text-accent-primary border-accent-primary
+      hover:bg-accent-primary/10 hover:shadow-lg hover:shadow-accent-primary/20
+      active:bg-accent-primary/5 disabled:hover:bg-transparent
+      focus:ring-accent-primary/50 focus:ring-offset-primary-dark
     `
   };
 
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       className={`${baseClasses} ${variantClasses[variant]} ${className}`}

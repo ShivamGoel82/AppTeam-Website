@@ -35,7 +35,7 @@ const AnimatedBackground: React.FC = () => {
 
     const animate = () => {
       // Clear with slight trail effect
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.05)';
+      ctx.fillStyle = 'rgba(10, 14, 26, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       nodes.forEach((node, i) => {
@@ -57,7 +57,7 @@ const AnimatedBackground: React.FC = () => {
         const nodeOpacity = isMobile ? 0.15 : 0.25;
         const nodeSize = isMobile ? 1 : 1.5;
         
-        ctx.fillStyle = `rgba(56, 189, 248, ${nodeOpacity})`;
+        ctx.fillStyle = `rgba(59, 130, 246, ${nodeOpacity})`;
         ctx.beginPath();
         ctx.arc(node.x, node.y, nodeSize, 0, Math.PI * 2);
         ctx.fill();
@@ -71,7 +71,7 @@ const AnimatedBackground: React.FC = () => {
 
           if (distance < maxDistance) {
             const connectionOpacity = (isMobile ? 0.08 : 0.12) * (1 - distance / maxDistance);
-            ctx.strokeStyle = `rgba(56, 189, 248, ${connectionOpacity})`;
+            ctx.strokeStyle = `rgba(59, 130, 246, ${connectionOpacity})`;
             ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);
