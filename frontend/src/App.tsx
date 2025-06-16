@@ -14,7 +14,7 @@ import CodeRain from './components/CodeRain';
 
 function App() {
   return (
-    <div className="min-h-screen bg-primary-dark text-primary-text overflow-x-hidden">
+    <div className="min-h-screen bg-primary-bg text-primary-text overflow-x-hidden">
       {/* Animated Backgrounds - Lower z-index */}
       <div className="fixed inset-0 z-0">
         <AnimatedBackground />

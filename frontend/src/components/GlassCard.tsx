@@ -10,9 +10,9 @@ const GlassCard: React.FC<GlassCardProps> = ({ children, className = '', hover =
   return (
     <div
       className={`
-        backdrop-blur-xl bg-glass-white border border-glass-border rounded-xl
-        shadow-lg shadow-accent-blue/5
-        ${hover ? 'hover:bg-glass-white/8 hover:shadow-accent-blue/10 hover:scale-[1.02]' : ''}
+        backdrop-blur-sm bg-glass-white border border-glass-border rounded-xl
+        shadow-lg shadow-neutral-200/20
+        ${hover ? 'hover:bg-white/90 hover:shadow-neutral-300/30 hover:scale-[1.02]' : ''}
         transition-all duration-300 ease-out
         ${className}
       `}

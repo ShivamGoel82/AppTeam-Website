@@ -30,7 +30,7 @@ const Header: React.FC = () => {
       className={`
         fixed top-0 left-0 right-0 z-50 transition-all duration-300
         ${isScrolled
-          ? 'backdrop-blur-xl bg-primary-dark/90 border-b border-glass-border shadow-lg shadow-accent-blue/5'
+          ? 'backdrop-blur-xl bg-white/95 border-b border-border-light shadow-lg shadow-neutral-200/20'
           : 'bg-transparent'
         }
       `}
@@ -54,7 +54,7 @@ const Header: React.FC = () => {
               <a
                 key={item.href}
                 href={item.href}
-                className="text-primary-text/80 font-inter hover:text-accent-blue transition-colors duration-300 relative group font-medium"
+                className="text-secondary-text font-inter hover:text-accent-blue transition-colors duration-300 relative group font-medium"
               >
                 {item.label}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-blue transition-all duration-300 group-hover:w-full"></span>
@@ -79,7 +79,7 @@ const Header: React.FC = () => {
                 <a
                   key={item.href}
                   href={item.href}
-                  className="block py-3 text-primary-text/80 font-inter hover:text-accent-blue transition-colors duration-300 font-medium"
+                  className="block py-3 text-secondary-text font-inter hover:text-accent-blue transition-colors duration-300 font-medium"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.label}

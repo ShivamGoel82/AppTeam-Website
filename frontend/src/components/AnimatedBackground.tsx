@@ -34,8 +34,8 @@ const AnimatedBackground: React.FC = () => {
     let animationId: number;
 
     const animate = () => {
-      // Clear with slight trail effect
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.05)';
+      // Clear with slight trail effect for light theme
+      ctx.fillStyle = 'rgba(248, 250, 252, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       nodes.forEach((node, i) => {
@@ -53,11 +53,11 @@ const AnimatedBackground: React.FC = () => {
           node.y = Math.max(0, Math.min(canvas.height, node.y));
         }
 
-        // Draw node with updated color
-        const nodeOpacity = isMobile ? 0.15 : 0.25;
+        // Draw node with light theme colors
+        const nodeOpacity = isMobile ? 0.2 : 0.3;
         const nodeSize = isMobile ? 1 : 1.5;
         
-        ctx.fillStyle = `rgba(56, 189, 248, ${nodeOpacity})`;
+        ctx.fillStyle = `rgba(99, 102, 241, ${nodeOpacity})`;
         ctx.beginPath();
         ctx.arc(node.x, node.y, nodeSize, 0, Math.PI * 2);
         ctx.fill();
@@ -70,8 +70,8 @@ const AnimatedBackground: React.FC = () => {
           const maxDistance = isMobile ? 80 : 100;
 
           if (distance < maxDistance) {
-            const connectionOpacity = (isMobile ? 0.08 : 0.12) * (1 - distance / maxDistance);
-            ctx.strokeStyle = `rgba(56, 189, 248, ${connectionOpacity})`;
+            const connectionOpacity = (isMobile ? 0.1 : 0.15) * (1 - distance / maxDistance);
+            ctx.strokeStyle = `rgba(99, 102, 241, ${connectionOpacity})`;
             ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);
