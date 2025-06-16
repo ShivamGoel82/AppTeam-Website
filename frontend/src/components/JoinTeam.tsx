@@ -69,13 +69,6 @@ const JoinTeam: React.FC = () => {
     }
   ];
 
- 
-
-  const handleApplyNow = () => {
-  setShowApplication(true);
-  // Removed scrollTo behavior
-};
-
 
   if (showApplication) {
     return (
