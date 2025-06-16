@@ -140,10 +140,6 @@ const Team: React.FC = () => {
     fetchMembers(); // Refresh the members list
   };
 
-  const coreMembers = members.filter(member => member.membershipInfo.memberType === 'core');
-  const activeMembers = members.filter(member => member.membershipInfo.memberType === 'active');
-  const alumni = members.filter(member => member.membershipInfo.memberType === 'alumni');
-
   const MemberCard: React.FC<{ member: Member }> = ({ member }) => (
     <GlassCard className="p-6 text-center group overflow-hidden">
       {/* Profile Image */}
@@ -317,47 +313,12 @@ const Team: React.FC = () => {
           </div>
         )}
 
-        {/* Core Team */}
-        {coreMembers.length > 0 && (
-          <div className="mb-16">
-            <h3 className="text-2xl md:text-3xl font-space font-bold text-primary-text mb-8 text-center">
-              <span className="text-accent-primary">Core</span> Team
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {coreMembers.map((member) => (
-                <MemberCard key={member._id} member={member} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Active Members */}
-        {activeMembers.length > 0 && (
-          <div className="mb-16">
-            <h3 className="text-2xl md:text-3xl font-space font-bold text-primary-text mb-8 text-center">
-              <span className="text-accent-secondary">Active</span> Members
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {activeMembers.map((member) => (
-                <MemberCard key={member._id} member={member} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Alumni */}
-        {alumni.length > 0 && (
-          <div>
-            <h3 className="text-2xl md:text-3xl font-space font-bold text-primary-text mb-8 text-center">
-              <span className="text-accent-tertiary">Alumni</span>
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {alumni.map((member) => (
-                <MemberCard key={member._id} member={member} />
-              ))}
-            </div>
-          </div>
-        )}
+        {/* All Team Members in One Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+          {members.map((member) => (
+            <MemberCard key={member._id} member={member} />
+          ))}
+        </div>
 
         {/* Member Form Modal */}
         {showMemberForm && (

@@ -80,10 +80,10 @@ const Contact: React.FC = () => {
   ];
 
   const socialLinks = [
-    { icon: <Github className="w-5 h-5" />, href: '#', label: 'GitHub', color: 'hover:text-accent-blue' },
-    { icon: <Linkedin className="w-5 h-5" />, href: '#', label: 'LinkedIn', color: 'hover:text-accent-blue' },
-    { icon: <Twitter className="w-5 h-5" />, href: '#', label: 'Twitter', color: 'hover:text-accent-blue' },
-    { icon: <Instagram className="w-5 h-5" />, href: '#', label: 'Instagram', color: 'hover:text-accent-purple' },
+    { icon: <Github className="w-5 h-5" />, href: '#', label: 'GitHub', color: 'hover:text-accent-primary' },
+    { icon: <Linkedin className="w-5 h-5" />, href: '#', label: 'LinkedIn', color: 'hover:text-accent-primary' },
+    { icon: <Twitter className="w-5 h-5" />, href: '#', label: 'Twitter', color: 'hover:text-accent-primary' },
+    { icon: <Instagram className="w-5 h-5" />, href: '#', label: 'Instagram', color: 'hover:text-accent-secondary' },
   ];
 
   return (
@@ -92,9 +92,9 @@ const Contact: React.FC = () => {
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-space font-bold text-primary-text mb-4 md:mb-6">
-            Get In <span className="text-accent-blue">Touch</span>
+            Get In <span className="text-accent-primary">Touch</span>
           </h2>
-          <p className="text-base md:text-xl font-inter text-primary-text/80 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base md:text-xl font-inter text-secondary-text max-w-3xl mx-auto leading-relaxed">
             Ready to collaborate or have questions about our projects? We'd love to hear from you.
             Let's build something amazing together.
           </p>
@@ -105,23 +105,23 @@ const Contact: React.FC = () => {
           <div className="space-y-6 md:space-y-8">
             <GlassCard className="p-6 md:p-8">
               <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-6 md:mb-8">
-                Contact <span className="text-accent-purple">Information</span>
+                Contact <span className="text-accent-secondary">Information</span>
               </h3>
               <div className="space-y-6">
                 {contactInfo.map((info, index) => (
                   <a
                     key={index}
                     href={info.link}
-                    className="flex items-start space-x-4 p-4 rounded-lg hover:bg-accent-blue/5 transition-colors duration-300 group"
+                    className="flex items-start space-x-4 p-4 rounded-lg hover:bg-accent-primary/5 transition-colors duration-300 group"
                   >
-                    <div className="text-accent-blue group-hover:scale-110 transition-transform duration-300 mt-1">
+                    <div className="text-accent-primary group-hover:scale-110 transition-transform duration-300 mt-1">
                       {info.icon}
                     </div>
                     <div>
-                      <h4 className="text-primary-text font-space font-medium mb-1 group-hover:text-accent-blue transition-colors duration-300">
+                      <h4 className="text-primary-text font-space font-medium mb-1 group-hover:text-accent-primary transition-colors duration-300">
                         {info.title}
                       </h4>
-                      <p className="text-primary-text/80 font-inter text-sm md:text-base">
+                      <p className="text-secondary-text font-inter text-sm md:text-base">
                         {info.details}
                       </p>
                     </div>
@@ -136,7 +136,7 @@ const Contact: React.FC = () => {
                       key={index}
                       href={social.href}
                       aria-label={social.label}
-                      className={`text-primary-text/80 ${social.color} transition-colors duration-300 transform hover:scale-110`}
+                      className={`text-muted-text ${social.color} transition-colors duration-300 transform hover:scale-110`}
                     >
                       {social.icon}
                     </a>
@@ -149,12 +149,12 @@ const Contact: React.FC = () => {
           {/* Contact Form */}
           <GlassCard className="p-6 md:p-8">
             <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-6 md:mb-8">
-              Send Us a <span className="text-accent-blue">Message</span>
+              Send Us a <span className="text-accent-primary">Message</span>
             </h3>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-inter text-primary-text/80 mb-2">Name *</label>
+                  <label htmlFor="name" className="block text-sm font-inter text-secondary-text mb-2">Name *</label>
                   <input
                     type="text"
                     id="name"
@@ -162,12 +162,12 @@ const Contact: React.FC = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-primary-text/50 focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300"
+                    className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
                     placeholder="Your name"
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-inter text-primary-text/80 mb-2">Email *</label>
+                  <label htmlFor="email" className="block text-sm font-inter text-secondary-text mb-2">Email *</label>
                   <input
                     type="email"
                     id="email"
@@ -175,13 +175,13 @@ const Contact: React.FC = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-primary-text/50 focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300"
+                    className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
                     placeholder="your.email@example.com"
                   />
                 </div>
               </div>
               <div>
-                <label htmlFor="subject" className="block text-sm font-inter text-primary-text/80 mb-2">Subject *</label>
+                <label htmlFor="subject" className="block text-sm font-inter text-secondary-text mb-2">Subject *</label>
                 <input
                   type="text"
                   id="subject"
@@ -189,12 +189,12 @@ const Contact: React.FC = () => {
                   value={formData.subject}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-primary-text/50 focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300"
+                  className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
                   placeholder="What's this about?"
                 />
               </div>
               <div>
-                <label htmlFor="message" className="block text-sm font-inter text-primary-text/80 mb-2">Message *</label>
+                <label htmlFor="message" className="block text-sm font-inter text-secondary-text mb-2">Message *</label>
                 <textarea
                   id="message"
                   name="message"
@@ -202,7 +202,7 @@ const Contact: React.FC = () => {
                   onChange={handleInputChange}
                   required
                   rows={6}
-                  className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-primary-text/50 focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300 resize-vertical"
+                  className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300 resize-vertical"
                   placeholder="Tell us about your project or question..."
                 />
               </div>

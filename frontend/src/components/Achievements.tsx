@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import GlassCard from "./GlassCard";
-import { ChevronLeft, ChevronRight, Camera, Calendar, MapPin, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
 
 const Achievements: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const galleryScrollRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
-  const [activeGalleryTab, setActiveGalleryTab] = useState('all');
   const pauseTimeoutRef = useRef<number | null>(null);
   const animationRef = useRef<number | null>(null);
 
@@ -21,7 +19,6 @@ const Achievements: React.FC = () => {
       event: "HOH 6.0",
       year: "2025",
       type: "Competition Organized",
-      category: "events"
     },
     {
       id: 2,
@@ -31,7 +28,6 @@ const Achievements: React.FC = () => {
       event: "Photo shoot",
       year: "2025",
       type: "Recognition",
-      category: "team"
     },
     {
       id: 3,
@@ -41,7 +37,6 @@ const Achievements: React.FC = () => {
       event: "Tech Innovation",
       year: "2025",
       type: "Innovation",
-      category: "awards"
     },
     {
       id: 4,
@@ -51,66 +46,60 @@ const Achievements: React.FC = () => {
       event: "Leadership",
       year: "2025",
       type: "Leadership",
-      category: "awards"
-    }
+    },
   ];
 
-  // Gallery memories
+  // Gallery memories - just images without categories
   const galleryMemories = [
     {
       id: 1,
       image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (1).jpeg",
       title: "Team Building Session",
       description: "Fun team building activities and bonding",
-      category: "team",
-      date: "2025"
     },
     {
       id: 2,
       image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (3).jpeg",
       title: "Workshop Moments",
       description: "Learning and sharing knowledge together",
-      category: "events",
-      date: "2025"
     },
     {
       id: 3,
       image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (4).jpeg",
       title: "Celebration Time",
       description: "Celebrating our achievements and milestones",
-      category: "celebrations",
-      date: "2025"
     },
     {
       id: 4,
       image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (6).jpeg",
       title: "Project Showcase",
       description: "Presenting our innovative projects",
-      category: "projects",
-      date: "2025"
     },
     {
       id: 5,
       image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (7).jpeg",
       title: "Coding Sessions",
       description: "Collaborative coding and problem solving",
-      category: "coding",
-      date: "2025"
+    },
+    {
+      id: 6,
+      image: "/img9.jpeg",
+      title: "HOH 6.0 Event",
+      description: "HackOnHills 6.0 organizing team",
+    },
+    {
+      id: 7,
+      image: "/img12.jpeg",
+      title: "Complete Team",
+      description: "Our amazing team together",
+    },
+    {
+      id: 8,
+      image: "/img5.jpeg",
+      title: "Award Ceremony",
+      description: "Receiving innovation awards",
     }
   ];
-
-  const galleryCategories = [
-    { id: 'all', label: 'All Memories', icon: <Camera className="w-4 h-4" /> },
-    { id: 'team', label: 'Team', icon: <Users className="w-4 h-4" /> },
-    { id: 'events', label: 'Events', icon: <Calendar className="w-4 h-4" /> },
-    { id: 'projects', label: 'Projects', icon: <MapPin className="w-4 h-4" /> },
-    { id: 'celebrations', label: 'Celebrations', icon: <Camera className="w-4 h-4" /> },
-    { id: 'coding', label: 'Coding', icon: <Camera className="w-4 h-4" /> }
-  ];
-
-  const filteredGalleryMemories = activeGalleryTab === 'all' 
-    ? galleryMemories 
-    : galleryMemories.filter(memory => memory.category === activeGalleryTab);
 
   // Duplicate gallery for seamless looping
   const duplicatedGallery = [...achievementGallery, ...achievementGallery];
@@ -358,7 +347,7 @@ const Achievements: React.FC = () => {
                       <img
                         src={achievement.image}
                         alt={achievement.title}
-                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-transparent to-transparent opacity-70"></div>
@@ -434,46 +423,28 @@ const Achievements: React.FC = () => {
           </GlassCard>
         </div>
 
-        {/* Gallery Section */}
+        {/* Memories Gallery Section */}
         <div className="mb-12 md:mb-16">
           <GlassCard className="p-6 md:p-8">
             <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-6 text-center">
               Our <span className="text-accent-primary">Memories</span>
             </h3>
 
-            {/* Gallery Categories */}
-            <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {galleryCategories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setActiveGalleryTab(category.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-inter text-sm transition-all duration-300 ${
-                    activeGalleryTab === category.id
-                      ? 'bg-accent-primary text-white'
-                      : 'bg-glass-white text-secondary-text hover:bg-hover-bg'
-                  }`}
-                >
-                  {category.icon}
-                  <span>{category.label}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Gallery Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              {filteredGalleryMemories.map((memory) => (
+            {/* Memories Grid - Full size images */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              {galleryMemories.map((memory) => (
                 <div
                   key={memory.id}
                   className="group cursor-pointer overflow-hidden rounded-lg border border-glass-border bg-secondary-dark/30 hover:border-accent-primary/30 transition-all duration-300"
                 >
-                  <div className="relative h-48 overflow-hidden">
+                  <div className="relative aspect-square overflow-hidden">
                     <img
                       src={memory.image}
                       alt={memory.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     
                     {/* Overlay Info */}
                     <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -489,11 +460,11 @@ const Achievements: React.FC = () => {
               ))}
             </div>
 
-            {filteredGalleryMemories.length === 0 && (
+            {galleryMemories.length === 0 && (
               <div className="text-center py-12">
                 <Camera className="w-12 h-12 text-muted-text mx-auto mb-4" />
                 <p className="text-secondary-text font-inter">
-                  No memories found in this category yet.
+                  No memories found yet.
                 </p>
               </div>
             )}

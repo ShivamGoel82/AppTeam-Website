@@ -38,14 +38,14 @@ const Footer: React.FC = () => {
                 <img
                   src="/AppTeam.png"
                   alt="AppTeam Logo"
-                  className="w-12 h-12 rounded-full ring-2 ring-accent-blue/20"
+                  className="w-12 h-12 rounded-full ring-2 ring-accent-primary/20"
                 />
               </div>
-              <span className="text-xl font-space font-bold text-white">
+              <span className="text-xl font-space font-bold text-primary-text">
                 AppTeam
               </span>
             </div>
-            <p className="text-neutral-medium font-inter leading-relaxed max-w-md mb-6">
+            <p className="text-secondary-text font-inter leading-relaxed max-w-md mb-6">
               Premier technology innovation team of NIT Hamirpur, pushing the boundaries of innovation through 
               competitive programming, app development, and cutting-edge technology solutions.
             </p>
@@ -57,7 +57,7 @@ const Footer: React.FC = () => {
                   key={index}
                   href={social.href}
                   aria-label={social.label}
-                  className="text-neutral-medium hover:text-accent-blue transition-colors duration-300 transform hover:scale-110"
+                  className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110"
                 >
                   {social.icon}
                 </a>
@@ -67,7 +67,7 @@ const Footer: React.FC = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-space font-semibold text-white mb-4">
+            <h3 className="text-lg font-space font-semibold text-primary-text mb-4">
               Quick Links
             </h3>
             <ul className="space-y-2">
@@ -75,7 +75,7 @@ const Footer: React.FC = () => {
                 <li key={index}>
                   <a
                     href={link.href}
-                    className="text-neutral-medium font-inter hover:text-accent-blue transition-colors duration-300"
+                    className="text-secondary-text font-inter hover:text-accent-primary transition-colors duration-300"
                   >
                     {link.name}
                   </a>
@@ -86,7 +86,7 @@ const Footer: React.FC = () => {
 
           {/* Events */}
           <div>
-            <h3 className="text-lg font-space font-semibold text-white mb-4">
+            <h3 className="text-lg font-space font-semibold text-primary-text mb-4">
               Events
             </h3>
             <ul className="space-y-2">
@@ -94,7 +94,7 @@ const Footer: React.FC = () => {
                 <li key={index}>
                   <a
                     href={event.href}
-                    className="text-neutral-medium font-inter hover:text-accent-purple transition-colors duration-300"
+                    className="text-secondary-text font-inter hover:text-accent-secondary transition-colors duration-300"
                   >
                     {event.name}
                   </a>
@@ -102,13 +102,13 @@ const Footer: React.FC = () => {
               ))}
             </ul>
             <div className="mt-6">
-              <h4 className="text-sm font-space font-semibold text-white mb-2">
+              <h4 className="text-sm font-space font-semibold text-primary-text mb-2">
                 Technologies
               </h4>
               <div className="flex flex-wrap gap-2">
-                <span className="text-xs font-inter text-accent-blue bg-accent-blue/10 px-2 py-1 rounded border border-accent-blue/30">React</span>
-                <span className="text-xs font-inter text-accent-purple bg-accent-purple/10 px-2 py-1 rounded border border-accent-purple/30">Flutter</span>
-                <span className="text-xs font-inter text-accent-teal bg-accent-teal/10 px-2 py-1 rounded border border-accent-teal/30">AI/ML</span>
+                <span className="text-xs font-inter text-accent-primary bg-accent-primary/10 px-2 py-1 rounded border border-accent-primary/30">React</span>
+                <span className="text-xs font-inter text-accent-secondary bg-accent-secondary/10 px-2 py-1 rounded border border-accent-secondary/30">Flutter</span>
+                <span className="text-xs font-inter text-accent-tertiary bg-accent-tertiary/10 px-2 py-1 rounded border border-accent-tertiary/30">AI/ML</span>
               </div>
             </div>
           </div>
@@ -116,14 +116,14 @@ const Footer: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-glass-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-neutral-medium font-inter text-sm">
+          <p className="text-secondary-text font-inter text-sm">
             © {currentYear} AppTeam, NIT Hamirpur. Built with passion and code.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <a href="#" className="text-neutral-medium font-inter text-sm hover:text-accent-blue transition-colors duration-300">
+            <a href="#" className="text-secondary-text font-inter text-sm hover:text-accent-primary transition-colors duration-300">
               Privacy Policy
             </a>
-            <a href="#" className="text-neutral-medium font-inter text-sm hover:text-accent-blue transition-colors duration-300">
+            <a href="#" className="text-secondary-text font-inter text-sm hover:text-accent-primary transition-colors duration-300">
               Code of Conduct
             </a>
           </div>

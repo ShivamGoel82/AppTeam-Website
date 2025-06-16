@@ -30,7 +30,7 @@ const Header: React.FC = () => {
       className={`
         fixed top-0 left-0 right-0 z-50 transition-all duration-300
         ${isScrolled
-          ? 'backdrop-blur-xl bg-primary-dark/90 border-b border-glass-border shadow-lg shadow-accent-blue/5'
+          ? 'backdrop-blur-xl bg-primary-dark/90 border-b border-glass-border shadow-lg shadow-accent-primary/5'
           : 'bg-transparent'
         }
       `}
@@ -43,7 +43,7 @@ const Header: React.FC = () => {
               <img
                 src="/AppTeam.png"
                 alt="AppTeam Logo"
-                className="w-12 h-12 rounded-full ring-2 ring-accent-blue/20"
+                className="w-12 h-12 rounded-full ring-2 ring-accent-primary/20"
               />
             </div>
           </div>
@@ -54,10 +54,10 @@ const Header: React.FC = () => {
               <a
                 key={item.href}
                 href={item.href}
-                className="text-primary-text/80 font-inter hover:text-accent-blue transition-colors duration-300 relative group font-medium"
+                className="text-secondary-text font-inter hover:text-accent-primary transition-colors duration-300 relative group font-medium"
               >
                 {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-blue transition-all duration-300 group-hover:w-full"></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-primary transition-all duration-300 group-hover:w-full"></span>
               </a>
             ))}
           </div>
@@ -65,7 +65,7 @@ const Header: React.FC = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-primary-text hover:text-accent-blue transition-colors duration-300"
+            className="md:hidden text-primary-text hover:text-accent-primary transition-colors duration-300"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -79,7 +79,7 @@ const Header: React.FC = () => {
                 <a
                   key={item.href}
                   href={item.href}
-                  className="block py-3 text-primary-text/80 font-inter hover:text-accent-blue transition-colors duration-300 font-medium"
+                  className="block py-3 text-secondary-text font-inter hover:text-accent-primary transition-colors duration-300 font-medium"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.label}

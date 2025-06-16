@@ -4,22 +4,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Professional neutral color palette
-        'primary-dark': '#0A0E1A',
-        'secondary-dark': '#1A1F2E',
-        'tertiary-dark': '#252B3B',
+        // Professional neutral color palette with better contrast
+        'primary-dark': '#0B1426',
+        'secondary-dark': '#1A2332',
+        'tertiary-dark': '#2A3441',
         'primary-text': '#FFFFFF',
-        'secondary-text': '#E2E8F0',
+        'secondary-text': '#F1F5F9',
         'muted-text': '#94A3B8',
-        'accent-primary': '#3B82F6',
-        'accent-secondary': '#6366F1',
-        'accent-tertiary': '#8B5CF6',
-        'accent-success': '#10B981',
-        'accent-warning': '#F59E0B',
-        'accent-error': '#EF4444',
-        'glass-white': 'rgba(255, 255, 255, 0.05)',
-        'glass-border': 'rgba(255, 255, 255, 0.1)',
-        'hover-bg': 'rgba(255, 255, 255, 0.08)',
+        'accent-primary': '#2563EB',
+        'accent-secondary': '#7C3AED',
+        'accent-tertiary': '#0891B2',
+        'accent-success': '#059669',
+        'accent-warning': '#D97706',
+        'accent-error': '#DC2626',
+        'glass-white': 'rgba(255, 255, 255, 0.08)',
+        'glass-border': 'rgba(255, 255, 255, 0.15)',
+        'hover-bg': 'rgba(255, 255, 255, 0.12)',
         'neutral-50': '#F8FAFC',
         'neutral-100': '#F1F5F9',
         'neutral-200': '#E2E8F0',
@@ -56,8 +56,8 @@ export default {
           '50%': { transform: 'translateY(-20px)' },
         },
         glow: {
-          '0%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)' },
-          '100%': { boxShadow: '0 0 30px rgba(59, 130, 246, 0.5)' },
+          '0%': { boxShadow: '0 0 20px rgba(37, 99, 235, 0.3)' },
+          '100%': { boxShadow: '0 0 30px rgba(37, 99, 235, 0.5)' },
         },
         slideDown: {
           '0%': { transform: 'translateY(-100%)', opacity: '0' },
@@ -88,8 +88,8 @@ export default {
           '100%': { transform: 'translateY(100vh)', opacity: '0' },
         },
         pulseGlow: {
-          '0%, 100%': { boxShadow: '0 0 20px rgba(139, 92, 246, 0.3)' },
-          '50%': { boxShadow: '0 0 40px rgba(139, 92, 246, 0.6)' },
+          '0%, 100%': { boxShadow: '0 0 20px rgba(124, 58, 237, 0.3)' },
+          '50%': { boxShadow: '0 0 40px rgba(124, 58, 237, 0.6)' },
         },
         rotateSlow: {
           '0%': { transform: 'rotate(0deg)' },
