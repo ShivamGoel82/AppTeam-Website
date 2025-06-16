@@ -69,7 +69,11 @@ const JoinTeam: React.FC = () => {
     }
   ];
 
+ const handleApplyNow = () => {
+    setShowApplication(true);
+  };
 
+  
   if (showApplication) {
     return (
       <section id="join-team" className="py-16 md:py-24 relative min-h-screen">
