@@ -18,7 +18,7 @@ const Hero: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 z-20 relative">
         <div className="text-center">
           {/* Main Heading */}
-          <h1 className="break-words leading-tight pt-6 text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-space font-bold text-white mb-4 sm:mb-6 animate-fade-in relative z-30">
+          <h1 className="break-words leading-tight pt-6 text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-space font-bold text-primary-text mb-4 sm:mb-6 animate-fade-in relative z-30">
             AppTeam
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-accent-blue via-accent-purple to-accent-teal">
               NIT Hamirpur
@@ -26,21 +26,24 @@ const Hero: React.FC = () => {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-sm xs:text-base sm:text-lg md:text-xl font-inter text-neutral-medium mb-6 sm:mb-8 max-w-2xl mx-auto animate-fade-in relative z-30 px-2 leading-relaxed">
+          <p className="text-sm xs:text-base sm:text-lg md:text-xl font-inter text-primary-text/80 mb-6 sm:mb-8 max-w-2xl mx-auto animate-fade-in relative z-30 px-2 leading-relaxed">
             The premier technology innovation team of NIT Hamirpur. Building the future 
             through cutting-edge development, competitive excellence, and innovative solutions.
           </p>
 
           {/* Stats */}
           <div className="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-12 mb-8 sm:mb-12 animate-fade-in relative z-30 px-2">
-          
+            <div className="text-center">
+              <div className="text-2xl sm:text-3xl md:text-4xl font-space font-bold text-accent-blue">6+</div>
+              <div className="text-primary-text/80 font-inter text-xs sm:text-sm">Years Active</div>
+            </div>
             <div className="text-center">
               <div className="text-2xl sm:text-3xl md:text-4xl font-space font-bold text-accent-purple">3</div>
-              <div className="text-neutral-medium font-inter text-xs sm:text-sm">Major Events</div>
+              <div className="text-primary-text/80 font-inter text-xs sm:text-sm">Major Events</div>
             </div>
             <div className="text-center">
               <div className="text-2xl sm:text-3xl md:text-4xl font-space font-bold text-accent-teal">40+</div>
-              <div className="text-neutral-medium font-inter text-xs sm:text-sm">Active Members</div>
+              <div className="text-primary-text/80 font-inter text-xs sm:text-sm">Active Members</div>
             </div>
           </div>
 

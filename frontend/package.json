@@ -1,11 +1,11 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "appteam-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "postinstall": "chmod +x node_modules/.bin/vite"
@@ -13,8 +13,7 @@
   "dependencies": {
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "sucrase": "^3.35.0"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^8.56.0",

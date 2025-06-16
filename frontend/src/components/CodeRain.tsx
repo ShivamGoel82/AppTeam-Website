@@ -10,17 +10,11 @@ const CodeRain: React.FC = () => {
     const codeChars = ['0', '1', '{', '}', '<', '>', '/', '\\', '(', ')', '[', ']', '=', '+', '-', '*', '&', '%', '$', '#', '@'];
     const isMobile = window.innerWidth < 768;
     const columns = Math.floor(window.innerWidth / (isMobile ? 40 : 25));
-    const drops: number[] = [];
-
-    // Initialize drops
-    for (let i = 0; i < columns; i++) {
-      drops[i] = 1;
-    }
 
     const createRainDrop = (x: number) => {
       const drop = document.createElement('div');
       drop.textContent = codeChars[Math.floor(Math.random() * codeChars.length)];
-      drop.className = `absolute text-accent-blue font-mono pointer-events-none select-none ${
+      drop.className = `absolute text-subtle-glow font-mono pointer-events-none select-none ${
         isMobile 
           ? 'text-xs opacity-15 animate-code-rain-mobile' 
           : 'text-sm opacity-25 animate-code-rain'
@@ -39,7 +33,6 @@ const CodeRain: React.FC = () => {
     };
 
     const interval = setInterval(() => {
-      // Reduce frequency on mobile for better performance
       const frequency = isMobile ? 0.994 : 0.988;
       
       for (let i = 0; i < columns; i++) {

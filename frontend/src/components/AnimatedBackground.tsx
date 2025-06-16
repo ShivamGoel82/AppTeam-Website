@@ -19,7 +19,7 @@ const AnimatedBackground: React.FC = () => {
 
     const nodes: { x: number; y: number; vx: number; vy: number }[] = [];
     const isMobile = window.innerWidth < 768;
-    const nodeCount = isMobile ? 15 : 30; // Fewer nodes on mobile for better performance
+    const nodeCount = isMobile ? 15 : 30;
 
     // Initialize nodes
     for (let i = 0; i < nodeCount; i++) {
@@ -34,7 +34,7 @@ const AnimatedBackground: React.FC = () => {
     let animationId: number;
 
     const animate = () => {
-      // Clear with slight trail effect for smoother animation
+      // Clear with slight trail effect
       ctx.fillStyle = 'rgba(15, 23, 42, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -43,7 +43,7 @@ const AnimatedBackground: React.FC = () => {
         node.x += node.vx;
         node.y += node.vy;
 
-        // Bounce off edges with some padding
+        // Bounce off edges
         if (node.x < 0 || node.x > canvas.width) {
           node.vx *= -1;
           node.x = Math.max(0, Math.min(canvas.width, node.x));
@@ -53,11 +53,11 @@ const AnimatedBackground: React.FC = () => {
           node.y = Math.max(0, Math.min(canvas.height, node.y));
         }
 
-        // Draw node
+        // Draw node with updated color
         const nodeOpacity = isMobile ? 0.15 : 0.25;
         const nodeSize = isMobile ? 1 : 1.5;
         
-        ctx.fillStyle = `rgba(59, 130, 246, ${nodeOpacity})`;
+        ctx.fillStyle = `rgba(56, 189, 248, ${nodeOpacity})`;
         ctx.beginPath();
         ctx.arc(node.x, node.y, nodeSize, 0, Math.PI * 2);
         ctx.fill();
@@ -71,7 +71,7 @@ const AnimatedBackground: React.FC = () => {
 
           if (distance < maxDistance) {
             const connectionOpacity = (isMobile ? 0.08 : 0.12) * (1 - distance / maxDistance);
-            ctx.strokeStyle = `rgba(59, 130, 246, ${connectionOpacity})`;
+            ctx.strokeStyle = `rgba(56, 189, 248, ${connectionOpacity})`;
             ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);

@@ -1,0 +1,17 @@
+{
+  "name": "appteam-website",
+  "version": "1.0.0",
+  "description": "AppTeam NITH Official Website",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm run preview",
+    "install-deps": "cd frontend && npm install && cd ../backend && npm install",
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd frontend && npm run dev"
+  },
+  "keywords": ["appteam", "nith", "website"],
+  "author": "AppTeam NITH",
+  "license": "MIT"
+}
