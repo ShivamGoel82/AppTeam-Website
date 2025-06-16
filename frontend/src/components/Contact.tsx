@@ -32,15 +32,16 @@ const Contact: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('https://appteam-website-1.onrender.com/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
       });
+
 
       const data = await response.json();
 
@@ -206,9 +207,9 @@ const Contact: React.FC = () => {
                   placeholder="Tell us about your project or question..."
                 />
               </div>
-              <GlowButton 
-                className="w-full group text-sm md:text-base" 
-                onClick={() => {}}
+              <GlowButton
+                className="w-full group text-sm md:text-base"
+                onClick={() => { }}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
