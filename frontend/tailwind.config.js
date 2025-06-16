@@ -4,8 +4,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Neutral professional color palette
-        'primary-dark': '#0F172A',
+        // Updated neutral professional color palette
+        'primary-dark': '#121417',
         'secondary-dark': '#1E293B',
         'accent-blue': '#3B82F6',
         'accent-purple': '#8B5CF6',
@@ -13,8 +13,10 @@ export default {
         'neutral-light': '#F8FAFC',
         'neutral-medium': '#64748B',
         'neutral-dark': '#334155',
-        'glass-white': 'rgba(255, 255, 255, 0.08)',
-        'glass-border': 'rgba(255, 255, 255, 0.12)',
+        'primary-text': '#E0E0E0',
+        'glass-white': 'rgba(255, 255, 255, 0.04)',
+        'glass-border': '#2A2A2A',
+        'hover-bg': '#1E293B',
         'success-green': '#10B981',
         'warning-orange': '#F59E0B',
       },
@@ -33,6 +35,7 @@ export default {
         'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
         'rotate-slow': 'rotateSlow 20s linear infinite',
         'slide-up': 'slideUp 0.6s ease-out',
+        'shimmer': 'shimmer 2s linear infinite',
       },
       keyframes: {
         float: {
@@ -74,6 +77,10 @@ export default {
         rotateSlow: {
           '0%': { transform: 'rotate(0deg)' },
           '100%': { transform: 'rotate(360deg)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
         },
       },
       backdropBlur: {

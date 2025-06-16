@@ -6,6 +6,7 @@ import Projects from './components/Projects';
 import Workshops from './components/Workshops';
 import Achievements from './components/Achievements';
 import Team from './components/Team';
+import JoinTeam from './components/JoinTeam';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import AnimatedBackground from './components/AnimatedBackground';
@@ -13,7 +14,7 @@ import CodeRain from './components/CodeRain';
 
 function App() {
   return (
-    <div className="min-h-screen bg-primary-dark text-white overflow-x-hidden">
+    <div className="min-h-screen bg-primary-dark text-primary-text overflow-x-hidden">
       {/* Animated Backgrounds - Lower z-index */}
       <div className="fixed inset-0 z-0">
         <AnimatedBackground />
@@ -30,6 +31,7 @@ function App() {
         <Workshops />
         <Achievements />
         <Team />
+        <JoinTeam />
         <Contact />
         <Footer />
       </div>

@@ -12,6 +12,7 @@ const Contact: React.FC = () => {
   });
 
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (toast) {
@@ -30,8 +31,10 @@ const Contact: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
     try {
-      const response = await fetch('https://appteam-backend.onrender.com/api/contact', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,18 +42,19 @@ const Contact: React.FC = () => {
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
 
-
-      if (response.ok) {
-        const data = await response.json();
+      if (response.ok && data.success) {
         setToast({ message: data.message, type: 'success' });
         setFormData({ name: '', email: '', subject: '', message: '' });
       } else {
-        setToast({ message: 'Something went wrong. Please try again.', type: 'error' });
+        setToast({ message: data.message || 'Something went wrong. Please try again.', type: 'error' });
       }
     } catch (err) {
       console.error('Network error:', err);
       setToast({ message: 'Network error. Please check your connection.', type: 'error' });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -87,10 +91,10 @@ const Contact: React.FC = () => {
       <div className="container mx-auto px-4 md:px-6">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-space font-bold text-white mb-4 md:mb-6">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-space font-bold text-primary-text mb-4 md:mb-6">
             Get In <span className="text-accent-blue">Touch</span>
           </h2>
-          <p className="text-base md:text-xl font-inter text-neutral-medium max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base md:text-xl font-inter text-primary-text/80 max-w-3xl mx-auto leading-relaxed">
             Ready to collaborate or have questions about our projects? We'd love to hear from you.
             Let's build something amazing together.
           </p>
@@ -100,7 +104,7 @@ const Contact: React.FC = () => {
           {/* Contact Information */}
           <div className="space-y-6 md:space-y-8">
             <GlassCard className="p-6 md:p-8">
-              <h3 className="text-xl md:text-2xl font-space font-semibold text-white mb-6 md:mb-8">
+              <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-6 md:mb-8">
                 Contact <span className="text-accent-purple">Information</span>
               </h3>
               <div className="space-y-6">
@@ -114,10 +118,10 @@ const Contact: React.FC = () => {
                       {info.icon}
                     </div>
                     <div>
-                      <h4 className="text-white font-space font-medium mb-1 group-hover:text-accent-blue transition-colors duration-300">
+                      <h4 className="text-primary-text font-space font-medium mb-1 group-hover:text-accent-blue transition-colors duration-300">
                         {info.title}
                       </h4>
-                      <p className="text-neutral-medium font-inter text-sm md:text-base">
+                      <p className="text-primary-text/80 font-inter text-sm md:text-base">
                         {info.details}
                       </p>
                     </div>
@@ -125,14 +129,14 @@ const Contact: React.FC = () => {
                 ))}
               </div>
               <div className="mt-8 pt-6 border-t border-glass-border">
-                <h4 className="text-white font-space font-medium mb-4">Follow Us</h4>
+                <h4 className="text-primary-text font-space font-medium mb-4">Follow Us</h4>
                 <div className="flex space-x-4">
                   {socialLinks.map((social, index) => (
                     <a
                       key={index}
                       href={social.href}
                       aria-label={social.label}
-                      className={`text-neutral-medium ${social.color} transition-colors duration-300 transform hover:scale-110`}
+                      className={`text-primary-text/80 ${social.color} transition-colors duration-300 transform hover:scale-110`}
                     >
                       {social.icon}
                     </a>
@@ -144,13 +148,13 @@ const Contact: React.FC = () => {
 
           {/* Contact Form */}
           <GlassCard className="p-6 md:p-8">
-            <h3 className="text-xl md:text-2xl font-space font-semibold text-white mb-6 md:mb-8">
+            <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-6 md:mb-8">
               Send Us a <span className="text-accent-blue">Message</span>
             </h3>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-inter text-neutral-medium mb-2">Name *</label>
+                  <label htmlFor="name" className="block text-sm font-inter text-primary-text/80 mb-2">Name *</label>
                   <input
                     type="text"
                     id="name"
@@ -158,12 +162,12 @@ const Contact: React.FC = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 bg-secondary-dark/50 border border-glass-border rounded-lg text-white font-inter placeholder-neutral-medium focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300"
+                    className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-primary-text/50 focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300"
                     placeholder="Your name"
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-inter text-neutral-medium mb-2">Email *</label>
+                  <label htmlFor="email" className="block text-sm font-inter text-primary-text/80 mb-2">Email *</label>
                   <input
                     type="email"
                     id="email"
@@ -171,13 +175,13 @@ const Contact: React.FC = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 bg-secondary-dark/50 border border-glass-border rounded-lg text-white font-inter placeholder-neutral-medium focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300"
+                    className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-primary-text/50 focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300"
                     placeholder="your.email@example.com"
                   />
                 </div>
               </div>
               <div>
-                <label htmlFor="subject" className="block text-sm font-inter text-neutral-medium mb-2">Subject *</label>
+                <label htmlFor="subject" className="block text-sm font-inter text-primary-text/80 mb-2">Subject *</label>
                 <input
                   type="text"
                   id="subject"
@@ -185,12 +189,12 @@ const Contact: React.FC = () => {
                   value={formData.subject}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 bg-secondary-dark/50 border border-glass-border rounded-lg text-white font-inter placeholder-neutral-medium focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300"
+                  className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-primary-text/50 focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300"
                   placeholder="What's this about?"
                 />
               </div>
               <div>
-                <label htmlFor="message" className="block text-sm font-inter text-neutral-medium mb-2">Message *</label>
+                <label htmlFor="message" className="block text-sm font-inter text-primary-text/80 mb-2">Message *</label>
                 <textarea
                   id="message"
                   name="message"
@@ -198,13 +202,26 @@ const Contact: React.FC = () => {
                   onChange={handleInputChange}
                   required
                   rows={6}
-                  className="w-full px-4 py-3 bg-secondary-dark/50 border border-glass-border rounded-lg text-white font-inter placeholder-neutral-medium focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300 resize-vertical"
+                  className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-primary-text/50 focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300 resize-vertical"
                   placeholder="Tell us about your project or question..."
                 />
               </div>
-              <GlowButton className="w-full group text-sm md:text-base" onClick={() => { }}>
-                <Send className="inline-block mr-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                Send Message
+              <GlowButton 
+                className="w-full group text-sm md:text-base" 
+                onClick={() => {}}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="inline-block mr-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    Send Message
+                  </>
+                )}
               </GlowButton>
             </form>
           </GlassCard>
@@ -227,9 +244,3 @@ const Contact: React.FC = () => {
 };
 
 export default Contact;
-
-// Add this animation to your global CSS if needed:
-// @keyframes fadeInUp {
-//   from { opacity: 0; transform: translate(-50%, 20px); }
-//   to { opacity: 1; transform: translate(-50%, 0); }
-// }
