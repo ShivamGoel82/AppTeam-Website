@@ -69,13 +69,13 @@ const JoinTeam: React.FC = () => {
     }
   ];
 
+ 
+
   const handleApplyNow = () => {
-    setShowApplication(true);
-    // Scroll to top of the page when form opens
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
-  };
+  setShowApplication(true);
+  // Removed scrollTo behavior
+};
+
 
   if (showApplication) {
     return (
