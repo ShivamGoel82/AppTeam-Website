@@ -52,12 +52,6 @@ const Achievements: React.FC = () => {
   // Gallery memories - just images without categories
   const galleryMemories = [
     {
-      id: 1,
-      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (1).jpeg",
-      title: "Team Building Session",
-      description: "Fun team building activities and bonding",
-    },
-    {
       id: 2,
       image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (3).jpeg",
       title: "Workshop Moments",
@@ -82,12 +76,6 @@ const Achievements: React.FC = () => {
       description: "Collaborative coding and problem solving",
     },
     {
-      id: 6,
-      image: "/img9.jpeg",
-      title: "HOH 6.0 Event",
-      description: "HackOnHills 6.0 organizing team",
-    },
-    {
       id: 7,
       image: "/img12.jpeg",
       title: "Complete Team",
@@ -96,6 +84,48 @@ const Achievements: React.FC = () => {
     {
       id: 8,
       image: "/img5.jpeg",
+      title: "Award Ceremony",
+      description: "Receiving innovation awards",
+    },
+    {
+      id: 9,
+      image: "/IMG-1.jpg",
+      title: "Award Ceremony",
+      description: "Receiving innovation awards",
+    },
+    {
+      id: 10,
+      image: "/IMG-2.jpg",
+      title: "Award Ceremony",
+      description: "Receiving innovation awards",
+    },
+    {
+      id: 11,
+      image: "/IMG-3.jpg",
+      title: "Award Ceremony",
+      description: "Receiving innovation awards",
+    },
+    {
+      id: 12,
+      image: "/IMG-4.jpg",
+      title: "Award Ceremony",
+      description: "Receiving innovation awards",
+    },
+    {
+      id: 13,
+      image: "/IMG-5.jpg",
+      title: "Award Ceremony",
+      description: "Receiving innovation awards",
+    },
+    {
+      id: 14,
+      image: "/IMG-6.jpg",
+      title: "Award Ceremony",
+      description: "Receiving innovation awards",
+    },
+    {
+      id: 15,
+      image: "/IMG-7.jpg",
       title: "Award Ceremony",
       description: "Receiving innovation awards",
     }
