@@ -14,7 +14,7 @@ const CodeRain: React.FC = () => {
     const createRainDrop = (x: number) => {
       const drop = document.createElement('div');
       drop.textContent = codeChars[Math.floor(Math.random() * codeChars.length)];
-      drop.className = `absolute text-blue font-mono pointer-events-none select-none ${
+      drop.className = `absolute text-accent-blue font-mono pointer-events-none select-none ${
         isMobile 
           ? 'text-xs opacity-15 animate-code-rain-mobile' 
           : 'text-sm opacity-25 animate-code-rain'
