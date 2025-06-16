@@ -284,7 +284,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onClose, editingEmail }) => {
                     <select
                       value={formData.personalInfo.branch}
                       onChange={(e) => handleInputChange('personalInfo', 'branch', e.target.value)}
-                      className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
+                      className="w-full px-4 py-3 bg-glass-grey border border-glass-border rounded-lg text-primary-text font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
                       required
                     >
                       <option value="">Select Branch</option>
