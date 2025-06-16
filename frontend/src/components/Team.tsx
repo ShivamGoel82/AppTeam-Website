@@ -7,7 +7,7 @@ const Team: React.FC = () => {
     {
       name: 'Pratyush Pragyey',
       role: 'Team Lead & Full-Stack MERN Developer',
-      image: 'pratyush pragyey.jpg',
+      image: 'pratyush_web.webp',
       bio: 'Expertise in MERN stack and currently learning DevOps. Led our team to successfully organize HOH-6.0',
       skills: ['React', 'Node.js', 'AWS', 'MongoDB'],
       icon: <Code className="w-5 h-5" />,
@@ -20,7 +20,7 @@ const Team: React.FC = () => {
     {
       name: 'Ishaan Yadav',
       role: 'UI/UX Designer & Frontend Developer',
-      image: 'ishaan yadav.jpg',
+      image: 'finance_ishan.webp',
       bio: 'Design enthusiast and frontend specialist. Creates stunning user experiences with modern design principles.',
       skills: ['Figma', 'React', 'Tailwind', 'Framer'],
       icon: <Palette className="w-5 h-5" />,
