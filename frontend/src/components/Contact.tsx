@@ -62,28 +62,28 @@ const Contact: React.FC = () => {
     {
       icon: <Mail className="w-6 h-6" />,
       title: 'Email',
-      details: 'appteam@nith.ac.in',
-      link: 'mailto:appteam@nith.ac.in'
+      details: 'hello@appteam.dev',
+      link: 'mailto:hello@appteam.dev'
     },
     {
       icon: <Phone className="w-6 h-6" />,
       title: 'Phone',
-      details: '+91 98765 43210',
-      link: 'tel:+919876543210'
+      details: '+91 9876547654',
+      link: 'tel:+919876547654'
     },
     {
       icon: <MapPin className="w-6 h-6" />,
       title: 'Location',
       details: 'NIT Hamirpur, Himachal Pradesh',
-      link: '#'
+      link: 'https://g.co/kgs/MB5Gt2H'
     }
   ];
 
   const socialLinks = [
-    { icon: <Github className="w-5 h-5" />, href: '#', label: 'GitHub', color: 'hover:text-accent-primary' },
-    { icon: <Linkedin className="w-5 h-5" />, href: '#', label: 'LinkedIn', color: 'hover:text-accent-primary' },
+    { icon: <Github className="w-5 h-5" />, href: 'https://github.com/appteam-nith', label: 'GitHub', color: 'hover:text-accent-primary' },
+    { icon: <Linkedin className="w-5 h-5" />, href: 'https://www.linkedin.com/company/appteam-nith/', label: 'LinkedIn', color: 'hover:text-accent-primary' },
     { icon: <Twitter className="w-5 h-5" />, href: '#', label: 'Twitter', color: 'hover:text-accent-primary' },
-    { icon: <Instagram className="w-5 h-5" />, href: '#', label: 'Instagram', color: 'hover:text-accent-secondary' },
+    { icon: <Instagram className="w-5 h-5" />, href: 'https://www.instagram.com/appteam_nith?igsh=MWRuM3dhanB6ZzQxdA==', label: 'Instagram', color: 'hover:text-accent-secondary' },
   ];
 
   return (
