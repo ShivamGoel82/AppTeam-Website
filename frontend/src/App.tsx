@@ -15,10 +15,14 @@ import CodeRain from './components/CodeRain';
 function App() {
   return (
     <div className="min-h-screen bg-primary-dark text-primary-text overflow-x-hidden">
-      {/* Animated Backgrounds - Lower z-index */}
+      {/* Enhanced Animated Backgrounds - Lower z-index */}
       <div className="fixed inset-0 z-0">
         <AnimatedBackground />
         <CodeRain />
+        
+        {/* Additional ambient effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/5 via-transparent to-accent-secondary/5 pointer-events-none" />
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-radial from-transparent via-transparent to-primary-dark/20 pointer-events-none" />
       </div>
       
       {/* Main Content - Higher z-index */}

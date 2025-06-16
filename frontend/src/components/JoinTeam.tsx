@@ -69,19 +69,22 @@ const JoinTeam: React.FC = () => {
     }
   ];
 
- const handleApplyNow = () => {
+  const handleApplyNow = () => {
     setShowApplication(true);
   };
 
-  
+  const handleBackToInfo = () => {
+    setShowApplication(false);
+  };
+
   if (showApplication) {
     return (
       <section id="join-team" className="py-16 md:py-24 relative min-h-screen">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
             <button
-              onClick={() => setShowApplication(false)}
-              className="text-accent-primary hover:text-accent-primary/80 font-inter font-medium mb-4 inline-flex items-center"
+              onClick={handleBackToInfo}
+              className="text-accent-primary hover:text-accent-primary/80 font-inter font-medium mb-4 inline-flex items-center transition-colors duration-300"
             >
               ← Back to Join Team Info
             </button>
