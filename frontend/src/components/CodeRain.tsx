@@ -8,36 +8,39 @@ const CodeRain: React.FC = () => {
     if (!container) return;
 
     const codeChars = ['0', '1', '{', '}', '<', '>', '/', '\\', '(', ')', '[', ']', '=', '+', '-', '*', '&', '%', '$', '#', '@'];
-    const columns = Math.floor(window.innerWidth / 20);
-    const drops: number[] = [];
-
-    // Initialize drops
-    for (let i = 0; i < columns; i++) {
-      drops[i] = 1;
-    }
+    const isMobile = window.innerWidth < 768;
+    const columns = Math.floor(window.innerWidth / (isMobile ? 40 : 25));
 
     const createRainDrop = (x: number) => {
       const drop = document.createElement('div');
       drop.textContent = codeChars[Math.floor(Math.random() * codeChars.length)];
-      drop.className = 'absolute text-electric-blue font-jetbrains text-sm opacity-60 animate-code-rain';
-      drop.style.left = `${x * 20}px`;
+      drop.className = `absolute text-electric-blue font-jetbrains text-sm opacity-60 animate-code-rain' ${
+        isMobile 
+          ? 'text-xs opacity-15 animate-code-rain-mobile' 
+          : 'text-sm opacity-25 animate-code-rain'
+      }`;
+      drop.style.left = `${x * (isMobile ? 40 : 25)}px`;
       drop.style.top = '-20px';
+      drop.style.willChange = 'transform';
       container.appendChild(drop);
 
+      // Remove drop after animation
       setTimeout(() => {
         if (container.contains(drop)) {
           container.removeChild(drop);
         }
-      }, 20000);
+      }, isMobile ? 12000 : 18000);
     };
 
     const interval = setInterval(() => {
+      const frequency = isMobile ? 0.994 : 0.988;
+      
       for (let i = 0; i < columns; i++) {
-        if (Math.random() > 0.98) {
+        if (Math.random() > frequency) {
           createRainDrop(i);
         }
       }
-    }, 100);
+    }, isMobile ? 400 : 200);
 
     return () => clearInterval(interval);
   }, []);
