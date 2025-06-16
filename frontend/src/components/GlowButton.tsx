@@ -26,12 +26,12 @@ const GlowButton: React.FC<GlowButtonProps> = ({
   const variantClasses = {
     primary: `
       bg-accent-blue text-white border-accent-blue
-      hover:bg-accent-blue/90 hover:shadow-lg hover:shadow-accent-blue/20
+      hover:bg-accent-blue/90 hover:shadow-lg hover:shadow-accent-blue/30
       active:bg-accent-blue/80 disabled:hover:bg-accent-blue
     `,
     secondary: `
       bg-transparent text-accent-blue border-accent-blue
-      hover:bg-accent-blue/10 hover:shadow-lg hover:shadow-accent-blue/10
+      hover:bg-accent-blue/10 hover:shadow-lg hover:shadow-accent-blue/20
       active:bg-accent-blue/5 disabled:hover:bg-transparent
     `
   };

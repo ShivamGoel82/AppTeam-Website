@@ -14,10 +14,10 @@ const CodeRain: React.FC = () => {
     const createRainDrop = (x: number) => {
       const drop = document.createElement('div');
       drop.textContent = codeChars[Math.floor(Math.random() * codeChars.length)];
-      drop.className = `absolute text-neutral-400 font-mono pointer-events-none select-none ${
+      drop.className = `absolute text-subtle-glow font-mono pointer-events-none select-none ${
         isMobile 
-          ? 'text-xs opacity-20 animate-code-rain-mobile' 
-          : 'text-sm opacity-30 animate-code-rain'
+          ? 'text-xs opacity-15 animate-code-rain-mobile' 
+          : 'text-sm opacity-25 animate-code-rain'
       }`;
       drop.style.left = `${x * (isMobile ? 40 : 25)}px`;
       drop.style.top = '-20px';
