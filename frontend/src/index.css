@@ -22,6 +22,21 @@
     color: #FFFFFF;
     line-height: 1.6;
     overflow-x: hidden;
+    /* Optimize for mobile */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  /* Re-enable text selection for content */
+  p, h1, h2, h3, h4, h5, h6, span, div[class*="text"], input, textarea {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
   }
   
   /* Optimize images */
@@ -29,6 +44,9 @@
     max-width: 100%;
     height: auto;
     display: block;
+    /* Improve image loading on mobile */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
   
   /* Reduce motion for users who prefer it */
@@ -87,13 +105,38 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
   }
+  
+  /* Mobile-specific optimizations */
+  @media (max-width: 768px) {
+    body {
+      font-size: 14px;
+    }
+    
+    /* Reduce animation complexity on mobile */
+    .animate-float,
+    .animate-pulse-glow,
+    .animate-rotate-slow {
+      animation: none;
+    }
+    
+    /* Optimize touch targets */
+    button, a, input, textarea, select {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Improve mobile scrolling */
+    * {
+      -webkit-overflow-scrolling: touch;
+    }
+  }
 }
 
 /* Component-specific optimizations */
 @layer components {
   .glass-card {
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 12px;
@@ -119,6 +162,15 @@
   
   .glow-button:hover::before {
     left: 100%;
+  }
+  
+  /* Mobile-optimized glass card */
+  @media (max-width: 768px) {
+    .glass-card {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.06);
+    }
   }
 }
 
@@ -153,5 +205,14 @@
   .hardware-accelerated {
     transform: translateZ(0);
     will-change: transform;
+  }
+  
+  /* Mobile-specific utilities */
+  @media (max-width: 768px) {
+    .mobile-optimized {
+      transform: none !important;
+      animation: none !important;
+      transition: opacity 0.2s ease !important;
+    }
   }
 }

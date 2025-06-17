@@ -24,7 +24,7 @@ const AnimatedBackground: React.FC = () => {
 
     const isMobile = window.innerWidth < 768;
     const isLowEnd = navigator.hardwareConcurrency <= 4;
-    const nodeCount = isMobile ? (isLowEnd ? 8 : 12) : (isLowEnd ? 20 : 25);
+    const nodeCount = isMobile ? (isLowEnd ? 6 : 8) : (isLowEnd ? 15 : 20);
 
     // Initialize nodes only once
     if (nodesRef.current.length === 0) {
@@ -32,14 +32,14 @@ const AnimatedBackground: React.FC = () => {
         nodesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * (isMobile ? 0.1 : 0.2),
-          vy: (Math.random() - 0.5) * (isMobile ? 0.1 : 0.2),
+          vx: (Math.random() - 0.5) * (isMobile ? 0.08 : 0.15),
+          vy: (Math.random() - 0.5) * (isMobile ? 0.08 : 0.15),
         });
       }
     }
 
     let lastTime = 0;
-    const targetFPS = isMobile ? 30 : 60;
+    const targetFPS = isMobile ? 24 : 45;
     const frameInterval = 1000 / targetFPS;
 
     const animate = (currentTime: number) => {
@@ -50,14 +50,14 @@ const AnimatedBackground: React.FC = () => {
 
       lastTime = currentTime;
 
-      // Clear with trail effect (reduced for mobile)
-      ctx.fillStyle = isMobile ? 'rgba(10, 14, 26, 0.08)' : 'rgba(10, 14, 26, 0.05)';
+      // Clear with trail effect (increased for mobile)
+      ctx.fillStyle = isMobile ? 'rgba(10, 14, 26, 0.12)' : 'rgba(10, 14, 26, 0.08)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const nodes = nodesRef.current;
-      const maxDistance = isMobile ? 60 : 80;
-      const nodeOpacity = isMobile ? 0.1 : 0.2;
-      const connectionOpacity = isMobile ? 0.05 : 0.08;
+      const maxDistance = isMobile ? 50 : 70;
+      const nodeOpacity = isMobile ? 0.08 : 0.15;
+      const connectionOpacity = isMobile ? 0.03 : 0.06;
 
       nodes.forEach((node, i) => {
         // Update position
@@ -74,14 +74,14 @@ const AnimatedBackground: React.FC = () => {
           node.y = Math.max(0, Math.min(canvas.height, node.y));
         }
 
-        // Draw node
+        // Draw node (smaller for mobile)
         ctx.fillStyle = `rgba(59, 130, 246, ${nodeOpacity})`;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, isMobile ? 0.8 : 1.2, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, isMobile ? 0.6 : 1, 0, Math.PI * 2);
         ctx.fill();
 
-        // Draw connections (reduced for mobile)
-        if (!isMobile || i % 2 === 0) {
+        // Draw connections (further reduced for mobile)
+        if (!isMobile || i % 3 === 0) {
           nodes.slice(i + 1).forEach((otherNode) => {
             const dx = node.x - otherNode.x;
             const dy = node.y - otherNode.y;
@@ -90,7 +90,7 @@ const AnimatedBackground: React.FC = () => {
             if (distance < maxDistance) {
               const opacity = connectionOpacity * (1 - distance / maxDistance);
               ctx.strokeStyle = `rgba(59, 130, 246, ${opacity})`;
-              ctx.lineWidth = 0.5;
+              ctx.lineWidth = 0.3;
               ctx.beginPath();
               ctx.moveTo(node.x, node.y);
               ctx.lineTo(otherNode.x, otherNode.y);

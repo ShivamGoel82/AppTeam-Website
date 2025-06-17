@@ -10,14 +10,14 @@ const CodeRain: React.FC = () => {
     if (!container) return;
 
     const drop = document.createElement('div');
-    const codeChars = ['0', '1', '{', '}', '<', '>', '/', '\\', '(', ')', '[', ']'];
+    const codeChars = ['0', '1', '{', '}', '<', '>', '/', '\\'];
     drop.textContent = codeChars[Math.floor(Math.random() * codeChars.length)];
     
     const isMobile = window.innerWidth < 768;
     drop.className = `absolute font-mono pointer-events-none ${
       isMobile 
-        ? 'text-xs opacity-10 animate-code-rain-mobile' 
-        : 'text-sm opacity-20 animate-code-rain'
+        ? 'text-xs opacity-8 animate-code-rain-mobile' 
+        : 'text-sm opacity-15 animate-code-rain'
     }`;
     
     drop.style.left = `${x}px`;
@@ -34,7 +34,7 @@ const CodeRain: React.FC = () => {
         container.removeChild(drop);
         dropsRef.current.delete(drop);
       }
-    }, isMobile ? 10000 : 15000);
+    }, isMobile ? 8000 : 12000);
   }, []);
 
   useEffect(() => {
@@ -43,17 +43,17 @@ const CodeRain: React.FC = () => {
 
     const isMobile = window.innerWidth < 768;
     const isLowEnd = navigator.hardwareConcurrency <= 4;
-    const columnWidth = isMobile ? 50 : 30;
+    const columnWidth = isMobile ? 60 : 35;
     const columns = Math.floor(window.innerWidth / columnWidth);
     
-    // Reduce frequency for mobile and low-end devices
-    const baseFrequency = isMobile ? 0.997 : 0.992;
-    const frequency = isLowEnd ? baseFrequency + 0.002 : baseFrequency;
-    const intervalTime = isMobile ? 600 : 300;
+    // Significantly reduce frequency for mobile and low-end devices
+    const baseFrequency = isMobile ? 0.998 : 0.994;
+    const frequency = isLowEnd ? baseFrequency + 0.003 : baseFrequency;
+    const intervalTime = isMobile ? 800 : 400;
 
     intervalRef.current = window.setInterval(() => {
       // Limit total drops for performance
-      if (dropsRef.current.size > (isMobile ? 15 : 30)) return;
+      if (dropsRef.current.size > (isMobile ? 8 : 20)) return;
 
       for (let i = 0; i < columns; i++) {
         if (Math.random() > frequency) {
