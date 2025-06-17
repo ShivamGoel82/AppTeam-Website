@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Github, Linkedin, Twitter, Code, Palette, Brain, Users, Plus, Edit, ExternalLink } from 'lucide-react';
 import GlassCard from './GlassCard';
 import GlowButton from './GlowButton';
@@ -34,8 +34,8 @@ const Team: React.FC = () => {
   const [memberEmail, setMemberEmail] = useState('');
   const [showEmailInput, setShowEmailInput] = useState(false);
 
-  // Default team members (fallback)
-  const defaultMembers = [
+  // Default team members (fallback) - memoized
+  const defaultMembers = useMemo(() => [
     {
       _id: 'default-1',
       personalInfo: {
@@ -93,13 +93,9 @@ const Team: React.FC = () => {
         memberType: 'active'
       }
     }
-  ];
+  ], []);
 
-  useEffect(() => {
-    fetchMembers();
-  }, []);
-
-  const fetchMembers = async () => {
+  const fetchMembers = useCallback(async () => {
     try {
       const response = await fetch('/api/members');
       const data = await response.json();
@@ -117,30 +113,34 @@ const Team: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [defaultMembers]);
 
-  const getRoleIcon = (role: string) => {
+  useEffect(() => {
+    fetchMembers();
+  }, [fetchMembers]);
+
+  const getRoleIcon = useCallback((role: string) => {
     if (role.toLowerCase().includes('design')) return <Palette className="w-5 h-5" />;
     if (role.toLowerCase().includes('ai') || role.toLowerCase().includes('ml')) return <Brain className="w-5 h-5" />;
     return <Code className="w-5 h-5" />;
-  };
+  }, []);
 
-  const handleEditProfile = () => {
+  const handleEditProfile = useCallback(() => {
     if (memberEmail.trim()) {
       setEditingEmail(memberEmail.trim());
       setShowMemberForm(true);
       setShowEmailInput(false);
       setMemberEmail('');
     }
-  };
+  }, [memberEmail]);
 
-  const handleFormClose = () => {
+  const handleFormClose = useCallback(() => {
     setShowMemberForm(false);
     setEditingEmail(undefined);
     fetchMembers(); // Refresh the members list
-  };
+  }, [fetchMembers]);
 
-  const MemberCard: React.FC<{ member: Member }> = ({ member }) => (
+  const MemberCard: React.FC<{ member: Member }> = React.memo(({ member }) => (
     <GlassCard className="p-6 text-center group overflow-hidden">
       {/* Profile Image */}
       <div className="relative mb-6 mx-auto w-32 h-32 rounded-full overflow-hidden border-2 border-accent-primary/30 group-hover:border-accent-primary transition-colors duration-300">
@@ -148,6 +148,8 @@ const Team: React.FC = () => {
           src={member.personalInfo.profileImage || '/AppTeam.png'}
           alt={member.personalInfo.fullName}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+          loading="lazy"
+          decoding="async"
           onError={(e) => {
             (e.target as HTMLImageElement).src = '/AppTeam.png';
           }}
@@ -240,7 +242,7 @@ const Team: React.FC = () => {
         )}
       </div>
     </GlassCard>
-  );
+  ));
 
   if (loading) {
     return (
@@ -332,4 +334,4 @@ const Team: React.FC = () => {
   );
 };
 
-export default Team;
+export default React.memo(Team);

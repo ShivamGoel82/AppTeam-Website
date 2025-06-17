@@ -9,6 +9,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: {
@@ -16,7 +23,8 @@ export default defineConfig({
           lucide: ['lucide-react']
         }
       }
-    }
+    },
+    chunkSizeWarningLimit: 1000,
   },
   server: {
     port: 3000,
@@ -28,4 +36,7 @@ export default defineConfig({
       },
     },
   },
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+  }
 });

@@ -135,4 +135,10 @@ export default {
     },
   },
   plugins: [],
+  corePlugins: {
+    // Disable unused features for smaller bundle
+    float: false,
+    clear: false,
+    skew: false,
+  },
 };

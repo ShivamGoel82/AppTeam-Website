@@ -4,13 +4,79 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon-32x32.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="AppTeam NITH - Premier technology innovation team of NIT Hamirpur. Building the future through cutting-edge development, competitive excellence, and innovative solutions." />
+    <meta name="keywords" content="AppTeam, NITH, NIT Hamirpur, technology, innovation, development, hackathon, programming" />
+    <meta name="author" content="AppTeam NITH" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://appteamwebsite.vercel.app/" />
+    <meta property="og:title" content="AppTeam | NITH" />
+    <meta property="og:description" content="Premier technology innovation team of NIT Hamirpur" />
+    <meta property="og:image" content="/AppTeam.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://appteamwebsite.vercel.app/" />
+    <meta property="twitter:title" content="AppTeam | NITH" />
+    <meta property="twitter:description" content="Premier technology innovation team of NIT Hamirpur" />
+    <meta property="twitter:image" content="/AppTeam.png" />
+
     <title>AppTeam | NITH</title>
+    
+    <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Optimized font loading with font-display: swap -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/AppTeam.png" as="image" type="image/png">
+    
+    <!-- Critical CSS for above-the-fold content -->
+    <style>
+      /* Critical CSS for initial render */
+      body {
+        margin: 0;
+        font-family: 'Inter', sans-serif;
+        background-color: #0A0F1C;
+        color: #FFFFFF;
+      }
+      
+      /* Loading spinner styles */
+      .loading-spinner {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(59, 130, 246, 0.3);
+        border-radius: 50%;
+        border-top-color: #3B82F6;
+        animation: spin 1s ease-in-out infinite;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      /* Hide scrollbar for better mobile experience */
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Loading fallback -->
+      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #0A0F1C;">
+        <div class="loading-spinner"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

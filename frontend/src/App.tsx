@@ -1,16 +1,26 @@
+import React, { Suspense, lazy } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
-import NewsSection from './components/NewsSection';
-import About from './components/About';
-import Projects from './components/Projects';
-import Workshops from './components/Workshops';
-import Achievements from './components/Achievements';
-import Team from './components/Team';
-import JoinTeam from './components/JoinTeam';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
 import AnimatedBackground from './components/AnimatedBackground';
 import CodeRain from './components/CodeRain';
+
+// Lazy load components that are not immediately visible
+const NewsSection = lazy(() => import('./components/NewsSection'));
+const About = lazy(() => import('./components/About'));
+const Projects = lazy(() => import('./components/Projects'));
+const Workshops = lazy(() => import('./components/Workshops'));
+const Achievements = lazy(() => import('./components/Achievements'));
+const Team = lazy(() => import('./components/Team'));
+const JoinTeam = lazy(() => import('./components/JoinTeam'));
+const Contact = lazy(() => import('./components/Contact'));
+const Footer = lazy(() => import('./components/Footer'));
+
+// Loading component
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center py-16">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-primary"></div>
+  </div>
+);
 
 function App() {
   return (
@@ -29,15 +39,42 @@ function App() {
       <div className="relative z-10">
         <Header />
         <Hero />
-        <NewsSection />
-        <About />
-        <Projects />
-        <Workshops />
-        <Achievements />
-        <Team />
-        <JoinTeam />
-        <Contact />
-        <Footer />
+        
+        <Suspense fallback={<LoadingSpinner />}>
+          <NewsSection />
+        </Suspense>
+        
+        <Suspense fallback={<LoadingSpinner />}>
+          <About />
+        </Suspense>
+        
+        <Suspense fallback={<LoadingSpinner />}>
+          <Projects />
+        </Suspense>
+        
+        <Suspense fallback={<LoadingSpinner />}>
+          <Workshops />
+        </Suspense>
+        
+        <Suspense fallback={<LoadingSpinner />}>
+          <Achievements />
+        </Suspense>
+        
+        <Suspense fallback={<LoadingSpinner />}>
+          <Team />
+        </Suspense>
+        
+        <Suspense fallback={<LoadingSpinner />}>
+          <JoinTeam />
+        </Suspense>
+        
+        <Suspense fallback={<LoadingSpinner />}>
+          <Contact />
+        </Suspense>
+        
+        <Suspense fallback={<LoadingSpinner />}>
+          <Footer />
+        </Suspense>
       </div>
     </div>
   );

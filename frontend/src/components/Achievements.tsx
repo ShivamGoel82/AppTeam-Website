@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import GlassCard from "./GlassCard";
 import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
 
@@ -9,8 +9,8 @@ const Achievements: React.FC = () => {
   const pauseTimeoutRef = useRef<number | null>(null);
   const animationRef = useRef<number | null>(null);
 
-  // Achievement Gallery Images
-  const achievementGallery = [
+  // Memoize achievement data to prevent re-renders
+  const achievementGallery = useMemo(() => [
     {
       id: 1,
       title: "HOH 6.0",
@@ -47,10 +47,10 @@ const Achievements: React.FC = () => {
       year: "2025",
       type: "Leadership",
     },
-  ];
+  ], []);
 
-  // Gallery memories - just images without categories
-  const galleryMemories = [
+  // Optimized gallery memories with lazy loading
+  const galleryMemories = useMemo(() => [
     {
       id: 2,
       image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (3).jpeg",
@@ -129,18 +129,21 @@ const Achievements: React.FC = () => {
       title: "Award Ceremony",
       description: "Receiving innovation awards",
     }
-  ];
+  ], []);
 
   // Duplicate gallery for seamless looping
-  const duplicatedGallery = [...achievementGallery, ...achievementGallery];
+  const duplicatedGallery = useMemo(() => [...achievementGallery, ...achievementGallery], [achievementGallery]);
 
-  // Detect mobile
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+  // Optimized mobile detection
+  const checkMobile = useCallback(() => {
+    setIsMobile(window.innerWidth < 768);
   }, []);
+
+  useEffect(() => {
+    checkMobile();
+    window.addEventListener("resize", checkMobile, { passive: true });
+    return () => window.removeEventListener("resize", checkMobile);
+  }, [checkMobile]);
 
   // Clean up on unmount
   useEffect(() => {
@@ -150,22 +153,20 @@ const Achievements: React.FC = () => {
     };
   }, []);
 
-  // Smooth auto-scroll with loop
+  // Optimized auto-scroll with better performance
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer || !isAutoScrolling) return;
 
     if (animationRef.current) cancelAnimationFrame(animationRef.current);
 
-    const card = scrollContainer.querySelector(
-      "div.flex-shrink-0"
-    ) as HTMLElement;
+    const card = scrollContainer.querySelector("div.flex-shrink-0") as HTMLElement;
     const cardWidth = card ? card.offsetWidth + 16 : 400;
-
-    const scrollStep = isMobile ? 1 : 2;
+    const scrollStep = isMobile ? 0.5 : 1;
+    const isLowEnd = navigator.hardwareConcurrency <= 4;
 
     let lastTimestamp = 0;
-    const frameDelay = isMobile ? 12 : 8;
+    const frameDelay = isMobile ? (isLowEnd ? 20 : 16) : (isLowEnd ? 12 : 8);
 
     function autoScroll(timestamp: number) {
       if (!scrollContainer) return;
@@ -173,10 +174,7 @@ const Achievements: React.FC = () => {
       if (timestamp - lastTimestamp > frameDelay) {
         scrollContainer.scrollLeft += scrollStep;
 
-        if (
-          scrollContainer.scrollLeft >=
-          cardWidth * achievementGallery.length
-        ) {
+        if (scrollContainer.scrollLeft >= cardWidth * achievementGallery.length) {
           scrollContainer.scrollLeft -= cardWidth * achievementGallery.length;
         }
 
@@ -193,19 +191,19 @@ const Achievements: React.FC = () => {
     };
   }, [isAutoScrolling, isMobile, achievementGallery.length]);
 
-  // Pause/resume handlers
-  const handlePause = () => {
+  // Optimized pause/resume handlers
+  const handlePause = useCallback(() => {
     setIsAutoScrolling(false);
     if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
-  };
+  }, []);
 
-  const handleResume = () => {
+  const handleResume = useCallback(() => {
     if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
     pauseTimeoutRef.current = window.setTimeout(
       () => setIsAutoScrolling(true),
       1500
     );
-  };
+  }, []);
 
   // Attach event listeners for pause/resume
   useEffect(() => {
@@ -215,12 +213,8 @@ const Achievements: React.FC = () => {
     if (isMobile) {
       const onTouchStart = () => handlePause();
       const onTouchEnd = () => handleResume();
-      scrollContainer.addEventListener("touchstart", onTouchStart, {
-        passive: true,
-      });
-      scrollContainer.addEventListener("touchend", onTouchEnd, {
-        passive: true,
-      });
+      scrollContainer.addEventListener("touchstart", onTouchStart, { passive: true });
+      scrollContainer.addEventListener("touchend", onTouchEnd, { passive: true });
       return () => {
         scrollContainer.removeEventListener("touchstart", onTouchStart);
         scrollContainer.removeEventListener("touchend", onTouchEnd);
@@ -235,14 +229,12 @@ const Achievements: React.FC = () => {
         scrollContainer.removeEventListener("mouseleave", onMouseLeave);
       };
     }
-  }, [isMobile]);
+  }, [isMobile, handlePause, handleResume]);
 
-  // Navigation buttons
-  const scrollLeft = () => {
+  // Optimized navigation buttons
+  const scrollLeft = useCallback(() => {
     if (scrollRef.current) {
-      const card = scrollRef.current.querySelector(
-        "div.flex-shrink-0"
-      ) as HTMLElement;
+      const card = scrollRef.current.querySelector("div.flex-shrink-0") as HTMLElement;
       const scrollAmount = card ? card.offsetWidth + 16 : 400;
       const maxScroll = card.offsetWidth * achievementGallery.length;
 
@@ -254,20 +246,17 @@ const Achievements: React.FC = () => {
       handlePause();
       handleResume();
     }
-  };
+  }, [achievementGallery.length, handlePause, handleResume]);
 
-  const scrollRight = () => {
+  const scrollRight = useCallback(() => {
     if (scrollRef.current) {
-      const card = scrollRef.current.querySelector(
-        "div.flex-shrink-0"
-      ) as HTMLElement;
+      const card = scrollRef.current.querySelector("div.flex-shrink-0") as HTMLElement;
       const scrollAmount = card ? card.offsetWidth + 16 : 400;
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
       setTimeout(() => {
         if (
           scrollRef.current &&
-          scrollRef.current.scrollLeft >=
-            card.offsetWidth * achievementGallery.length
+          scrollRef.current.scrollLeft >= card.offsetWidth * achievementGallery.length
         ) {
           scrollRef.current.scrollLeft = 0;
         }
@@ -275,9 +264,9 @@ const Achievements: React.FC = () => {
       handlePause();
       handleResume();
     }
-  };
+  }, [achievementGallery.length, handlePause, handleResume]);
 
-  const getTypeColor = (type: string) => {
+  const getTypeColor = useCallback((type: string) => {
     switch (type) {
       case "Competition Organized":
         return "text-white bg-accent-primary/20 border-accent-primary/30";
@@ -290,31 +279,28 @@ const Achievements: React.FC = () => {
       default:
         return "text-white bg-neutral-500/20 border-neutral-500/30";
     }
-  };
+  }, []);
 
-  const timeline = [
+  const timeline = useMemo(() => [
     {
       year: "2019",
       title: "Team Formation",
-      description:
-        "AppTeam was founded with a vision to excel in competitive programming and app development.",
+      description: "AppTeam was founded with a vision to excel in competitive programming and app development.",
       color: "border-accent-primary",
     },
     {
       year: "2020",
       title: "HackOnHills Announced",
-      description:
-        "Announced our first hackathon and successfully organized it, marking our entry in finding solutions to real-world problems.",
+      description: "Announced our first hackathon and successfully organized it, marking our entry in finding solutions to real-world problems.",
       color: "border-accent-secondary",
     },
     {
       year: "2025",
       title: "Triple Crown",
-      description:
-        "Achieved success in HOH 6.0, Nimbus, and Hillfair, cementing our position as elite developers.",
+      description: "Achieved success in HOH 6.0, Nimbus, and Hillfair, cementing our position as elite developers.",
       color: "border-accent-tertiary",
     },
-  ];
+  ], []);
 
   return (
     <section id="achievements" className="py-16 md:py-24 relative">
@@ -364,6 +350,7 @@ const Achievements: React.FC = () => {
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
                 WebkitOverflowScrolling: "touch",
+                willChange: "scroll-position"
               }}
             >
               {duplicatedGallery.map((achievement, idx) => (
@@ -379,6 +366,7 @@ const Achievements: React.FC = () => {
                         alt={achievement.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         loading="lazy"
+                        decoding="async"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-transparent to-transparent opacity-70"></div>
 
@@ -453,16 +441,16 @@ const Achievements: React.FC = () => {
           </GlassCard>
         </div>
 
-        {/* Memories Gallery Section */}
+        {/* Memories Gallery Section - Optimized for mobile */}
         <div className="mb-12 md:mb-16">
           <GlassCard className="p-6 md:p-8">
             <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-6 text-center">
               Our <span className="text-accent-primary">Memories</span>
             </h3>
 
-            {/* Memories Grid - Full size images */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {galleryMemories.map((memory) => (
+            {/* Memories Grid - Responsive and optimized */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+              {galleryMemories.slice(0, isMobile ? 8 : galleryMemories.length).map((memory) => (
                 <div
                   key={memory.id}
                   className="group cursor-pointer overflow-hidden rounded-lg border border-glass-border bg-secondary-dark/30 hover:border-accent-primary/30 transition-all duration-300"
@@ -473,15 +461,16 @@ const Achievements: React.FC = () => {
                       alt={memory.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       loading="lazy"
+                      decoding="async"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     
                     {/* Overlay Info */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                      <h4 className="text-white font-space font-semibold text-sm mb-1">
+                    <div className="absolute bottom-0 left-0 right-0 p-2 md:p-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                      <h4 className="text-white font-space font-semibold text-xs md:text-sm mb-1">
                         {memory.title}
                       </h4>
-                      <p className="text-neutral-200 font-inter text-xs">
+                      <p className="text-neutral-200 font-inter text-xs hidden md:block">
                         {memory.description}
                       </p>
                     </div>
@@ -489,6 +478,14 @@ const Achievements: React.FC = () => {
                 </div>
               ))}
             </div>
+
+            {isMobile && galleryMemories.length > 8 && (
+              <div className="text-center mt-4">
+                <button className="text-accent-primary font-inter text-sm hover:text-accent-primary/80 transition-colors duration-300">
+                  View More ({galleryMemories.length - 8} more)
+                </button>
+              </div>
+            )}
 
             {galleryMemories.length === 0 && (
               <div className="text-center py-12">
@@ -537,4 +534,4 @@ const Achievements: React.FC = () => {
   );
 };
 
-export default Achievements;
+export default React.memo(Achievements);

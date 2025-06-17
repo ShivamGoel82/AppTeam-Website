@@ -17,6 +17,11 @@ const GlassCard: React.FC<GlassCardProps> = ({ children, className = '', hover =
         relative overflow-hidden
         ${className}
       `}
+      style={{
+        willChange: hover ? 'transform, box-shadow' : 'auto',
+        backfaceVisibility: 'hidden',
+        perspective: '1000px'
+      }}
     >
       {/* Subtle gradient overlay for enhanced depth */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none" />
@@ -36,4 +41,4 @@ const GlassCard: React.FC<GlassCardProps> = ({ children, className = '', hover =
   );
 };
 
-export default GlassCard;
+export default React.memo(GlassCard);

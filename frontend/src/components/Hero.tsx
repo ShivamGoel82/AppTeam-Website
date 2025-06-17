@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ArrowRight, Trophy, Users, Zap } from 'lucide-react';
 import GlowButton from './GlowButton';
 
 const Hero: React.FC = () => {
-  const scrollToSection = (sectionId: string) => {
+  const scrollToSection = useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ 
@@ -11,7 +11,7 @@ const Hero: React.FC = () => {
         block: 'start'
       });
     }
-  };
+  }, []);
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -79,7 +79,7 @@ const Hero: React.FC = () => {
             </GlowButton>
           </div>
 
-          {/* Floating Elements - Hidden on mobile */}
+          {/* Floating Elements - Hidden on mobile for performance */}
           <div className="hidden lg:block absolute top-20 left-10 animate-float">
             <div className="w-16 h-16 border border-accent-primary/20 rounded-lg rotate-45 backdrop-blur-sm"></div>
           </div>
@@ -98,4 +98,4 @@ const Hero: React.FC = () => {
   );
 };
 
-export default Hero;
+export default React.memo(Hero);
