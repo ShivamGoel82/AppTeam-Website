@@ -23,6 +23,7 @@ const Header: React.FC = () => {
     { href: '#team', label: 'Team' },
     { href: '#join-team', label: 'Join Us' },
     { href: '#contact', label: 'Contact' },
+    { href: '/mnue29dd', label: 'Announcements' },
   ];
 
   return (
