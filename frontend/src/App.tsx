@@ -6,6 +6,7 @@ import AnimatedBackground from './components/AnimatedBackground';
 import CodeRain from './components/CodeRain';
 
 // Lazy load components that are not immediately visible
+const NewsSection = lazy(() => import('./components/NewsSection'));
 const About = lazy(() => import('./components/About'));
 const Projects = lazy(() => import('./components/Projects'));
 const Workshops = lazy(() => import('./components/Workshops'));
@@ -30,6 +31,10 @@ const LoadingSpinner = () => (
 const HomePage = () => (
   <>
     <Hero />
+    
+    <Suspense fallback={<LoadingSpinner />}>
+      <NewsSection />
+    </Suspense>
     
     <Suspense fallback={<LoadingSpinner />}>
       <About />

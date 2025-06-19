@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Users, ArrowRight, Star, Code, Palette, Brain, Shield } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import GlassCard from './GlassCard';
 import GlowButton from './GlowButton';
+import TeamApplication from './TeamApplication';
 
 const JoinTeam: React.FC = () => {
-  const navigate = useNavigate();
+  const [showApplication, setShowApplication] = useState(false);
 
   const benefits = [
     {
@@ -70,8 +70,36 @@ const JoinTeam: React.FC = () => {
   ];
 
   const handleApplyNow = () => {
-    navigate('/xjfhe839');
+    setShowApplication(true);
   };
+
+  const handleBackToInfo = () => {
+    setShowApplication(false);
+  };
+
+  if (showApplication) {
+    return (
+      <section id="join-team" className="py-16 md:py-24 relative min-h-screen">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center mb-12">
+            <button
+              onClick={handleBackToInfo}
+              className="text-accent-primary hover:text-accent-primary/80 font-inter font-medium mb-4 inline-flex items-center transition-colors duration-300"
+            >
+              ← Back to Join Team Info
+            </button>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-space font-bold text-primary-text mb-4">
+              Apply to Join <span className="text-accent-primary">AppTeam</span>
+            </h2>
+            <p className="text-base md:text-xl font-inter text-secondary-text max-w-3xl mx-auto leading-relaxed">
+              Fill out this application form to join our team. We'll review your application and get back to you soon.
+            </p>
+          </div>
+          <TeamApplication />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="join-team" className="py-16 md:py-24 relative">
