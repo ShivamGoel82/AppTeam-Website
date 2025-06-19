@@ -93,9 +93,9 @@ function App() {
             <Route 
               path="/xjfhe839" 
               element={
-                <Suspense fallback={<LoadingSpinner />}>
+                
                   <AddMembersPage />
-                </Suspense>
+                
               } 
             />
             <Route 
