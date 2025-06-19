@@ -93,22 +93,17 @@ function App() {
             <Route 
               path="/xjfhe839" 
               element={
-                
+                <Suspense fallback={<LoadingSpinner />}>
                   <AddMembersPage />
-                
+                </Suspense>
               } 
             />
             <Route 
               path="/google" 
               element={
-                <div>
-                    <h1 className="text-center text-2xl md:text-3xl font-bold mt-8">
-                      Welcome to the Announcements Page
-                    </h1>
-                    <p className="text-center text-lg md:text-xl mt-4">
-                      Here you can find all the latest updates and announcements.
-                    </p>
-                  </div>
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AnnouncementsPage />
+                </Suspense>
               } 
             />
           </Routes>
