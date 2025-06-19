@@ -2,17 +2,19 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: '', // ✅ Ensure assets work correctly with SPA routing on Vercel
+  base: '', // ✅ Crucial for Vercel + React Router (no leading slash or './')
   plugins: [react()],
+  optimizeDeps: {
+    exclude: ['lucide-react'], // ✅ Only if needed
+  },
   build: {
-    outDir: '../dist', // ✅ Must match 'outputDirectory' in vercel.json
-    emptyOutDir: true,
+    outDir: 'dist',
     sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          lucide: ['lucide-react'] // ✅ Optional: optimize lucide
+          lucide: ['lucide-react']
         }
       }
     }
@@ -21,10 +23,10 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000', // ✅ Backend proxy for dev
+        target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
-      }
-    }
-  }
+      },
+    },
+  },
 });
