@@ -5,7 +5,7 @@ export default defineConfig({
   base: '', // ✅ Ensure assets work correctly with SPA routing on Vercel
   plugins: [react()],
   build: {
-    outDir: 'dist', // ✅ Must match 'outputDirectory' in vercel.json
+    outDir: '../dist', // ✅ Must match 'outputDirectory' in vercel.json
     sourcemap: false,
     rollupOptions: {
       output: {
