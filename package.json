@@ -19,6 +19,6 @@
   "author": "AppTeam NITH",
   "license": "MIT",
   "dependencies": {
-    "react-router-dom": "^6.30.1"
+    "react-router-dom": "^7.6.2"
   }
 }
