@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: '../dist', // ✅ Must match 'outputDirectory' in vercel.json
+    emptyOutDir: true,
     sourcemap: false,
     rollupOptions: {
       output: {
