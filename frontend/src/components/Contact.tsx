@@ -208,22 +208,23 @@ const Contact: React.FC = () => {
                 />
               </div>
               <GlowButton
-                className="w-full group text-sm md:text-base"
-                onClick={() => { }}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <Send className="inline-block mr-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                    Send Message
-                  </>
-                )}
-              </GlowButton>
+  type="submit"
+  className="w-full group text-sm md:text-base"
+  disabled={isSubmitting}
+>
+  {isSubmitting ? (
+    <>
+      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+      Sending...
+    </>
+  ) : (
+    <>
+      <Send className="inline-block mr-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+      Send Message
+    </>
+  )}
+</GlowButton>
+
             </form>
           </GlassCard>
         </div>
