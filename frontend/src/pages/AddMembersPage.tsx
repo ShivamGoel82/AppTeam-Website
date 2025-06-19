@@ -99,7 +99,7 @@ const AddMembersPage: React.FC = () => {
 
   const fetchMembers = useCallback(async () => {
     try {
-      const response = await fetch('/api/members');
+      const response = await fetch('/https://appteam-website-1.onrender.com/api/members');
       const data = await response.json();
       
       if (data.success && data.data.length > 0) {
