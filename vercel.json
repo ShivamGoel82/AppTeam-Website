@@ -1,4 +1,5 @@
 {
+  
   "version": 2,
   "builds": [
     {
@@ -11,11 +12,16 @@
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/frontend"
+      "dest": "/frontend/$1"
     }
   ],
   "buildCommand": "cd frontend && npm run build",
-  "installCommand": "cd frontend && npm install",
-  "outputDirectory": "frontend/dist"
+  "outputDirectory": "frontend/dist",
+  "installCommand": "cd frontend && npm install"
+  
 }
