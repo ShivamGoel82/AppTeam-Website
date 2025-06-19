@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Github, Linkedin, Twitter, Code, Palette, Brain, Users, ExternalLink } from 'lucide-react';
-import GlassCard from './GlassCard';
+import { Github, Linkedin, Twitter, Code, Palette, Brain, Users, Plus, Edit, ExternalLink, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import GlassCard from '../components/GlassCard';
+import GlowButton from '../components/GlowButton';
+import MemberForm from '../components/MemberForm';
 
 interface Member {
   _id: string;
@@ -24,9 +27,14 @@ interface Member {
   };
 }
 
-const Team: React.FC = () => {
+const AddMembersPage: React.FC = () => {
+  const navigate = useNavigate();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showMemberForm, setShowMemberForm] = useState(false);
+  const [editingEmail, setEditingEmail] = useState<string | undefined>();
+  const [memberEmail, setMemberEmail] = useState('');
+  const [showEmailInput, setShowEmailInput] = useState(false);
 
   // Default team members (fallback) - memoized
   const defaultMembers = useMemo(() => [
@@ -118,6 +126,21 @@ const Team: React.FC = () => {
     if (role.toLowerCase().includes('ai') || role.toLowerCase().includes('ml')) return <Brain className="w-4 h-4 md:w-5 md:h-5" />;
     return <Code className="w-4 h-4 md:w-5 md:h-5" />;
   }, []);
+
+  const handleEditProfile = useCallback(() => {
+    if (memberEmail.trim()) {
+      setEditingEmail(memberEmail.trim());
+      setShowMemberForm(true);
+      setShowEmailInput(false);
+      setMemberEmail('');
+    }
+  }, [memberEmail]);
+
+  const handleFormClose = useCallback(() => {
+    setShowMemberForm(false);
+    setEditingEmail(undefined);
+    fetchMembers(); // Refresh the members list
+  }, [fetchMembers]);
 
   const MemberCard: React.FC<{ member: Member }> = React.memo(({ member }) => (
     <GlassCard className="p-4 md:p-6 text-center group overflow-hidden">
@@ -225,7 +248,7 @@ const Team: React.FC = () => {
 
   if (loading) {
     return (
-      <section id="team" className="py-16 md:py-24 relative">
+      <section className="py-16 md:py-24 relative min-h-screen">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-accent-primary mx-auto"></div>
@@ -237,18 +260,72 @@ const Team: React.FC = () => {
   }
 
   return (
-    <section id="team" className="py-16 md:py-24 relative">
+    <section className="py-16 md:py-24 relative min-h-screen">
       <div className="container mx-auto px-4 md:px-6">
+        {/* Back Button */}
+        <div className="mb-6 md:mb-8">
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center space-x-2 text-accent-primary hover:text-accent-primary/80 transition-colors duration-300 font-inter font-medium"
+          >
+            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+            <span>Back to Home</span>
+          </button>
+        </div>
+
         {/* Section Header */}
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-space font-bold text-primary-text mb-4 md:mb-6">
-            Meet Our <span className="text-accent-primary">Team</span>
-          </h2>
-          <p className="text-sm md:text-base lg:text-lg xl:text-xl font-inter text-secondary-text max-w-3xl mx-auto leading-relaxed">
-            The brilliant minds behind AppTeam. A diverse group of passionate 
-            developers, designers, and innovators united by our love for creating exceptional software.
+        <div className="text-center mb-8 md:mb-12">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-space font-bold text-primary-text mb-3 md:mb-4">
+            Manage <span className="text-accent-primary">Team Members</span>
+          </h1>
+          <p className="text-sm md:text-base lg:text-lg font-inter text-secondary-text max-w-2xl mx-auto leading-relaxed">
+            Add new team members or edit existing profiles. Manage the AppTeam roster and showcase our talented developers.
           </p>
         </div>
+
+        {/* Member Actions */}
+        <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mb-8 md:mb-12">
+          <GlowButton
+            onClick={() => setShowMemberForm(true)}
+            className="group text-sm md:text-base"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add New Member
+          </GlowButton>
+          
+          <GlowButton
+            variant="secondary"
+            onClick={() => setShowEmailInput(!showEmailInput)}
+            className="group text-sm md:text-base"
+          >
+            <Edit className="w-4 h-4 mr-2" />
+            Edit Member Profile
+          </GlowButton>
+        </div>
+
+        {/* Email Input for Editing */}
+        {showEmailInput && (
+          <div className="max-w-md mx-auto mb-6 md:mb-8">
+            <GlassCard className="p-3 md:p-4">
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={memberEmail}
+                  onChange={(e) => setMemberEmail(e.target.value)}
+                  placeholder="Enter email to edit profile"
+                  className="flex-1 px-3 py-2 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300 text-sm md:text-base"
+                />
+                <button
+                  onClick={handleEditProfile}
+                  disabled={!memberEmail.trim()}
+                  className="px-3 md:px-4 py-2 bg-accent-primary text-white rounded-lg font-inter font-medium hover:bg-accent-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 text-sm md:text-base"
+                >
+                  Edit
+                </button>
+              </div>
+            </GlassCard>
+          </div>
+        )}
 
         {/* Team Members Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
@@ -256,9 +333,17 @@ const Team: React.FC = () => {
             <MemberCard key={member._id} member={member} />
           ))}
         </div>
+
+        {/* Member Form Modal */}
+        {showMemberForm && (
+          <MemberForm 
+            onClose={handleFormClose}
+            editingEmail={editingEmail}
+          />
+        )}
       </div>
     </section>
   );
 };
 
-export default React.memo(Team);
+export default React.memo(AddMembersPage);

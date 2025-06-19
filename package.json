@@ -11,7 +11,14 @@
     "backend": "cd backend && npm run dev",
     "frontend": "cd frontend && npm run dev"
   },
-  "keywords": ["appteam", "nith", "website"],
+  "keywords": [
+    "appteam",
+    "nith",
+    "website"
+  ],
   "author": "AppTeam NITH",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "react-router-dom": "^6.30.1"
+  }
 }

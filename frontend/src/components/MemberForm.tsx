@@ -209,6 +209,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onClose, editingEmail }) => {
   }
 
   return (
+    
     <div className="fixed inset-0 bg-primary-dark/90 backdrop-blur-sm z-50 overflow-y-auto">
       <div className="min-h-screen flex items-start justify-center p-4 pt-8 pb-8">
         <div className="w-full max-w-4xl">
