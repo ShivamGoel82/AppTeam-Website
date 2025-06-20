@@ -26,6 +26,7 @@ const AnnouncementsPage: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Announcement>>({
     type: 'General',
     title: '',
@@ -104,6 +105,7 @@ const AnnouncementsPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrorMsg(null);
 
     try {
       const url = editingId
@@ -126,9 +128,11 @@ const AnnouncementsPage: React.FC = () => {
         await fetchAnnouncements(); // Refresh the list
         resetForm();
       } else {
+        setErrorMsg(data.message || 'Failed to save announcement.');
         console.error('Failed to save announcement:', data.message);
       }
     } catch (error) {
+      setErrorMsg('Network or server error.');
       console.error('Error saving announcement:', error);
     } finally {
       setIsSubmitting(false);
@@ -489,6 +493,12 @@ const AnnouncementsPage: React.FC = () => {
                         Active (visible to users)
                       </label>
                     </div>
+
+                    {errorMsg && (
+                      <div className="text-accent-error text-sm font-inter">
+                        {errorMsg}
+                      </div>
+                    )}
 
                     <div className="flex justify-end space-x-4">
                       <button
