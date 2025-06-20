@@ -35,6 +35,14 @@ router.post('/', async (req, res) => {
   try {
     const memberData = req.body;
 
+    // Validation
+    if (!memberData.personalInfo || !memberData.professionalInfo) {
+      return res.status(400).json({
+        success: false,
+        message: 'Personal and professional information are required'
+      });
+    }
+
     // Check if email already exists
     const existingMember = await Member.findOne({
       'personalInfo.email': memberData.personalInfo.email
@@ -62,6 +70,17 @@ router.post('/', async (req, res) => {
 
   } catch (error) {
     console.error('Add member error:', error);
+    
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: validationErrors
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: 'Failed to create member profile'
@@ -126,6 +145,17 @@ router.put('/profile/:email', async (req, res) => {
 
   } catch (error) {
     console.error('Update member profile error:', error);
+    
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: validationErrors
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: 'Failed to update profile'
@@ -133,7 +163,7 @@ router.put('/profile/:email', async (req, res) => {
   }
 });
 
-// Delete member profile
+// Delete member profile (soft delete)
 router.delete('/profile/:email', async (req, res) => {
   try {
     const { email } = req.params;
@@ -161,6 +191,40 @@ router.delete('/profile/:email', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to hide profile'
+    });
+  }
+});
+
+// Get member statistics
+router.get('/stats', async (req, res) => {
+  try {
+    const [
+      totalMembers,
+      coreMembers,
+      activeMembers,
+      alumniMembers
+    ] = await Promise.all([
+      Member.countDocuments({ isVisible: true }),
+      Member.countDocuments({ isVisible: true, 'membershipInfo.memberType': 'core' }),
+      Member.countDocuments({ isVisible: true, 'membershipInfo.memberType': 'active' }),
+      Member.countDocuments({ isVisible: true, 'membershipInfo.memberType': 'alumni' })
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        total: totalMembers,
+        core: coreMembers,
+        active: activeMembers,
+        alumni: alumniMembers
+      }
+    });
+
+  } catch (error) {
+    console.error('Get member stats error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch member statistics'
     });
   }
 });
