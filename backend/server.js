@@ -25,7 +25,7 @@ app.use(cors({
     'https://appteamwebsite.vercel.app', // your deployed frontend
     'http://localhost:5173'              // for local development
   ],
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'FETCH'],
   credentials: true
 }));
 
