@@ -101,7 +101,7 @@ const TeamApplication: React.FC = () => {
       const newArray = currentArray.includes(value)
         ? currentArray.filter((item: string) => item !== value)
         : [...currentArray, value];
-      
+
       return {
         ...prev,
         [section]: {
@@ -146,12 +146,10 @@ const TeamApplication: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/team/apply', {
+      const response = await fetch('https://appteam-website-1.onrender.com/api/team/apply', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
       });
 
       if (response.ok) {
@@ -174,7 +172,7 @@ const TeamApplication: React.FC = () => {
           Application Submitted Successfully!
         </h3>
         <p className="text-primary-text/80 font-inter leading-relaxed mb-6">
-          Thank you for your interest in joining AppTeam! We've received your application and will review it carefully. 
+          Thank you for your interest in joining AppTeam! We've received your application and will review it carefully.
           You'll hear back from us within 5-7 business days.
         </p>
         <div className="bg-accent-blue/10 border border-accent-blue/30 rounded-lg p-4">
@@ -193,24 +191,21 @@ const TeamApplication: React.FC = () => {
         <div className="flex justify-between items-center">
           {steps.map((step, index) => (
             <div key={step.number} className="flex items-center">
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors duration-300 ${
-                currentStep >= step.number
+              <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors duration-300 ${currentStep >= step.number
                   ? 'bg-accent-blue border-accent-blue text-white'
                   : 'border-glass-border text-primary-text/60'
-              }`}>
+                }`}>
                 {step.icon}
               </div>
               <div className="ml-3 hidden sm:block">
-                <div className={`text-sm font-space font-medium ${
-                  currentStep >= step.number ? 'text-primary-text' : 'text-primary-text/60'
-                }`}>
+                <div className={`text-sm font-space font-medium ${currentStep >= step.number ? 'text-primary-text' : 'text-primary-text/60'
+                  }`}>
                   {step.title}
                 </div>
               </div>
               {index < steps.length - 1 && (
-                <div className={`w-8 sm:w-16 h-0.5 mx-4 transition-colors duration-300 ${
-                  currentStep > step.number ? 'bg-accent-blue' : 'bg-glass-border'
-                }`} />
+                <div className={`w-8 sm:w-16 h-0.5 mx-4 transition-colors duration-300 ${currentStep > step.number ? 'bg-accent-blue' : 'bg-glass-border'
+                  }`} />
               )}
             </div>
           ))}
@@ -305,7 +300,7 @@ const TeamApplication: React.FC = () => {
             <h3 className="text-2xl font-space font-bold text-primary-text mb-6">
               Technical Skills
             </h3>
-            
+
             <div>
               <label className="block text-sm font-inter text-primary-text/80 mb-3">Primary Skills * (Select all that apply)</label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -402,7 +397,7 @@ const TeamApplication: React.FC = () => {
             <h3 className="text-2xl font-space font-bold text-primary-text mb-6">
               Motivation & Goals
             </h3>
-            
+
             <div>
               <label className="block text-sm font-inter text-primary-text/80 mb-2">Why do you want to join AppTeam? * (Max 500 characters)</label>
               <textarea
@@ -456,7 +451,7 @@ const TeamApplication: React.FC = () => {
             <h3 className="text-2xl font-space font-bold text-primary-text mb-6">
               Availability & Role Preference
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-inter text-primary-text/80 mb-2">Hours per week you can commit *</label>
@@ -512,11 +507,10 @@ const TeamApplication: React.FC = () => {
           <button
             onClick={handlePrevious}
             disabled={currentStep === 1}
-            className={`px-6 py-3 rounded-lg font-inter font-medium transition-colors duration-300 ${
-              currentStep === 1
+            className={`px-6 py-3 rounded-lg font-inter font-medium transition-colors duration-300 ${currentStep === 1
                 ? 'bg-glass-white/50 text-primary-text/50 cursor-not-allowed'
                 : 'bg-glass-white border border-glass-border text-primary-text hover:bg-glass-white/80'
-            }`}
+              }`}
           >
             Previous
           </button>
