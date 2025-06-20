@@ -1,74 +1,101 @@
 import React, { useEffect, useState } from 'react';
-import { Calendar, ExternalLink, Sparkles, Clock, Users, Trophy, ArrowRight } from 'lucide-react';
-import GlassCard from './GlassCard';
 import axios from 'axios';
+import { Trophy, Users, Sparkles, Calendar, ArrowRight } from 'lucide-react';
+import GlassCard from './GlassCard';
 
 interface Announcement {
-  id: string;
+  id: string | number;
   type: string;
   title: string;
   description: string;
-  date: string;
+  date?: string;
   time?: string;
-  location?: string;
+  icon?: JSX.Element;
+  color?: string;
+  bgGradient?: string;
   link?: string;
-  priority: 'low' | 'medium' | 'high';
+  details?: Record<string, string>;
   isActive?: boolean;
-  createdAt?: string;
 }
 
-const hardcodedAnnouncements: Announcement[] = [
+const defaultNewsItems: Announcement[] = [
   {
-    id: 'static-1',
-    type: 'Event',
-    title: 'HackOnHills 7.0 Registration Opens',
-    description: 'Get ready for the biggest hackathon of the year! Registration for HackOnHills 7.0 is now open. Join us for 48 hours of innovation, coding, and networking.',
-    date: '2025-03-15',
-    time: '10:00 AM',
-    location: 'NIT Hamirpur',
+    id: 1,
+    type: 'Major Event',
+    title: 'HackOnHills 7.0 - Registration Opens Soon!',
+    description:
+      'Get ready for the biggest hackathon of the year! HackOnHills 7.0 is coming with exciting challenges, amazing prizes, and opportunities to showcase your innovation.',
+    date: 'Coming Soon 2025',
+    icon: <Trophy className="w-6 h-6" />,
+    color: 'accent-blue',
+    bgGradient: 'from-accent-blue/10 to-accent-purple/5',
     link: '#',
-    priority: 'high'
+    details: {
+      duration: '48 Hours',
+      location: 'NIT Hamirpur',
+      participants: '500+ Expected',
+      prizes: '₹2L+ Prize Pool'
+    }
   },
   {
-    id: 'static-2',
-    type: 'Workshop',
+    id: 2,
+    type: 'Workshop Series',
     title: 'Full-Stack Development Bootcamp',
-    description: 'Join our comprehensive 8-week bootcamp covering React, Node.js, MongoDB, and deployment strategies. Limited seats available.',
-    date: '2025-03-01',
-    time: '2:00 PM',
-    location: 'Online + Offline',
-    link: '#',
-    priority: 'medium'
+    description:
+      'Join our comprehensive 8-week bootcamp covering React, Node.js, MongoDB, and deployment strategies. Perfect for beginners and intermediate developers.',
+    date: 'March 2025',
+    icon: <Users className="w-6 h-6" />,
+    color: 'accent-purple',
+    bgGradient: 'from-accent-purple/10 to-accent-teal/5',
+    link: '#workshops',
+    details: {
+      duration: '8 Weeks',
+      location: 'Online + Offline',
+      participants: '50 Seats',
+      level: 'Beginner-Friendly'
+    }
   },
   {
-    id: 'static-3',
+    id: 3,
     type: 'Achievement',
     title: 'AppTeam Wins Best Innovation Award',
-    description: 'We are proud to announce that AppTeam has been recognized for outstanding innovation in mobile app development at the institute level.',
-    date: '2025-02-20',
-    priority: 'medium'
+    description:
+      'Our team has been recognized for outstanding innovation in mobile app development and our contribution to the tech community at NITH.',
+    date: 'February 2025',
+    icon: <Sparkles className="w-6 h-6" />,
+    color: 'accent-teal',
+    bgGradient: 'from-accent-teal/10 to-success-green/5',
+    link: '#achievements',
+    details: {
+      category: 'Innovation',
+      level: 'Institute Level',
+      recognition: 'Best Team',
+      impact: 'Community'
+    }
   }
 ];
 
 const NewsSection: React.FC = () => {
-  const [newsItems, setNewsItems] = useState<Announcement[]>([]);
+  const [newsItems, setNewsItems] = useState<Announcement[]>(defaultNewsItems);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    const fetchAnnouncements = async () => {
-      try {
-        const response = await axios.get('app-team-website-1onrender.com/api/announcements');
-        const activeBackendAnnouncements: Announcement[] = response.data.filter(
-          (a: Announcement) => a.isActive
-        );
-        setNewsItems([...hardcodedAnnouncements, ...activeBackendAnnouncements]);
-      } catch (error) {
-        console.error('Error fetching announcements:', error);
-        setNewsItems(hardcodedAnnouncements); // Fallback to static
-      }
-    };
+    axios.get('https://appteam-website-1.onrender.com/api/announcements')
+      .then((res) => {
+        const active = res.data.data.filter((a: Announcement) => a.isActive);
+        const formatted = active.map((item: Announcement, index: number) => ({
+          ...item,
+          id: `fetched-${index}`,
+          color: 'accent-success',
+          bgGradient: 'from-accent-success/10 to-accent-success/5',
+          icon: <Sparkles className="w-6 h-6" />
+        }));
 
-    fetchAnnouncements();
+        setNewsItems([...defaultNewsItems, ...formatted]);
+      })
+      .catch((err) => {
+        console.error('Error fetching announcements:', err);
+      });
   }, []);
 
   useEffect(() => {
@@ -80,62 +107,39 @@ const NewsSection: React.FC = () => {
     }
   }, [newsItems]);
 
-  const getIcon = (type: string) => {
-    switch (type) {
-      case 'Event':
-        return <Trophy className="w-6 h-6" />;
-      case 'Workshop':
-        return <Users className="w-6 h-6" />;
-      case 'Achievement':
-        return <Sparkles className="w-6 h-6" />;
-      default:
-        return <Sparkles className="w-6 h-6" />;
-    }
-  };
-
-  const getColor = (type: string) => {
-    switch (type) {
-      case 'Event':
-        return 'accent-blue';
-      case 'Workshop':
-        return 'accent-purple';
-      case 'Achievement':
-        return 'accent-teal';
-      case 'Urgent':
-        return 'accent-error';
-      default:
-        return 'accent-success';
-    }
-  };
-
-  if (!newsItems.length) return null;
-
   const current = newsItems[currentIndex];
-  const color = getColor(current.type || 'General');
 
   return (
     <section className="py-8 relative">
       <div className="container mx-auto px-4 md:px-6">
-        <GlassCard className={`p-6 md:p-8 border-l-4 border-${color} bg-gradient-to-r from-${color}/10 to-${color}/5 overflow-hidden relative group`}>
+        <GlassCard
+          className={`p-6 md:p-8 border-l-4 border-${current.color} bg-gradient-to-r ${current.bgGradient} overflow-hidden relative`}
+        >
           <div className="relative z-10">
             <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-8">
               <div className="flex-1">
                 <div className="flex items-start space-x-4 mb-4">
                   <div className="flex-shrink-0">
-                    <div className={`w-12 h-12 bg-${color}/20 rounded-full flex items-center justify-center`}>
-                      <div className={`text-${color}`}>
-                        {getIcon(current.type)}
-                      </div>
+                    <div
+                      className={`w-12 h-12 bg-${current.color}/20 rounded-full flex items-center justify-center text-${current.color}`}
+                    >
+                      {current.icon}
                     </div>
                   </div>
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-3 mb-3">
-                      <span className={`bg-${color}/20 text-${color} px-3 py-1 rounded-full text-sm font-inter font-medium border border-${color}/30`}>
+                      <span
+                        className={`bg-${current.color}/20 text-${current.color} px-3 py-1 rounded-full text-sm font-inter font-medium border border-${current.color}/30`}
+                      >
                         {current.type}
                       </span>
                       <div className="flex items-center text-primary-text text-sm">
                         <Calendar className="w-4 h-4 mr-1" />
-                        <span className="font-inter">{new Date(current.date).toDateString()}</span>
+                        <span className="font-inter">
+                          {current.date && current.time
+                            ? `${current.date} at ${current.time}`
+                            : current.date || 'Coming Soon'}
+                        </span>
                       </div>
                     </div>
                     <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-3">
@@ -147,35 +151,30 @@ const NewsSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Extra Info */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  {current.location && (
-                    <div className="text-center p-3 bg-glass-white/50 rounded-lg border border-glass-border">
-                      <div className="text-primary-text/60 text-xs font-inter uppercase tracking-wide mb-1">Location</div>
-                      <div className="text-primary-text font-space font-medium text-sm">{current.location}</div>
-                    </div>
-                  )}
-                  {current.time && (
-                    <div className="text-center p-3 bg-glass-white/50 rounded-lg border border-glass-border">
-                      <div className="text-primary-text/60 text-xs font-inter uppercase tracking-wide mb-1">Time</div>
-                      <div className="text-primary-text font-space font-medium text-sm">{current.time}</div>
-                    </div>
-                  )}
-                  {current.priority && (
-                    <div className="text-center p-3 bg-glass-white/50 rounded-lg border border-glass-border">
-                      <div className="text-primary-text/60 text-xs font-inter uppercase tracking-wide mb-1">Priority</div>
-                      <div className="text-primary-text font-space font-medium text-sm capitalize">{current.priority}</div>
-                    </div>
-                  )}
-                </div>
+                {/* Details Section */}
+                {current.details && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    {Object.entries(current.details).map(([label, value], i) => (
+                      <div
+                        key={i}
+                        className="text-center p-3 bg-glass-white/50 rounded-lg border border-glass-border"
+                      >
+                        <div className="text-primary-text/60 text-xs font-inter uppercase tracking-wide mb-1">
+                          {label}
+                        </div>
+                        <div className="text-primary-text font-space font-medium text-sm">
+                          {value}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-                {/* Learn More */}
                 {current.link && (
                   <a
                     href={current.link}
-                    className={`inline-flex items-center text-${color} hover:text-${color}/80 transition-colors duration-300 font-inter font-medium group`}
+                    className={`inline-flex items-center text-${current.color} hover:text-${current.color}/80 transition-colors duration-300 font-inter font-medium group`}
                     target="_blank"
-                    rel="noopener noreferrer"
                   >
                     Learn More
                     <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
@@ -183,33 +182,30 @@ const NewsSection: React.FC = () => {
                 )}
               </div>
 
-              {/* Dots Navigation */}
+              {/* Dots */}
               <div className="mt-6 lg:mt-0 lg:ml-8">
                 <div className="flex lg:flex-col space-x-2 lg:space-x-0 lg:space-y-2">
                   {newsItems.map((_, idx) => (
                     <button
                       key={idx}
                       onClick={() => setCurrentIndex(idx)}
-                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                        idx === currentIndex
-                          ? `bg-${color} scale-125`
+                      className={`w-3 h-3 rounded-full transition-all duration-300 ${idx === currentIndex
+                          ? `bg-${current.color} scale-125`
                           : 'bg-primary-text/30 hover:bg-primary-text/50'
-                      }`}
-                      aria-label={`View news item ${idx + 1}`}
+                        }`}
                     />
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Progress Bar */}
+            {/* Progress bar */}
             <div className="mt-6 w-full bg-glass-border rounded-full h-1 overflow-hidden">
-              <div 
-                className={`h-full bg-${color} transition-all duration-300 animate-shimmer`}
+              <div
+                className={`h-full bg-${current.color}`}
                 style={{
-                  background: `linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent)`,
-                  backgroundSize: '200% 100%',
-                  width: `${((currentIndex + 1) / newsItems.length) * 100}%`
+                  width: `${((currentIndex + 1) / newsItems.length) * 100}%`,
+                  transition: 'width 500ms ease'
                 }}
               />
             </div>

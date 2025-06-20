@@ -47,7 +47,7 @@ const AnnouncementsPage: React.FC = () => {
     try {
       const response = await fetch('https://appteam-website-1.onrender.com/api/announcements?isActive=all');
       const data = await response.json();
-      
+
       if (data.success) {
         setAnnouncements(data.data.announcements);
       } else {
@@ -104,14 +104,14 @@ const AnnouncementsPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
-      const url = editingId 
+      const url = editingId
         ? `https://appteam-website-1.onrender.com/api/announcements/${editingId}`
         : 'https://appteam-website-1.onrender.com/api/announcements';
-      
+
       const method = editingId ? 'PUT' : 'POST';
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -260,11 +260,10 @@ const AnnouncementsPage: React.FC = () => {
             </GlassCard>
           ) : (
             announcements.map((announcement) => (
-              <GlassCard 
-                key={announcement._id} 
-                className={`p-4 md:p-6 border-l-4 ${getPriorityColor(announcement.priority)} ${
-                  !announcement.isActive ? 'opacity-60' : ''
-                }`}
+              <GlassCard
+                key={announcement._id}
+                className={`p-4 md:p-6 border-l-4 ${getPriorityColor(announcement.priority)} ${!announcement.isActive ? 'opacity-60' : ''
+                  }`}
               >
                 <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                   <div className="flex-1">
@@ -274,26 +273,25 @@ const AnnouncementsPage: React.FC = () => {
                         {getTypeIcon(announcement.type)}
                         <span>{announcement.type}</span>
                       </div>
-                      
+
                       <div className="flex items-center space-x-2 text-secondary-text text-sm">
                         <Calendar className="w-4 h-4" />
                         <span className="font-inter">{new Date(announcement.date).toLocaleDateString()}</span>
                       </div>
-                      
+
                       {announcement.time && (
                         <div className="flex items-center space-x-2 text-secondary-text text-sm">
                           <Clock className="w-4 h-4" />
                           <span className="font-inter">{announcement.time}</span>
                         </div>
                       )}
-                      
-                      <span className={`px-2 py-1 text-xs font-inter rounded-full ${
-                        announcement.priority === 'high' 
-                          ? 'bg-accent-error/20 text-accent-error' 
+
+                      <span className={`px-2 py-1 text-xs font-inter rounded-full ${announcement.priority === 'high'
+                          ? 'bg-accent-error/20 text-accent-error'
                           : announcement.priority === 'medium'
-                          ? 'bg-accent-warning/20 text-accent-warning'
-                          : 'bg-accent-success/20 text-accent-success'
-                      }`}>
+                            ? 'bg-accent-warning/20 text-accent-warning'
+                            : 'bg-accent-success/20 text-accent-success'
+                        }`}>
                         {announcement.priority.toUpperCase()}
                       </span>
                     </div>
@@ -302,7 +300,7 @@ const AnnouncementsPage: React.FC = () => {
                     <h3 className="text-lg md:text-xl font-space font-semibold text-primary-text mb-3">
                       {announcement.title}
                     </h3>
-                    
+
                     <p className="text-secondary-text font-inter leading-relaxed mb-4 text-sm md:text-base">
                       {announcement.description}
                     </p>
@@ -315,7 +313,7 @@ const AnnouncementsPage: React.FC = () => {
                           <span className="font-inter">{announcement.location}</span>
                         </div>
                       )}
-                      
+
                       {announcement.link && (
                         <a
                           href={announcement.link}
@@ -339,19 +337,18 @@ const AnnouncementsPage: React.FC = () => {
                     >
                       <Edit className="w-4 h-4" />
                     </button>
-                    
+
                     <button
                       onClick={() => toggleActive(announcement._id)}
-                      className={`p-2 rounded-lg transition-colors duration-300 ${
-                        announcement.isActive 
-                          ? 'text-accent-success hover:text-accent-success/80 hover:bg-accent-success/10' 
+                      className={`p-2 rounded-lg transition-colors duration-300 ${announcement.isActive
+                          ? 'text-accent-success hover:text-accent-success/80 hover:bg-accent-success/10'
                           : 'text-muted-text hover:text-accent-success hover:bg-accent-success/10'
-                      }`}
+                        }`}
                       title={announcement.isActive ? 'Deactivate' : 'Activate'}
                     >
                       <Bell className="w-4 h-4" />
                     </button>
-                    
+
                     <button
                       onClick={() => handleDelete(announcement._id)}
                       className="p-2 text-accent-error hover:text-accent-error/80 hover:bg-accent-error/10 rounded-lg transition-colors duration-300"
@@ -375,7 +372,7 @@ const AnnouncementsPage: React.FC = () => {
                   <h2 className="text-xl md:text-2xl font-space font-bold text-primary-text mb-6">
                     {editingId ? 'Edit Announcement' : 'Add New Announcement'}
                   </h2>
-                  
+
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -393,7 +390,7 @@ const AnnouncementsPage: React.FC = () => {
                           <option value="Urgent">Urgent</option>
                         </select>
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-inter text-secondary-text mb-2">Priority *</label>
                         <select
@@ -444,7 +441,7 @@ const AnnouncementsPage: React.FC = () => {
                           required
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-inter text-secondary-text mb-2">Time (Optional)</label>
                         <input
@@ -467,7 +464,7 @@ const AnnouncementsPage: React.FC = () => {
                           placeholder="Event location"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-inter text-secondary-text mb-2">Link (Optional)</label>
                         <input
@@ -501,7 +498,7 @@ const AnnouncementsPage: React.FC = () => {
                       >
                         Cancel
                       </button>
-                      <GlowButton 
+                      <GlowButton
                         type="submit"
                         disabled={isSubmitting}
                         className={isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}
