@@ -46,7 +46,7 @@ const AnnouncementsPage: React.FC = () => {
 
   const fetchAnnouncements = async () => {
     try {
-      const response = await fetch('https://appteam-website-1.onrender.com/api/announcements?isActive=all');
+      const response = await fetch('https://appteam-website-1onrender.com/api/announcements?isActive=all');
       const data = await response.json();
 
       if (data.success) {
@@ -109,8 +109,8 @@ const AnnouncementsPage: React.FC = () => {
 
     try {
       const url = editingId
-        ? `https://appteam-website-1.onrender.com/api/announcements/${editingId}`
-        : 'https://appteam-website-1.onrender.com/api/announcements';
+        ? `https://appteam-website-1onrender.com/api/announcements/${editingId}`
+        : 'https://appteam-website-1onrender.com/api/announcements';
 
       const method = editingId ? 'PUT' : 'POST';
 
@@ -152,7 +152,7 @@ const AnnouncementsPage: React.FC = () => {
     if (!confirm('Are you sure you want to delete this announcement?')) return;
 
     try {
-      const response = await fetch(`https://appteam-website-1.onrender.com/api/announcements/${id}`, {
+      const response = await fetch(`https://appteam-website-1onrender.com/api/announcements/${id}`, {
         method: 'DELETE',
       });
 
@@ -170,7 +170,7 @@ const AnnouncementsPage: React.FC = () => {
 
   const toggleActive = async (id: string) => {
     try {
-      const response = await fetch(`https://appteam-website-1.onrender.com/api/announcements/${id}/toggle`, {
+      const response = await fetch(`https://appteam-website-1onrender.com/api/announcements/${id}/toggle`, {
         method: 'PATCH',
       });
 
