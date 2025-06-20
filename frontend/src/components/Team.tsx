@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Github, Linkedin, Twitter, Code, Palette, Brain, Users, ExternalLink } from 'lucide-react';
+import { Github, Linkedin, Twitter, Code, Palette, Brain, ExternalLink } from 'lucide-react';
 import GlassCard from './GlassCard';
 
 interface Member {
@@ -7,6 +7,7 @@ interface Member {
   personalInfo: {
     fullName: string;
     email: string;
+    year?: string;
     profileImage?: string;
   };
   professionalInfo: {
@@ -27,14 +28,15 @@ interface Member {
 const Team: React.FC = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<'none' | 'role' | 'year'>('none');
 
-  // Default team members (fallback) - memoized
   const defaultMembers = useMemo(() => [
     {
       _id: 'default-1',
       personalInfo: {
         fullName: 'Pratyush Pragyey',
         email: 'pratyush@example.com',
+        year: '4th',
         profileImage: 'pratyush_web.webp'
       },
       professionalInfo: {
@@ -54,6 +56,7 @@ const Team: React.FC = () => {
       personalInfo: {
         fullName: 'Ishaan Yadav',
         email: 'ishaan@example.com',
+        year: '3rd',
         profileImage: 'finance_ishan.webp'
       },
       professionalInfo: {
@@ -73,6 +76,7 @@ const Team: React.FC = () => {
       personalInfo: {
         fullName: 'Aryan Raghav',
         email: 'aryan@example.com',
+        year: '2nd',
         profileImage: 'image.png'
       },
       professionalInfo: {
@@ -93,16 +97,13 @@ const Team: React.FC = () => {
     try {
       const response = await fetch('https://appteam-website-1.onrender.com/api/members');
       const data = await response.json();
-      
       if (data.success && data.data.length > 0) {
-        setMembers(data.data);
+        setMembers([...defaultMembers, ...data.data]);
       } else {
-        // Use default members if no members found
         setMembers(defaultMembers);
       }
     } catch (error) {
       console.error('Failed to fetch members:', error);
-      // Use default members on error
       setMembers(defaultMembers);
     } finally {
       setLoading(false);
@@ -119,8 +120,32 @@ const Team: React.FC = () => {
     return <Code className="w-4 h-4 md:w-5 md:h-5" />;
   }, []);
 
+  const sortedMembers = useMemo(() => {
+    let sorted = [...members];
+    if (sortBy === 'role') {
+      sorted.sort((a, b) =>
+        a.professionalInfo.role.localeCompare(b.professionalInfo.role)
+      );
+    } else if (sortBy === 'year') {
+      const yearOrder: Record<string, number> = { '1st': 1, '2nd': 2, '3rd': 3, '4th': 4 };
+      sorted.sort((a, b) => {
+        const aYear = yearOrder[a.personalInfo.year || ''] || 0;
+        const bYear = yearOrder[b.personalInfo.year || ''] || 0;
+        return aYear - bYear;
+      });
+    }
+    return sorted;
+  }, [members, sortBy]);
+
   const MemberCard: React.FC<{ member: Member }> = React.memo(({ member }) => (
-    <GlassCard className="p-4 md:p-6 text-center group overflow-hidden">
+    <GlassCard className="p-4 md:p-6 text-center group overflow-hidden relative">
+      {/* Optional NEW tag */}
+      {!member._id.startsWith('default-') && (
+        <span className="absolute top-2 right-2 bg-accent-success text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm">
+          NEW
+        </span>
+      )}
+
       {/* Profile Image */}
       <div className="relative mb-4 md:mb-6 mx-auto w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-accent-primary/30 group-hover:border-accent-primary transition-colors duration-300">
         <img
@@ -133,10 +158,8 @@ const Team: React.FC = () => {
             (e.target as HTMLImageElement).src = '/AppTeam.png';
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
 
-      {/* Member Info */}
       <div className="flex items-center justify-center space-x-2 mb-2">
         <div className="text-accent-primary">
           {getRoleIcon(member.professionalInfo.role)}
@@ -145,7 +168,7 @@ const Team: React.FC = () => {
           {member.personalInfo.fullName}
         </h3>
       </div>
-      
+
       <p className="text-accent-secondary font-inter font-medium mb-2 text-xs md:text-sm line-clamp-2">
         {member.professionalInfo.role}
       </p>
@@ -155,18 +178,14 @@ const Team: React.FC = () => {
           {member.membershipInfo.position}
         </p>
       )}
-      
+
       <p className="text-muted-text font-inter text-xs md:text-sm mb-4 md:mb-6 leading-relaxed line-clamp-3">
         {member.professionalInfo.bio}
       </p>
 
-      {/* Skills */}
       <div className="flex flex-wrap justify-center gap-1 md:gap-2 mb-4 md:mb-6">
-        {member.professionalInfo.skills.slice(0, 3).map((skill, skillIndex) => (
-          <span
-            key={skillIndex}
-            className="px-2 md:px-3 py-1 bg-accent-tertiary/10 text-accent-tertiary text-xs font-inter rounded-full border border-accent-tertiary/30"
-          >
+        {member.professionalInfo.skills.slice(0, 3).map((skill, index) => (
+          <span key={index} className="px-2 md:px-3 py-1 bg-accent-tertiary/10 text-accent-tertiary text-xs font-inter rounded-full border border-accent-tertiary/30">
             {skill}
           </span>
         ))}
@@ -177,45 +196,24 @@ const Team: React.FC = () => {
         )}
       </div>
 
-      {/* Social Links */}
       <div className="flex justify-center space-x-3 md:space-x-4">
         {member.professionalInfo.githubUrl && (
-          <a
-            href={member.professionalInfo.githubUrl}
-            className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={member.professionalInfo.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent-primary transition-transform transform hover:scale-110 text-muted-text">
             <Github className="w-4 h-4 md:w-5 md:h-5" />
           </a>
         )}
         {member.professionalInfo.linkedinUrl && (
-          <a
-            href={member.professionalInfo.linkedinUrl}
-            className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={member.professionalInfo.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent-primary transition-transform transform hover:scale-110 text-muted-text">
             <Linkedin className="w-4 h-4 md:w-5 md:h-5" />
           </a>
         )}
         {member.professionalInfo.twitterUrl && (
-          <a
-            href={member.professionalInfo.twitterUrl}
-            className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={member.professionalInfo.twitterUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent-primary transition-transform transform hover:scale-110 text-muted-text">
             <Twitter className="w-4 h-4 md:w-5 md:h-5" />
           </a>
         )}
         {member.professionalInfo.portfolioUrl && (
-          <a
-            href={member.professionalInfo.portfolioUrl}
-            className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={member.professionalInfo.portfolioUrl} target="_blank" rel="noopener noreferrer" className="hover:text-accent-primary transition-transform transform hover:scale-110 text-muted-text">
             <ExternalLink className="w-4 h-4 md:w-5 md:h-5" />
           </a>
         )}
@@ -225,13 +223,8 @@ const Team: React.FC = () => {
 
   if (loading) {
     return (
-      <section id="team" className="py-16 md:py-24 relative">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-accent-primary mx-auto"></div>
-            <p className="text-secondary-text mt-4">Loading team members...</p>
-          </div>
-        </div>
+      <section className="py-16 md:py-24 text-center">
+        <p className="text-secondary-text">Loading team members...</p>
       </section>
     );
   }
@@ -239,20 +232,32 @@ const Team: React.FC = () => {
   return (
     <section id="team" className="py-16 md:py-24 relative">
       <div className="container mx-auto px-4 md:px-6">
-        {/* Section Header */}
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-space font-bold text-primary-text mb-4 md:mb-6">
+        {/* Header */}
+        <div className="text-center mb-8 md:mb-12">
+          <h2 className="text-3xl lg:text-4xl font-space font-bold text-primary-text mb-2">
             Meet Our <span className="text-accent-primary">Team</span>
           </h2>
-          <p className="text-sm md:text-base lg:text-lg xl:text-xl font-inter text-secondary-text max-w-3xl mx-auto leading-relaxed">
-            The brilliant minds behind AppTeam. A diverse group of passionate 
-            developers, designers, and innovators united by our love for creating exceptional software.
+          <p className="text-secondary-text max-w-2xl mx-auto">
+            Developers, designers, thinkers, and creators working together to build amazing tech.
           </p>
         </div>
 
-        {/* Team Members Grid */}
+        {/* Sorting Control */}
+        <div className="flex justify-end mb-6">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as 'none' | 'role' | 'year')}
+            className="px-4 py-2 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter text-sm focus:outline-none focus:ring-2 focus:ring-accent-primary/20"
+          >
+            <option value="none">Sort By</option>
+            <option value="role">Role</option>
+            <option value="year">Year</option>
+          </select>
+        </div>
+
+        {/* Team Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-          {members.map((member) => (
+          {sortedMembers.map((member) => (
             <MemberCard key={member._id} member={member} />
           ))}
         </div>
