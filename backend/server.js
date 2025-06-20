@@ -21,9 +21,11 @@ app.use('/api/', limiter);
 
 // CORS
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? ['https://appteamwebsite.vercel.app', 'https://appteam-nith.vercel.app']
-    : ['http://localhost:3000', 'http://localhost:5173'],
+  origin: [
+    'https://appteamwebsite.vercel.app', // your deployed frontend
+    'http://localhost:5173'              // for local development
+  ],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   credentials: true
 }));
 
