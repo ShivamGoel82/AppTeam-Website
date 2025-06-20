@@ -57,7 +57,7 @@ const NewsSection: React.FC = () => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const response = await axios.get('/api/announcements');
+        const response = await axios.get('app-team-website-1onrender.com/api/announcements');
         const activeBackendAnnouncements: Announcement[] = response.data.filter(
           (a: Announcement) => a.isActive
         );
