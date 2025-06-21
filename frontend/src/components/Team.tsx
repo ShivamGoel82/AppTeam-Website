@@ -30,85 +30,22 @@ const Team: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<'none' | 'role' | 'year'>('none');
 
-  const defaultMembers = useMemo(() => [
-    {
-      _id: 'default-1',
-      personalInfo: {
-        fullName: 'Pratyush Pragyey',
-        email: 'pratyush@example.com',
-        year: '4th',
-        profileImage: 'pratyush_web.webp'
-      },
-      professionalInfo: {
-        role: 'Team Lead & Full-Stack MERN Developer',
-        bio: 'Expertise in MERN stack and currently learning DevOps. Led our team to successfully organize HOH-6.0',
-        skills: ['React', 'Node.js', 'AWS', 'MongoDB'],
-        githubUrl: '#',
-        linkedinUrl: '#',
-        twitterUrl: '#'
-      },
-      membershipInfo: {
-        memberType: 'core'
-      }
-    },
-    {
-      _id: 'default-2',
-      personalInfo: {
-        fullName: 'Ishaan Yadav',
-        email: 'ishaan@example.com',
-        year: '3rd',
-        profileImage: 'finance_ishan.webp'
-      },
-      professionalInfo: {
-        role: 'UI/UX Designer & Frontend Developer',
-        bio: 'Design enthusiast and frontend specialist. Creates stunning user experiences with modern design principles.',
-        skills: ['Figma', 'React', 'Tailwind', 'Framer'],
-        githubUrl: '#',
-        linkedinUrl: '#',
-        twitterUrl: '#'
-      },
-      membershipInfo: {
-        memberType: 'core'
-      }
-    },
-    {
-      _id: 'default-3',
-      personalInfo: {
-        fullName: 'Aryan Raghav',
-        email: 'aryan@example.com',
-        year: '2nd',
-        profileImage: 'image.png'
-      },
-      professionalInfo: {
-        role: 'DSA Expert & AI/ML Enthusiast',
-        bio: 'Solving complex problems with code. Exploring artificial intelligence and machine learning technologies.',
-        skills: ['Python', 'TensorFlow', 'PyTorch', 'OpenAI'],
-        githubUrl: '#',
-        linkedinUrl: '#',
-        twitterUrl: '#'
-      },
-      membershipInfo: {
-        memberType: 'active'
-      }
-    }
-  ], []);
-
   const fetchMembers = useCallback(async () => {
     try {
       const response = await fetch('https://appteam-website-1.onrender.com/api/members');
       const data = await response.json();
       if (data.success && data.data.length > 0) {
-        setMembers([...defaultMembers, ...data.data]);
+        setMembers(data.data);
       } else {
-        setMembers(defaultMembers);
+        setMembers([]);
       }
     } catch (error) {
       console.error('Failed to fetch members:', error);
-      setMembers(defaultMembers);
+      setMembers([]);
     } finally {
       setLoading(false);
     }
-  }, [defaultMembers]);
+  }, []);
 
   useEffect(() => {
     fetchMembers();
@@ -139,14 +76,6 @@ const Team: React.FC = () => {
 
   const MemberCard: React.FC<{ member: Member }> = React.memo(({ member }) => (
     <GlassCard className="p-4 md:p-6 text-center group overflow-hidden relative">
-      {/* Optional NEW tag */}
-      {!member._id.startsWith('default-') && (
-        <span className="absolute top-2 right-2 bg-accent-success text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm">
-          NEW
-        </span>
-      )}
-
-      {/* Profile Image */}
       <div className="relative mb-4 md:mb-6 mx-auto w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-accent-primary/30 group-hover:border-accent-primary transition-colors duration-300">
         <img
           src={member.personalInfo.profileImage || '/AppTeam.png'}
@@ -255,12 +184,16 @@ const Team: React.FC = () => {
           </select>
         </div>
 
-        {/* Team Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-          {sortedMembers.map((member) => (
-            <MemberCard key={member._id} member={member} />
-          ))}
-        </div>
+        {/* No Members Fallback */}
+        {sortedMembers.length === 0 ? (
+          <p className="text-center text-secondary-text">No members found.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            {sortedMembers.map((member) => (
+              <MemberCard key={member._id} member={member} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
