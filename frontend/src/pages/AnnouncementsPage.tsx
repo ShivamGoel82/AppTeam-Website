@@ -16,7 +16,8 @@ interface Announcement {
   priority: 'low' | 'medium' | 'high';
   isActive: boolean;
   createdAt: string;
-  updatedAt: string;
+  updatedAt: string; // Ensure this is present
+  customFields?: Record<string, string>; // Ensure this is present for custom fields functionality
 }
 
 const AnnouncementsPage: React.FC = () => {
@@ -35,19 +36,18 @@ const AnnouncementsPage: React.FC = () => {
     location: '',
     link: '',
     priority: 'medium',
-    isActive: true
+    isActive: true,
+    customFields: {},
   });
+  const [newCustomFieldName, setNewCustomFieldName] = useState('');
+  const [newCustomFieldValue, setNewCustomFieldValue] = useState('');
 
-  // Fetch announcements from backend
-  useEffect(() => {
-    fetchAnnouncements();
-  }, []);
 
   const fetchAnnouncements = async () => {
+    setLoading(true);
     try {
-      const response = await fetch('https://appteam-website-1.onrender.com/api/announcements?isActive=all');
-      const data = await response.json();
-      
+      const res = await fetch('https://appteam-website-1.onrender.com/api/announcements?isActive=all');
+      const data = await res.json();
       if (data.success) {
         setAnnouncements(data.data.announcements);
       } else {
@@ -57,6 +57,161 @@ const AnnouncementsPage: React.FC = () => {
       console.error('Error fetching announcements:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAnnouncements();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      setFormData((prev) => ({ ...prev, [name]: (e.target as HTMLInputElement).checked }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleAddCustomField = () => {
+    if (newCustomFieldName.trim() && newCustomFieldValue.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        customFields: {
+          ...prev.customFields,
+          [newCustomFieldName.trim()]: newCustomFieldValue.trim(),
+        },
+      }));
+      setNewCustomFieldName('');
+      setNewCustomFieldValue('');
+    }
+  };
+
+  const handleRemoveCustomField = (fieldName: string) => {
+    setFormData((prev) => {
+      const updatedCustomFields = { ...prev.customFields };
+      delete updatedCustomFields[fieldName];
+      return { ...prev, customFields: updatedCustomFields };
+    });
+  };
+
+  const resetForm = () => {
+    setEditingId(null);
+    setFormData({
+      type: 'General',
+      title: '',
+      description: '',
+      date: '',
+      time: '',
+      location: '',
+      link: '',
+      priority: 'medium',
+      isActive: true,
+      customFields: {},
+    });
+    setNewCustomFieldName('');
+    setNewCustomFieldValue('');
+    setShowForm(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const announcementToSubmit = { ...formData };
+    if (!announcementToSubmit.time) {
+      delete announcementToSubmit.time;
+    }
+    if (!announcementToSubmit.location) {
+      delete announcementToSubmit.location;
+    }
+    if (!announcementToSubmit.link) {
+      delete announcementToSubmit.link;
+    }
+    if (Object.keys(announcementToSubmit.customFields || {}).length === 0) {
+      delete announcementToSubmit.customFields;
+    }
+
+
+    try {
+      let res;
+      if (editingId) {
+        res = await fetch(`https://appteam-website-1.onrender.com/api/announcements/${editingId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(announcementToSubmit),
+        });
+      } else {
+        res = await fetch('https://appteam-website-1.onrender.com/api/announcements', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(announcementToSubmit),
+        });
+      }
+
+      const data = await res.json();
+      if (data.success) {
+        alert(`Announcement ${editingId ? 'updated' : 'created'} successfully!`);
+        resetForm();
+        fetchAnnouncements();
+      } else {
+        alert(`Failed to ${editingId ? 'update' : 'create'} announcement: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error submitting announcement:', error);
+      alert(`Error ${editingId ? 'updating' : 'creating'} announcement.`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEdit = (id: string) => {
+    const announcementToEdit = announcements.find((ann) => ann._id === id);
+    if (announcementToEdit) {
+      setEditingId(id);
+      setFormData({
+        ...announcementToEdit,
+        customFields: announcementToEdit.customFields || {},
+      });
+      setShowForm(true);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this announcement?')) return;
+
+    try {
+      const res = await fetch(`https://appteam-website-1.onrender.com/api/announcements/${id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Announcement deleted successfully!');
+        fetchAnnouncements();
+      } else {
+        // CORRECTED: Using template literal for alert message
+        alert(`Failed to delete announcement: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error deleting announcement:', error);
+      alert('Error deleting announcement.');
+    }
+  };
+
+  const getPriorityColor = (priority: 'low' | 'medium' | 'high') => {
+    switch (priority) {
+      case 'high':
+        return 'text-red-500 bg-red-500/10 border-red-500/30';
+      case 'medium':
+        return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/30';
+      case 'low':
+        return 'text-green-500 bg-green-500/10 border-green-500/30';
+      default:
+        return 'text-gray-500 bg-gray-500/10 border-gray-500/30';
     }
   };
 
@@ -70,338 +225,137 @@ const AnnouncementsPage: React.FC = () => {
         return <Trophy className="w-5 h-5" />;
       case 'Urgent':
         return <Bell className="w-5 h-5" />;
+      case 'General':
       default:
         return <Sparkles className="w-5 h-5" />;
     }
   };
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'Event':
-        return 'text-accent-primary bg-accent-primary/10 border-accent-primary/30';
-      case 'Workshop':
-        return 'text-accent-secondary bg-accent-secondary/10 border-accent-secondary/30';
-      case 'Achievement':
-        return 'text-accent-tertiary bg-accent-tertiary/10 border-accent-tertiary/30';
-      case 'Urgent':
-        return 'text-accent-error bg-accent-error/10 border-accent-error/30';
-      default:
-        return 'text-accent-success bg-accent-success/10 border-accent-success/10';
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return 'border-l-accent-error';
-      case 'medium':
-        return 'border-l-accent-warning';
-      default:
-        return 'border-l-accent-success';
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      const url = editingId 
-        ? `https://appteam-website-1.onrender.com/api/announcements/${editingId}`
-        : 'https://appteam-website-1.onrender.com/api/announcements';
-      
-      const method = editingId ? 'PUT' : 'POST';
-
-      // --- START: Clean payload for API request ---
-      let payload: Partial<Announcement> = { ...formData };
-      
-      // Remove server-managed fields for POST
-      if (!editingId) {
-        // Destructure to exclude _id, createdAt, updatedAt
-        const { _id, createdAt, updatedAt, ...rest } = payload;
-        payload = rest;
-      } else {
-        // For PUT, only remove createdAt and updatedAt (as _id is in the URL)
-        const { createdAt, updatedAt, ...rest } = payload;
-        payload = rest;
-      }
-      // --- END: Clean payload for API request ---
-      
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload), // Use the cleaned payload
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        await fetchAnnouncements(); // Refresh the list
-        resetForm();
-      } else {
-        // Enhanced error logging
-        console.error('Failed to save announcement:', data.message || 'Unknown error');
-        console.error('Full API Response:', data);
-      }
-    } catch (error) {
-      console.error('Error saving announcement:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleEdit = (announcement: Announcement) => {
-    setFormData({
-      ...announcement,
-      date: announcement.date.split('T')[0] // Format date for input
-    });
-    setEditingId(announcement._id);
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this announcement?')) return;
-
-    try {
-      const response = await fetch(`https://appteam-website-1.onrender.com/api/announcements/${id}`, {
-        method: 'DELETE',
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        await fetchAnnouncements(); // Refresh the list
-      } else {
-        console.error('Failed to delete announcement:', data.message || 'Unknown error');
-        console.error('Full API Response:', data);
-      }
-    } catch (error) {
-      console.error('Error deleting announcement:', error);
-    }
-  };
-
-  const toggleActive = async (id: string) => {
-    try {
-      const response = await fetch(`https://appteam-website-1.onrender.com/api/announcements/${id}/toggle`, {
-        method: 'PATCH',
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        await fetchAnnouncements(); // Refresh the list
-      } else {
-        console.error('Failed to toggle announcement:', data.message || 'Unknown error');
-        console.error('Full API Response:', data);
-      }
-    } catch (error) {
-      console.error('Error toggling announcement:', error);
-    }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      type: 'General',
-      title: '',
-      description: '',
-      date: '',
-      time: '',
-      location: '',
-      link: '',
-      priority: 'medium',
-      isActive: true
-    });
-    setShowForm(false);
-    setEditingId(null);
-  };
-
-  if (loading) {
-    return (
-      <section className="py-16 md:py-24 relative min-h-screen">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-accent-primary mx-auto"></div>
-            <p className="text-secondary-text mt-4">Loading announcements...</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section className="py-16 md:py-24 relative min-h-screen">
+    <section className="py-8 md:py-12 bg-gradient-to-br from-background via-background to-gray-900 min-h-screen">
       <div className="container mx-auto px-4 md:px-6">
-        {/* Back Button */}
-        <div className="mb-6 md:mb-8">
+        <div className="flex items-center justify-between mb-8">
           <button
-            onClick={() => navigate('/')}
-            className="flex items-center space-x-2 text-accent-primary hover:text-accent-primary/80 transition-colors duration-300 font-inter font-medium"
+            onClick={() => navigate(-1)}
+            className="flex items-center text-primary-text hover:text-accent-primary transition-colors duration-300"
           >
-            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-            <span>Back to Home</span>
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back
           </button>
-        </div>
-
-        {/* Section Header */}
-        <div className="text-center mb-8 md:mb-12">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-space font-bold text-primary-text mb-3 md:mb-4">
-            <span className="text-accent-primary">Announcements</span> & Updates
+          <h1 className="text-3xl md:text-4xl font-space font-bold text-primary-text">
+            Manage <span className="text-accent-primary">Announcements</span>
           </h1>
-          <p className="text-sm md:text-base lg:text-lg font-inter text-secondary-text max-w-2xl mx-auto leading-relaxed">
-            Stay updated with the latest news, events, and important announcements from AppTeam NITH.
-          </p>
-        </div>
-
-        {/* Add Announcement Button */}
-        <div className="flex justify-center mb-8 md:mb-12">
-          <GlowButton
-            onClick={() => setShowForm(true)}
-            className="group text-sm md:text-base"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add New Announcement
+          <GlowButton onClick={() => setShowForm(true)} className="flex items-center px-4 py-2">
+            <Plus className="w-5 h-5 mr-2" /> New Announcement
           </GlowButton>
         </div>
 
-        {/* Announcements List */}
-        <div className="space-y-4 md:space-y-6">
-          {announcements.length === 0 ? (
-            <GlassCard className="p-8 text-center">
-              <Bell className="w-12 h-12 text-muted-text mx-auto mb-4" />
-              <h3 className="text-xl font-space font-semibold text-primary-text mb-2">
-                No Announcements Yet
-              </h3>
-              <p className="text-secondary-text font-inter">
-                Create your first announcement to get started.
-              </p>
-            </GlassCard>
-          ) : (
-            announcements.map((announcement) => (
-              <GlassCard 
-                key={announcement._id} 
-                className={`p-4 md:p-6 border-l-4 ${getPriorityColor(announcement.priority)} ${
-                  !announcement.isActive ? 'opacity-60' : ''
-                }`}
-              >
-                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                  <div className="flex-1">
-                    {/* Header */}
-                    <div className="flex flex-wrap items-center gap-3 mb-3 md:mb-4">
-                      <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-inter border ${getTypeColor(announcement.type)}`}>
-                        {getTypeIcon(announcement.type)}
-                        <span>{announcement.type}</span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2 text-secondary-text text-sm">
-                        <Calendar className="w-4 h-4" />
-                        <span className="font-inter">{new Date(announcement.date).toLocaleDateString()}</span>
-                      </div>
-                      
-                      {announcement.time && (
-                        <div className="flex items-center space-x-2 text-secondary-text text-sm">
-                          <Clock className="w-4 h-4" />
-                          <span className="font-inter">{announcement.time}</span>
-                        </div>
-                      )}
-                      
-                      <span className={`px-2 py-1 text-xs font-inter rounded-full ${
-                        announcement.priority === 'high' 
-                          ? 'bg-accent-error/20 text-accent-error' 
-                          : announcement.priority === 'medium'
-                          ? 'bg-accent-warning/20 text-accent-warning'
-                          : 'bg-accent-success/20 text-accent-success'
-                      }`}>
-                        {announcement.priority.toUpperCase()}
-                      </span>
-                    </div>
-
-                    {/* Content */}
-                    <h3 className="text-lg md:text-xl font-space font-semibold text-primary-text mb-3">
-                      {announcement.title}
-                    </h3>
-                    
-                    <p className="text-secondary-text font-inter leading-relaxed mb-4 text-sm md:text-base">
-                      {announcement.description}
-                    </p>
-
-                    {/* Additional Info */}
-                    <div className="flex flex-wrap gap-4 text-sm">
-                      {announcement.location && (
-                        <div className="flex items-center space-x-2 text-muted-text">
-                          <Users className="w-4 h-4" />
-                          <span className="font-inter">{announcement.location}</span>
-                        </div>
-                      )}
-                      
-                      {announcement.link && (
-                        <a
-                          href={announcement.link}
-                          className="flex items-center space-x-2 text-accent-primary hover:text-accent-primary/80 transition-colors duration-300"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                          <span className="font-inter">Learn More</span>
-                        </a>
-                      )}
-                    </div>
+        {loading ? (
+          <div className="text-center text-primary-text">Loading announcements...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {announcements.length === 0 ? (
+              <p className="text-primary-text col-span-full text-center">No announcements found. Create one!</p>
+            ) : (
+              announcements.map((ann) => (
+                <GlassCard key={ann._id} className="p-6 relative overflow-hidden group">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getPriorityColor(ann.priority)}`}>
+                      {ann.priority.toUpperCase()}
+                    </span>
+                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${ann.isActive ? 'bg-green-500/10 text-green-500 border-green-500/30' : 'bg-red-500/10 text-red-500 border-red-500/30'}`}>
+                      {ann.isActive ? 'Active' : 'Inactive'}
+                    </span>
                   </div>
-
-                  {/* Actions */}
-                  <div className="flex flex-row lg:flex-col gap-2">
+                  <h3 className="text-xl font-space font-semibold text-primary-text mb-2 flex items-center">
+                    {getTypeIcon(ann.type)}
+                    <span className="ml-2">{ann.title}</span>
+                  </h3>
+                  <p className="text-secondary-text text-sm mb-4 line-clamp-3">
+                    {ann.description}
+                  </p>
+                  <div className="text-sm text-muted-text mb-4">
+                    <div className="flex items-center mb-1">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      <span>{new Date(ann.date).toLocaleDateString()} {ann.time && `at ${ann.time}`}</span>
+                    </div>
+                    {ann.location && (
+                      <div className="flex items-center mb-1">
+                        <Users className="w-4 h-4 mr-2" />
+                        <span>{ann.location}</span>
+                      </div>
+                    )}
+                    {ann.link && (
+                      <div className="flex items-center mb-1">
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        <a href={ann.link} target="_blank" rel="noopener noreferrer" className="hover:underline text-accent-primary">
+                          View Link
+                        </a>
+                      </div>
+                    )}
+                    {ann.customFields && Object.keys(ann.customFields).length > 0 && (
+                      <div className="mt-2 text-xs text-primary-text/70">
+                        <strong>Custom Fields:</strong>
+                        <ul className="list-disc list-inside ml-2">
+                          {Object.entries(ann.customFields).map(([key, value]) => (
+                            <li key={key}>{key}: {value}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute bottom-4 right-4">
                     <button
-                      onClick={() => handleEdit(announcement)}
-                      className="p-2 text-accent-secondary hover:text-accent-secondary/80 hover:bg-accent-secondary/10 rounded-lg transition-colors duration-300"
+                      onClick={() => handleEdit(ann._id)}
+                      className="p-2 bg-accent-secondary text-white rounded-full hover:bg-accent-secondary/90 transition-colors duration-300"
                       title="Edit"
                     >
                       <Edit className="w-4 h-4" />
                     </button>
-                    
                     <button
-                      onClick={() => toggleActive(announcement._id)}
-                      className={`p-2 rounded-lg transition-colors duration-300 ${
-                        announcement.isActive 
-                          ? 'text-accent-success hover:text-accent-success/80 hover:bg-accent-success/10' 
-                          : 'text-muted-text hover:text-accent-success hover:bg-accent-success/10'
-                      }`}
-                      title={announcement.isActive ? 'Deactivate' : 'Activate'}
-                    >
-                      <Bell className="w-4 h-4" />
-                    </button>
-                    
-                    <button
-                      onClick={() => handleDelete(announcement._id)}
-                      className="p-2 text-accent-error hover:text-accent-error/80 hover:bg-accent-error/10 rounded-lg transition-colors duration-300"
+                      onClick={() => handleDelete(ann._id)}
+                      className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-300"
                       title="Delete"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
-                </div>
-              </GlassCard>
-            ))
-          )}
-        </div>
+                </GlassCard>
+              ))
+            )}
+          </div>
+        )}
 
-        {/* Add/Edit Form Modal */}
         {showForm && (
-          <div className="fixed inset-0 bg-primary-dark/90 backdrop-blur-sm z-50 overflow-y-auto">
-            <div className="min-h-screen flex items-start justify-center p-4 pt-8 pb-8">
-              <div className="w-full max-w-2xl">
-                <GlassCard className="p-6 md:p-8">
-                  <h2 className="text-xl md:text-2xl font-space font-bold text-primary-text mb-6">
-                    {editingId ? 'Edit Announcement' : 'Add New Announcement'}
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-auto">
+            <div className="relative w-full max-w-2xl mx-auto my-8">
+              <div className="p-1 rounded-xl bg-gradient-to-br from-purple-600 to-blue-500 shadow-xl">
+                <GlassCard className="p-8 relative">
+                  <h2 className="text-2xl font-space font-bold text-primary-text mb-6">
+                    {editingId ? 'Edit Announcement' : 'Create New Announcement'}
                   </h2>
-                  
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <form onSubmit={handleSubmit}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <div>
-                        <label className="block text-sm font-inter text-secondary-text mb-2">Type *</label>
+                        <label htmlFor="title" className="block text-primary-text text-sm font-medium mb-2">Title</label>
+                        <input
+                          type="text"
+                          id="title"
+                          name="title"
+                          value={formData.title || ''}
+                          onChange={handleChange}
+                          placeholder="Announcement Title"
+                          className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="type" className="block text-primary-text text-sm font-medium mb-2">Type</label>
                         <select
-                          value={formData.type}
-                          onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as any }))}
+                          id="type"
+                          name="type"
+                          value={formData.type || 'General'}
+                          onChange={handleChange}
                           className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
                           required
                         >
@@ -412,103 +366,151 @@ const AnnouncementsPage: React.FC = () => {
                           <option value="Urgent">Urgent</option>
                         </select>
                       </div>
-                      
-                      <div>
-                        <label className="block text-sm font-inter text-secondary-text mb-2">Priority *</label>
-                        <select
-                          value={formData.priority}
-                          onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value as any }))}
-                          className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                          required
-                        >
-                          <option value="low">Low</option>
-                          <option value="medium">Medium</option>
-                          <option value="high">High</option>
-                        </select>
-                      </div>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-inter text-secondary-text mb-2">Title *</label>
-                      <input
-                        type="text"
-                        value={formData.title}
-                        onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                        className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                        placeholder="Enter announcement title"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-inter text-secondary-text mb-2">Description *</label>
+                    <div className="mb-6">
+                      <label htmlFor="description" className="block text-primary-text text-sm font-medium mb-2">Description</label>
                       <textarea
-                        value={formData.description}
-                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        id="description"
+                        name="description"
+                        value={formData.description || ''}
+                        onChange={handleChange}
+                        placeholder="Detailed description of the announcement"
                         rows={4}
-                        className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300 resize-vertical"
-                        placeholder="Enter announcement description"
+                        className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
                         required
-                      />
+                      ></textarea>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <div>
-                        <label className="block text-sm font-inter text-secondary-text mb-2">Date *</label>
+                        <label htmlFor="date" className="block text-primary-text text-sm font-medium mb-2">Date</label>
                         <input
                           type="date"
-                          value={formData.date}
-                          onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                          id="date"
+                          name="date"
+                          value={formData.date ? formData.date.split('T')[0] : ''}
+                          onChange={handleChange}
                           className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
                           required
                         />
                       </div>
-                      
                       <div>
-                        <label className="block text-sm font-inter text-secondary-text mb-2">Time (Optional)</label>
+                        <label htmlFor="time" className="block text-primary-text text-sm font-medium mb-2">Time (Optional)</label>
                         <input
                           type="time"
-                          value={formData.time}
-                          onChange={(e) => setFormData(prev => ({ ...prev, time: e.target.value }))}
+                          id="time"
+                          name="time"
+                          value={formData.time || ''}
+                          onChange={handleChange}
                           className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
                         />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <div>
-                        <label className="block text-sm font-inter text-secondary-text mb-2">Location (Optional)</label>
+                        <label htmlFor="location" className="block text-primary-text text-sm font-medium mb-2">Location (Optional)</label>
                         <input
                           type="text"
-                          value={formData.location}
-                          onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                          id="location"
+                          name="location"
+                          value={formData.location || ''}
+                          onChange={handleChange}
+                          placeholder="e.g., Auditorium, Online"
                           className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                          placeholder="Event location"
                         />
                       </div>
-                      
                       <div>
-                        <label className="block text-sm font-inter text-secondary-text mb-2">Link (Optional)</label>
+                        <label htmlFor="link" className="block text-primary-text text-sm font-medium mb-2">External Link (Optional)</label>
                         <input
                           type="url"
-                          value={formData.link}
-                          onChange={(e) => setFormData(prev => ({ ...prev, link: e.target.value }))}
-                          className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
+                          id="link"
+                          name="link"
+                          value={formData.link || ''}
+                          onChange={handleChange}
                           placeholder="https://example.com"
+                          className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
                         />
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-2">
+                    <div className="mb-6">
+                      <label htmlFor="priority" className="block text-primary-text text-sm font-medium mb-2">Priority</label>
+                      <select
+                        id="priority"
+                        name="priority"
+                        value={formData.priority || 'medium'}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
+                        required
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                      </select>
+                    </div>
+
+                    <div className="mb-6 border border-glass-border rounded-lg p-4">
+                      <h3 className="text-lg font-space font-semibold text-primary-text mb-4">Add Custom Fields</h3>
+                      <div className="flex flex-col md:flex-row gap-4 mb-4">
+                        <input
+                          type="text"
+                          placeholder="Field Name (e.g., Department)"
+                          value={newCustomFieldName}
+                          onChange={(e) => setNewCustomFieldName(e.target.value)}
+                          className="flex-1 px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Field Value (e.g., CSE)"
+                          value={newCustomFieldValue}
+                          onChange={(e) => setNewCustomFieldValue(e.target.value)}
+                          className="flex-1 px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
+                        />
+                        <GlowButton
+                          type="button"
+                          onClick={handleAddCustomField}
+                          disabled={!newCustomFieldName.trim() || !newCustomFieldValue.trim()}
+                          className="px-6 py-3 flex-shrink-0"
+                        >
+                          Add Field
+                        </GlowButton>
+                      </div>
+
+                      {formData.customFields && Object.keys(formData.customFields).length > 0 && (
+                        <div>
+                          <p className="text-primary-text text-sm font-medium mb-2">Current Custom Fields:</p>
+                          <ul className="space-y-2">
+                            {Object.entries(formData.customFields).map(([key, value]) => (
+                              <li key={key} className="flex items-center justify-between bg-glass-white border border-glass-border rounded-lg px-4 py-2 text-primary-text text-sm">
+                                <span><strong>{key}:</strong> {value}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveCustomField(key)}
+                                  className="text-red-500 hover:text-red-600 transition-colors duration-300"
+                                  title="Remove field"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-center mb-6">
                       <input
                         type="checkbox"
                         id="isActive"
-                        checked={formData.isActive}
-                        onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-                        className="w-4 h-4 text-accent-primary bg-glass-white border-glass-border rounded focus:ring-accent-primary focus:ring-2"
+                        name="isActive"
+                        checked={formData.isActive || false}
+                        onChange={handleChange}
+                        className="mr-2 h-4 w-4 text-accent-primary rounded border-gray-300 focus:ring-accent-primary"
                       />
-                      <label htmlFor="isActive" className="text-sm font-inter text-secondary-text">
-                        Active (visible to users)
+                      <label htmlFor="isActive" className="text-primary-text text-sm font-medium">
+                        Is Active (Display in News Section)
                       </label>
                     </div>
 

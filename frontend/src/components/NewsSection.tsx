@@ -4,7 +4,7 @@ import { Trophy, Users, Sparkles, Calendar, ArrowRight } from 'lucide-react';
 import GlassCard from './GlassCard';
 
 interface Announcement {
-  _id: string; // Changed from 'id' to '_id' to match backend
+  _id: string;
   type: string;
   title: string;
   description: string;
@@ -16,11 +16,12 @@ interface Announcement {
   link?: string;
   details?: Record<string, string>;
   isActive?: boolean;
+  customFields?: Record<string, string>; // ADDED: New field for custom key-value pairs
 }
 
 const defaultNewsItems: Announcement[] = [
   {
-    _id: 'default-1', // Changed from 'id' to '_id'
+    _id: 'default-1',
     type: 'Major Event',
     title: 'HackOnHills 7.0 - Registration Opens Soon!',
     description:
@@ -38,7 +39,7 @@ const defaultNewsItems: Announcement[] = [
     }
   },
   {
-    _id: 'default-2', // Changed from 'id' to '_id'
+    _id: 'default-2',
     type: 'Workshop Series',
     title: 'Full-Stack Development Bootcamp',
     description:
@@ -56,7 +57,7 @@ const defaultNewsItems: Announcement[] = [
     }
   },
   {
-    _id: 'default-3', // Changed from 'id' to '_id'
+    _id: 'default-3',
     type: 'Achievement',
     title: 'AppTeam Wins Best Innovation Award',
     description:
@@ -84,7 +85,6 @@ const NewsSection: React.FC = () => {
     
     axiosInstance.get('https://appteam-website-1.onrender.com/api/announcements?isActive=all')
       .then((res: { data: { data: { announcements: never[]; }; }; }) => {
-        // CORRECTED: Accessing 'announcements' array from 'res.data.data'
         const apiAnnouncements: Announcement[] = res.data.data.announcements || [];
         
         console.log('API Announcements (before filter):', apiAnnouncements);
@@ -93,19 +93,20 @@ const NewsSection: React.FC = () => {
         
         console.log('Active Announcements (after filter):', active);
 
-        const formatted = active.map((item: Announcement) => ({ // Removed index as it's not needed for id
+        const formatted = active.map((item: Announcement) => ({
           ...item,
-          _id: item._id, // Use the backend's _id
           color: 'accent-success', // API fetched items will use accent-success
           bgGradient: 'from-accent-success/10 to-accent-success/5',
           icon: <Sparkles className="w-6 h-6" />
+          // customFields will be carried over directly from 'item' due to the spread operator
+          // if it's present in the API response and the interface
         }));
 
-        setNewsItems([...defaultNewsItems, ...formatted]);
+        setNewsItems([...formatted]); 
       })
       .catch((err: any) => {
         console.error('Error fetching announcements in NewsSection:', err);
-        setNewsItems(defaultNewsItems);
+        setNewsItems(defaultNewsItems); 
       });
   }, []);
 
@@ -119,6 +120,10 @@ const NewsSection: React.FC = () => {
   }, [newsItems]);
 
   const current = newsItems[currentIndex];
+
+  if (!current) {
+    return null;
+  }
 
   return (
     <section className="py-8 relative">
@@ -148,7 +153,7 @@ const NewsSection: React.FC = () => {
                         <Calendar className="w-4 h-4 mr-1" />
                         <span className="font-inter">
                           {current.date && current.time
-                            ? `${new Date(current.date).toLocaleDateString()} at ${current.time}` // Format date
+                            ? `${new Date(current.date).toLocaleDateString()} at ${current.time}`
                             : current.date ? new Date(current.date).toLocaleDateString() : 'Coming Soon'}
                         </span>
                       </div>
@@ -157,13 +162,29 @@ const NewsSection: React.FC = () => {
                       {current.title}
                     </h3>
                     <p className="text-primary-text/80 font-inter leading-relaxed mb-4">
-                      {current.description} {/* Changed from 'content' to 'description' */}
+                      {current.description}
                     </p>
+
+                    {/* NEW: Display Custom Fields */}
+                    {current.customFields && Object.keys(current.customFields).length > 0 && (
+                      <div className="mt-4 border-t border-glass-border pt-4">
+                        <p className="text-primary-text text-base font-inter font-semibold mb-2">Additional Details:</p>
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-primary-text/90 text-sm">
+                          {Object.entries(current.customFields).map(([key, value]) => (
+                            <li key={key} className="flex items-center">
+                              <span className="font-medium mr-1">{key}:</span> {value}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {/* END NEW: Display Custom Fields */}
+
                   </div>
                 </div>
 
-                {/* Details Section */}
-                {current.details && (
+                {/* Details Section (existing, if you have other fixed details) */}
+                {current.details && Object.keys(current.details).length > 0 && (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                     {Object.entries(current.details).map(([label, value], i) => (
                       <div
