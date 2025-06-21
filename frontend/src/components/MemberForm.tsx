@@ -288,7 +288,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onClose, editingEmail }) => {
                     <select
                       value={formData.personalInfo.branch}
                       onChange={(e) => handleInputChange('personalInfo', 'branch', e.target.value)}
-                      className="w-full px-4 py-3 bg-glass-grey border border-glass-border rounded-lg text-primary-text font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
+                      className="w-full px-4 py-3 bg-tertiary-dark text-primary-text border border-accent-primary rounded-md font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
                       required
                     >
                       <option value="">Select Branch</option>
@@ -305,7 +305,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onClose, editingEmail }) => {
                     <select
                       value={formData.personalInfo.year}
                       onChange={(e) => handleInputChange('personalInfo', 'year', e.target.value)}
-                      className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
+                      className="w-full px-4 py-3 bg-tertiary-dark text-primary-text border border-accent-primary rounded-md font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
                       required
                     >
                       <option value="">Select Year</option>
@@ -341,7 +341,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onClose, editingEmail }) => {
                     <select
                       value={formData.professionalInfo.role}
                       onChange={(e) => handleInputChange('professionalInfo', 'role', e.target.value)}
-                      className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
+                      className="w-full px-4 py-3 bg-tertiary-dark text-primary-text border border-accent-primary rounded-md font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
                       required
                     >
                       <option value="">Select Role</option>
@@ -355,7 +355,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onClose, editingEmail }) => {
                     <select
                       value={formData.membershipInfo.memberType}
                       onChange={(e) => handleInputChange('membershipInfo', 'memberType', e.target.value)}
-                      className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
+                      className="w-full px-4 py-3 bg-tertiary-dark text-primary-text border border-accent-primary rounded-md font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
                     >
                       <option value="active">Active Member</option>
                       <option value="core">Core Team</option>

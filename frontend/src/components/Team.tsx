@@ -171,16 +171,15 @@ const Team: React.FC = () => {
           </p>
         </div>
 
-        {/* Sorting Control */}
         <div className="flex justify-end mb-6">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as 'none' | 'role' | 'year')}
-            className="px-4 py-2 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter text-sm focus:outline-none focus:ring-2 focus:ring-accent-primary/20"
+            className="bg-tertiary-dark text-primary-text border border-accent-primary rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-primary"
           >
-            <option value="none">Sort By</option>
-            <option value="role">Role</option>
-            <option value="year">Year</option>
+            <option className="bg-tertiary-dark text-primary-text">Sort By</option>
+            <option className="bg-tertiary-dark text-primary-text">Role</option>
+            <option className="bg-tertiary-dark text-primary-text">Year</option>
           </select>
         </div>
 

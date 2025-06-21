@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Github, Linkedin, Twitter, Code, Palette, Brain, Users, Plus, Edit, ExternalLink, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Github, Linkedin, Twitter, Code, Palette, Brain, Plus, Edit, ExternalLink, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
 import GlowButton from '../components/GlowButton';
@@ -38,86 +38,23 @@ const AddMembersPage: React.FC = () => {
   const [memberEmail, setMemberEmail] = useState('');
   const [showEmailInput, setShowEmailInput] = useState(false);
 
-  // Default team members (fallback) - memoized
-  const defaultMembers = useMemo(() => [
-    {
-      _id: 'default-1',
-      personalInfo: {
-        fullName: 'Pratyush Pragyey',
-        email: 'pratyush@example.com',
-        profileImage: 'pratyush_web.webp'
-      },
-      professionalInfo: {
-        role: 'Team Lead & Full-Stack MERN Developer',
-        bio: 'Expertise in MERN stack and currently learning DevOps. Led our team to successfully organize HOH-6.0',
-        skills: ['React', 'Node.js', 'AWS', 'MongoDB'],
-        githubUrl: '#',
-        linkedinUrl: '#',
-        twitterUrl: '#'
-      },
-      membershipInfo: {
-        memberType: 'core'
-      }
-    },
-    {
-      _id: 'default-2',
-      personalInfo: {
-        fullName: 'Ishaan Yadav',
-        email: 'ishaan@example.com',
-        profileImage: 'finance_ishan.webp'
-      },
-      professionalInfo: {
-        role: 'UI/UX Designer & Frontend Developer',
-        bio: 'Design enthusiast and frontend specialist. Creates stunning user experiences with modern design principles.',
-        skills: ['Figma', 'React', 'Tailwind', 'Framer'],
-        githubUrl: '#',
-        linkedinUrl: '#',
-        twitterUrl: '#'
-      },
-      membershipInfo: {
-        memberType: 'core'
-      }
-    },
-    {
-      _id: 'default-3',
-      personalInfo: {
-        fullName: 'Aryan Raghav',
-        email: 'aryan@example.com',
-        profileImage: 'image.png'
-      },
-      professionalInfo: {
-        role: 'DSA Expert & AI/ML Enthusiast',
-        bio: 'Solving complex problems with code. Exploring artificial intelligence and machine learning technologies.',
-        skills: ['Python', 'TensorFlow', 'PyTorch', 'OpenAI'],
-        githubUrl: '#',
-        linkedinUrl: '#',
-        twitterUrl: '#'
-      },
-      membershipInfo: {
-        memberType: 'active'
-      }
-    }
-  ], []);
-
   const fetchMembers = useCallback(async () => {
     try {
       const response = await fetch(API_BASE);
       const data = await response.json();
-      
-      if (data.success && data.data.length > 0) {
+
+      if (data.success) {
         setMembers(data.data);
       } else {
-        // Use default members if no members found
-        setMembers(defaultMembers);
+        setMembers([]);
       }
     } catch (error) {
       console.error('Failed to fetch members:', error);
-      // Use default members on error
-      setMembers(defaultMembers);
+      setMembers([]);
     } finally {
       setLoading(false);
     }
-  }, [defaultMembers]);
+  }, []);
 
   useEffect(() => {
     fetchMembers();
@@ -146,7 +83,6 @@ const AddMembersPage: React.FC = () => {
 
   const MemberCard: React.FC<{ member: Member }> = React.memo(({ member }) => (
     <GlassCard className="p-4 md:p-6 text-center group overflow-hidden">
-      {/* Profile Image */}
       <div className="relative mb-4 md:mb-6 mx-auto w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-accent-primary/30 group-hover:border-accent-primary transition-colors duration-300">
         <img
           src={member.personalInfo.profileImage || '/AppTeam.png'}
@@ -161,7 +97,6 @@ const AddMembersPage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
 
-      {/* Member Info */}
       <div className="flex items-center justify-center space-x-2 mb-2">
         <div className="text-accent-primary">
           {getRoleIcon(member.professionalInfo.role)}
@@ -170,7 +105,7 @@ const AddMembersPage: React.FC = () => {
           {member.personalInfo.fullName}
         </h3>
       </div>
-      
+
       <p className="text-accent-secondary font-inter font-medium mb-2 text-xs md:text-sm line-clamp-2">
         {member.professionalInfo.role}
       </p>
@@ -180,16 +115,15 @@ const AddMembersPage: React.FC = () => {
           {member.membershipInfo.position}
         </p>
       )}
-      
+
       <p className="text-muted-text font-inter text-xs md:text-sm mb-4 md:mb-6 leading-relaxed line-clamp-3">
         {member.professionalInfo.bio}
       </p>
 
-      {/* Skills */}
       <div className="flex flex-wrap justify-center gap-1 md:gap-2 mb-4 md:mb-6">
-        {member.professionalInfo.skills.slice(0, 3).map((skill, skillIndex) => (
+        {member.professionalInfo.skills.slice(0, 3).map((skill, i) => (
           <span
-            key={skillIndex}
+            key={i}
             className="px-2 md:px-3 py-1 bg-accent-tertiary/10 text-accent-tertiary text-xs font-inter rounded-full border border-accent-tertiary/30"
           >
             {skill}
@@ -202,45 +136,24 @@ const AddMembersPage: React.FC = () => {
         )}
       </div>
 
-      {/* Social Links */}
       <div className="flex justify-center space-x-3 md:space-x-4">
         {member.professionalInfo.githubUrl && (
-          <a
-            href={member.professionalInfo.githubUrl}
-            className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={member.professionalInfo.githubUrl} target="_blank" rel="noopener noreferrer" className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110">
             <Github className="w-4 h-4 md:w-5 md:h-5" />
           </a>
         )}
         {member.professionalInfo.linkedinUrl && (
-          <a
-            href={member.professionalInfo.linkedinUrl}
-            className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={member.professionalInfo.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110">
             <Linkedin className="w-4 h-4 md:w-5 md:h-5" />
           </a>
         )}
         {member.professionalInfo.twitterUrl && (
-          <a
-            href={member.professionalInfo.twitterUrl}
-            className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={member.professionalInfo.twitterUrl} target="_blank" rel="noopener noreferrer" className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110">
             <Twitter className="w-4 h-4 md:w-5 md:h-5" />
           </a>
         )}
         {member.professionalInfo.portfolioUrl && (
-          <a
-            href={member.professionalInfo.portfolioUrl}
-            className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={member.professionalInfo.portfolioUrl} target="_blank" rel="noopener noreferrer" className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110">
             <ExternalLink className="w-4 h-4 md:w-5 md:h-5" />
           </a>
         )}
@@ -264,7 +177,6 @@ const AddMembersPage: React.FC = () => {
   return (
     <section className="py-16 md:py-24 relative min-h-screen">
       <div className="container mx-auto px-4 md:px-6">
-        {/* Back Button */}
         <div className="mb-6 md:mb-8">
           <button
             onClick={() => navigate('/')}
@@ -275,7 +187,6 @@ const AddMembersPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Section Header */}
         <div className="text-center mb-8 md:mb-12">
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-space font-bold text-primary-text mb-3 md:mb-4">
             Manage <span className="text-accent-primary">Team Members</span>
@@ -285,16 +196,12 @@ const AddMembersPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Member Actions */}
         <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mb-8 md:mb-12">
-          <GlowButton
-            onClick={() => setShowMemberForm(true)}
-            className="group text-sm md:text-base"
-          >
+          <GlowButton onClick={() => setShowMemberForm(true)} className="group text-sm md:text-base">
             <Plus className="w-4 h-4 mr-2" />
             Add New Member
           </GlowButton>
-          
+
           <GlowButton
             variant="secondary"
             onClick={() => setShowEmailInput(!showEmailInput)}
@@ -305,7 +212,6 @@ const AddMembersPage: React.FC = () => {
           </GlowButton>
         </div>
 
-        {/* Email Input for Editing */}
         {showEmailInput && (
           <div className="max-w-md mx-auto mb-6 md:mb-8">
             <GlassCard className="p-3 md:p-4">
@@ -329,14 +235,12 @@ const AddMembersPage: React.FC = () => {
           </div>
         )}
 
-        {/* Team Members Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
           {members.map((member) => (
             <MemberCard key={member._id} member={member} />
           ))}
         </div>
 
-        {/* Member Form Modal */}
         {showMemberForm && (
           <MemberForm 
             onClose={handleFormClose}

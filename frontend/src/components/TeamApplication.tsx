@@ -265,7 +265,7 @@ const TeamApplication: React.FC = () => {
                 <select
                   value={formData.personalInfo.branch}
                   onChange={(e) => handleInputChange('personalInfo', 'branch', e.target.value)}
-                  className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300"
+                  className="w-full px-4 py-3 bg-tertiary-dark text-primary-text border border-accent-primary rounded-md font-inter focus:border-grey focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300"
                 >
                   <option value="">Select Branch</option>
                   <option value="CSE">Computer Science Engineering</option>
@@ -281,7 +281,7 @@ const TeamApplication: React.FC = () => {
                 <select
                   value={formData.personalInfo.year}
                   onChange={(e) => handleInputChange('personalInfo', 'year', e.target.value)}
-                  className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300"
+                  className="w-full px-4 py-3 bg-tertiary-dark text-primary-text border border-accent-primary rounded-md font-inter focus:border-accent-blue focus:outline-none focus:ring-2 focus:ring-accent-blue/20 transition-colors duration-300"
                 >
                   <option value="">Select Year</option>
                   <option value="1st">1st Year</option>
