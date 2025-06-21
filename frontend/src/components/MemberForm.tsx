@@ -3,6 +3,9 @@ import { User, Mail, Phone, Code, Send, CheckCircle, AlertCircle, Edit, X } from
 import GlassCard from './GlassCard';
 import GlowButton from './GlowButton';
 
+const API_BASE = 'https://appteam-website-1.onrender.com/api/members';
+
+
 interface MemberFormData {
   personalInfo: {
     fullName: string;
@@ -66,25 +69,25 @@ const MemberForm: React.FC<MemberFormProps> = ({ onClose, editingEmail }) => {
 
   // Load existing member data if editing
   useEffect(() => {
-    if (editingEmail) {
-      const fetchMemberData = async () => {
-        try {
-          const response = await fetch(`/api/members/profile/${editingEmail}`);
-          const data = await response.json();
-          
-          if (data.success) {
-            setFormData(data.data);
-          } else {
-            setErrorMessage('Failed to load member data');
-          }
-        } catch (error) {
+  if (editingEmail) {
+    const fetchMemberData = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/profile/${encodeURIComponent(editingEmail)}`);
+        const data = await response.json();
+
+        if (data.success) {
+          setFormData(data.data);
+        } else {
           setErrorMessage('Failed to load member data');
         }
-      };
-      
-      fetchMemberData();
-    }
-  }, [editingEmail]);
+      } catch (error) {
+        setErrorMessage('Failed to load member data');
+      }
+    };
+
+    fetchMemberData();
+  }
+}, [editingEmail]);
 
   const skillOptions = [
     'JavaScript', 'Python', 'Java', 'C++', 'React', 'Node.js', 'Flutter', 'React Native',
@@ -148,46 +151,46 @@ const MemberForm: React.FC<MemberFormProps> = ({ onClose, editingEmail }) => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
+  e.preventDefault();
 
-    setIsSubmitting(true);
-    setErrorMessage('');
-    
-    try {
-      const url = isEditing 
-        ? `/api/members/profile/${editingEmail}`
-        : '/api/members';
-      
-      const method = isEditing ? 'PUT' : 'POST';
-      
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+  if (!validateForm()) return;
 
-      const data = await response.json();
+  setIsSubmitting(true);
+  setErrorMessage('');
 
-      if (response.ok && data.success) {
-        setSubmitStatus('success');
-        setTimeout(() => {
-          onClose();
-        }, 2000);
-      } else {
-        setSubmitStatus('error');
-        setErrorMessage(data.message || 'Something went wrong. Please try again.');
-      }
-    } catch (error) {
+  try {
+    const url = isEditing
+      ? `${API_BASE}/profile/${encodeURIComponent(editingEmail || '')}`
+      : `${API_BASE}`;
+
+    const method = isEditing ? 'PUT' : 'POST';
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      setSubmitStatus('success');
+      setTimeout(() => {
+        onClose();
+      }, 2000);
+    } else {
       setSubmitStatus('error');
-      setErrorMessage('Network error. Please check your connection.');
-    } finally {
-      setIsSubmitting(false);
+      setErrorMessage(data.message || 'Something went wrong. Please try again.');
     }
-  };
+  } catch (error) {
+    setSubmitStatus('error');
+    setErrorMessage('Network error. Please check your connection.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   if (submitStatus === 'success') {
     return (

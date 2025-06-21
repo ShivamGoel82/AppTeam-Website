@@ -27,6 +27,8 @@ interface Member {
   };
 }
 
+const API_BASE = 'https://appteam-website-1.onrender.com/api/members';
+
 const AddMembersPage: React.FC = () => {
   const navigate = useNavigate();
   const [members, setMembers] = useState<Member[]>([]);
@@ -99,7 +101,7 @@ const AddMembersPage: React.FC = () => {
 
   const fetchMembers = useCallback(async () => {
     try {
-      const response = await fetch('https://appteam-website-1.onrender.com/api/members');
+      const response = await fetch(API_BASE);
       const data = await response.json();
       
       if (data.success && data.data.length > 0) {

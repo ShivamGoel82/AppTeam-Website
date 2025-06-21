@@ -1,21 +1,12 @@
-import express, { json, urlencoded } from 'express';
-import { connect } from 'mongoose';
-import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
-
-// CORS (put this FIRST)
-app.use(cors({
-  origin: [
-    'https://appteamwebsite.vercel.app',
-    'http://localhost:5173'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  credentials: true
-}));
+app.set('trust proxy', true);
 
 // Security
 app.use(helmet());
@@ -28,16 +19,24 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+// CORS
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production'
+    ? ['https://appteamwebsite.vercel.app', 'https://appteam-nith.vercel.app']
+    : ['http://localhost:3000', 'http://localhost:5173'],
+  credentials: true
+}));
+
 // Parsing
-app.use(json({ limit: '10mb' }));
-app.use(urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // MongoDB connection
 const connectDB = async () => {
   try {
     const uri = process.env.MONGODB_URI;
     if (!uri) throw new Error('MONGODB_URI is not defined');
-    const conn = await connect(uri, {
+    const conn = await mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
