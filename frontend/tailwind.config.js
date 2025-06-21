@@ -112,11 +112,11 @@ export default {
           '75%': { transform: 'translateY(-20px) translateX(3px)', opacity: '0.4' },
         },
         glowPulse: {
-          '0%, 100%': { 
+          '0%, 100%': {
             boxShadow: '0 0 20px rgba(59, 130, 246, 0.2), 0 0 40px rgba(59, 130, 246, 0.1)',
             transform: 'scale(1)'
           },
-          '50%': { 
+          '50%': {
             boxShadow: '0 0 30px rgba(59, 130, 246, 0.4), 0 0 60px rgba(59, 130, 246, 0.2)',
             transform: 'scale(1.02)'
           },
@@ -135,4 +135,54 @@ export default {
     },
   },
   plugins: [],
+  safelist: [
+    // --- Colors from theme.extend.colors ---
+    'primary-dark', 'secondary-dark', 'tertiary-dark',
+    'primary-text', 'secondary-text', 'muted-text',
+    'accent-primary', 'accent-secondary', 'accent-tertiary',
+    'accent-success', 'accent-warning', 'accent-error',
+    'glass-white', 'glass-border', 'hover-bg',
+    'neutral-50', 'neutral-100', 'neutral-200', 'neutral-300',
+    'neutral-400', 'neutral-500', 'neutral-600', 'neutral-700',
+    'neutral-800', 'neutral-900',
+
+    // --- Dynamic classes from NewsSection.tsx and AnnouncementsPage.tsx ---
+
+    // Background colors (bg-{color}, bg-{color}/XX)
+    'bg-accent-primary', 'bg-accent-primary/10', 'bg-accent-primary/20',
+    'bg-accent-secondary', 'bg-accent-secondary/10', 'bg-accent-secondary/20',
+    'bg-accent-tertiary', 'bg-accent-tertiary/10', 'bg-accent-tertiary/20',
+    'bg-accent-success', 'bg-accent-success/10', 'bg-accent-success/20',
+    'bg-accent-warning', 'bg-accent-warning/10', 'bg-accent-warning/20',
+    'bg-accent-error', 'bg-accent-error/10', 'bg-accent-error/20',
+    'bg-glass-white', 'bg-glass-white/50',
+    'bg-hover-bg',
+    'bg-primary-dark/90', // For modal background
+
+    // Text colors (text-{color}, text-{color}/XX)
+    'text-accent-primary', 'text-accent-primary/80',
+    'text-accent-secondary', 'text-accent-secondary/80',
+    'text-accent-tertiary',
+    'text-accent-success', 'text-accent-success/80',
+    'text-accent-warning',
+    'text-accent-error', 'text-accent-error/80',
+    'text-primary-text', 'text-primary-text/30', 'text-primary-text/60', 'text-primary-text/80',
+    'text-secondary-text',
+    'text-muted-text',
+
+    // Border colors (border-{color}, border-{color}/XX)
+    'border-accent-primary', 'border-accent-primary/30',
+    'border-accent-secondary', 'border-accent-secondary/30',
+    'border-accent-tertiary', 'border-accent-tertiary/30',
+    'border-accent-success', 'border-accent-success/30',
+    'border-accent-warning', 'border-accent-warning/30',
+    'border-accent-error', 'border-accent-error/30',
+    'border-glass-border',
+
+    // Gradient 'from-' and 'to-' classes
+    'from-accent-primary/10', 'to-accent-secondary/5',
+    'from-accent-secondary/10', 'to-accent-tertiary/5',
+    'from-accent-tertiary/10', 'to-accent-success/5',
+    'from-accent-success/10', 'to-accent-success/5', // Added for API fetched news
+  ],
 };
