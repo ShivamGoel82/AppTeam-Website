@@ -6,7 +6,16 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
-app.set('trust proxy', true);
+
+// CORS (put this FIRST)
+app.use(cors({
+  origin: [
+    'https://appteamwebsite.vercel.app',
+    'http://localhost:5173'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  credentials: true
+}));
 
 // Security
 app.use(helmet());
@@ -18,16 +27,6 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP, please try again later.'
 });
 app.use('/api/', limiter);
-
-// CORS
-app.use(cors({
-  origin: [
-    'https://appteamwebsite.vercel.app', // your deployed frontend
-    'http://localhost:5173'              // for local development
-  ],
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'FETCH'],
-  credentials: true
-}));
 
 // Parsing
 app.use(express.json({ limit: '10mb' }));
