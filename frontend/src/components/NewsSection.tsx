@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import * as axios from 'axios'; // Changed import statement for axios
+import * as axios from 'axios';
 import { Trophy, Users, Sparkles, Calendar, ArrowRight } from 'lucide-react';
 import GlassCard from './GlassCard';
 
@@ -7,7 +7,7 @@ interface Announcement {
   id: string | number;
   type: string;
   title: string;
-  content: string; // Changed from description to content
+  content: string;
   date?: string;
   time?: string;
   icon?: JSX.Element;
@@ -15,7 +15,7 @@ interface Announcement {
   bgGradient?: string;
   link?: string;
   details?: Record<string, string>;
-  isActive?: boolean;
+  isActive?: boolean; // Ensure isActive is part of the interface
 }
 
 const defaultNewsItems: Announcement[] = [
@@ -23,12 +23,12 @@ const defaultNewsItems: Announcement[] = [
     id: 1,
     type: 'Major Event',
     title: 'HackOnHills 7.0 - Registration Opens Soon!',
-    content: // Changed from description to content
+    content:
       'Get ready for the biggest hackathon of the year! HackOnHills 7.0 is coming with exciting challenges, amazing prizes, and opportunities to showcase your innovation.',
     date: 'Coming Soon 2025',
     icon: <Trophy className="w-6 h-6" />,
-    color: 'accent-primary', // Changed from 'accent-blue'
-    bgGradient: 'from-accent-primary/10 to-accent-secondary/5', // Changed from 'to-accent-purple/5'
+    color: 'accent-primary',
+    bgGradient: 'from-accent-primary/10 to-accent-secondary/5',
     link: '#',
     details: {
       duration: '48 Hours',
@@ -41,12 +41,12 @@ const defaultNewsItems: Announcement[] = [
     id: 2,
     type: 'Workshop Series',
     title: 'Full-Stack Development Bootcamp',
-    content: // Changed from description to content
+    content:
       'Join our comprehensive 8-week bootcamp covering React, Node.js, MongoDB, and deployment strategies. Perfect for beginners and intermediate developers.',
     date: 'March 2025',
     icon: <Users className="w-6 h-6" />,
-    color: 'accent-secondary', // Changed from 'accent-purple'
-    bgGradient: 'from-accent-secondary/10 to-accent-tertiary/5', // Changed from 'to-accent-teal/5'
+    color: 'accent-secondary',
+    bgGradient: 'from-accent-secondary/10 to-accent-tertiary/5',
     link: '#workshops',
     details: {
       duration: '8 Weeks',
@@ -59,12 +59,12 @@ const defaultNewsItems: Announcement[] = [
     id: 3,
     type: 'Achievement',
     title: 'AppTeam Wins Best Innovation Award',
-    content: // Changed from description to content
+    content:
       'Our team has been recognized for outstanding innovation in mobile app development and our contribution to the tech community at NITH.',
     date: 'February 2025',
     icon: <Sparkles className="w-6 h-6" />,
-    color: 'accent-tertiary', // Changed from 'accent-teal'
-    bgGradient: 'from-accent-tertiary/10 to-accent-success/5', // Changed from 'to-success-green/5'
+    color: 'accent-tertiary',
+    bgGradient: 'from-accent-tertiary/10 to-accent-success/5',
     link: '#achievements',
     details: {
       category: 'Innovation',
@@ -80,14 +80,19 @@ const NewsSection: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    // Use axios.default if axios is imported as * axios, otherwise just axios
     const axiosInstance = (axios as any).default || axios; 
     
-    axiosInstance.get('https://appteam-website-1.onrender.com/api/announcements')
+    // Changed API call to include ?isActive=all
+    axiosInstance.get('https://appteam-website-1.onrender.com/api/announcements?isActive=all')
       .then((res: { data: { data: any; }; }) => {
         const apiAnnouncements = Array.isArray(res.data.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []);
+        
+        console.log('API Announcements (before filter):', apiAnnouncements); // Log fetched data
 
         const active = apiAnnouncements.filter((a: Announcement) => a.isActive);
+        
+        console.log('Active Announcements (after filter):', active); // Log filtered data
+
         const formatted = active.map((item: Announcement, index: number) => ({
           ...item,
           id: `fetched-${index}`,
@@ -99,7 +104,7 @@ const NewsSection: React.FC = () => {
         setNewsItems([...defaultNewsItems, ...formatted]);
       })
       .catch((err: any) => {
-        console.error('Error fetching announcements:', err);
+        console.error('Error fetching announcements in NewsSection:', err);
         setNewsItems(defaultNewsItems);
       });
   }, []);
@@ -152,7 +157,7 @@ const NewsSection: React.FC = () => {
                       {current.title}
                     </h3>
                     <p className="text-primary-text/80 font-inter leading-relaxed mb-4">
-                      {current.content} {/* Changed from description to content */}
+                      {current.content}
                     </p>
                   </div>
                 </div>
