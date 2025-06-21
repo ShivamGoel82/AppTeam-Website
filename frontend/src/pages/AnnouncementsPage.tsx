@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Calendar, Clock, Users, Trophy, Sparkles, Bell, Plus, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
 import GlowButton from '../components/GlowButton';
 
+// Centralize API Base URL
+const API_BASE_URL = 'https://appteam-website-1.onrender.com/api/announcements';
+
 interface Announcement {
   _id: string;
   type: 'Event' | 'Workshop' | 'Achievement' | 'General' | 'Urgent';
   title: string;
-  description: string;
+  content: string; // Changed from description to content for consistency
   date: string;
   time?: string;
   location?: string;
@@ -29,7 +32,7 @@ const AnnouncementsPage: React.FC = () => {
   const [formData, setFormData] = useState<Partial<Announcement>>({
     type: 'General',
     title: '',
-    description: '',
+    content: '', // Changed from description to content
     date: '',
     time: '',
     location: '',
@@ -38,29 +41,33 @@ const AnnouncementsPage: React.FC = () => {
     isActive: true
   });
 
-  // Fetch announcements from backend
-  useEffect(() => {
-    fetchAnnouncements();
-  }, []);
-
-  const fetchAnnouncements = async () => {
+  // Function to fetch announcements from the backend
+  const fetchAnnouncements = useCallback(async () => {
+    setLoading(true);
     try {
-      const response = await fetch('https://appteam-website-1.onrender.com/api/announcements?isActive=all');
+      // This fetches ALL announcements (active and inactive) for management
+      const response = await fetch(`${API_BASE_URL}?isActive=all`);
       const data = await response.json();
       
       if (data.success) {
         setAnnouncements(data.data.announcements);
       } else {
         console.error('Failed to fetch announcements:', data.message);
+        // TODO: Add user-friendly error notification (e.g., toast)
       }
     } catch (error) {
       console.error('Error fetching announcements:', error);
+      // TODO: Add user-friendly error notification (e.g., toast)
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // Dependencies: none as it uses fixed URL and setters
 
-  const getTypeIcon = (type: string) => {
+  useEffect(() => {
+    fetchAnnouncements();
+  }, [fetchAnnouncements]);
+
+  const getTypeIcon = useCallback((type: string) => {
     switch (type) {
       case 'Event':
         return <Calendar className="w-5 h-5" />;
@@ -73,9 +80,9 @@ const AnnouncementsPage: React.FC = () => {
       default:
         return <Sparkles className="w-5 h-5" />;
     }
-  };
+  }, []);
 
-  const getTypeColor = (type: string) => {
+  const getTypeColor = useCallback((type: string) => {
     switch (type) {
       case 'Event':
         return 'text-accent-primary bg-accent-primary/10 border-accent-primary/30';
@@ -88,9 +95,9 @@ const AnnouncementsPage: React.FC = () => {
       default:
         return 'text-accent-success bg-accent-success/10 border-accent-success/30';
     }
-  };
+  }, []);
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = useCallback((priority: string) => {
     switch (priority) {
       case 'high':
         return 'border-l-accent-error';
@@ -99,16 +106,32 @@ const AnnouncementsPage: React.FC = () => {
       default:
         return 'border-l-accent-success';
     }
-  };
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const resetForm = useCallback(() => {
+    setFormData({
+      type: 'General',
+      title: '',
+      content: '', // Changed from description to content
+      date: '',
+      time: '',
+      location: '',
+      link: '',
+      priority: 'medium',
+      isActive: true
+    });
+    setShowForm(false);
+    setEditingId(null);
+  }, [setFormData, setShowForm, setEditingId]);
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
     try {
       const url = editingId 
-        ? `https://appteam-website-1.onrender.com/api/announcements/${editingId}`
-        : 'https://appteam-website-1.onrender.com/api/announcements';
+        ? `${API_BASE_URL}/${editingId}`
+        : API_BASE_URL; // Using centralized API_BASE_URL
       
       const method = editingId ? 'PUT' : 'POST';
       
@@ -125,30 +148,33 @@ const AnnouncementsPage: React.FC = () => {
       if (response.ok && data.success) {
         await fetchAnnouncements(); // Refresh the list
         resetForm();
+        // TODO: Add success toast notification
       } else {
         console.error('Failed to save announcement:', data.message);
+        // TODO: Add error toast notification
       }
     } catch (error) {
       console.error('Error saving announcement:', error);
+      // TODO: Add error toast notification
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [formData, editingId, fetchAnnouncements, resetForm]); // Added dependencies
 
-  const handleEdit = (announcement: Announcement) => {
+  const handleEdit = useCallback((announcement: Announcement) => {
     setFormData({
       ...announcement,
       date: announcement.date.split('T')[0] // Format date for input
     });
     setEditingId(announcement._id);
     setShowForm(true);
-  };
+  }, [setFormData, setEditingId, setShowForm]); // Added dependencies
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this announcement?')) return;
+  const handleDelete = useCallback(async (id: string) => {
+    if (!confirm('Are you sure you want to delete this announcement?')) return; // Consider a custom modal for better UX
 
     try {
-      const response = await fetch(`https://appteam-website-1.onrender.com/api/announcements/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/${id}`, { // Using centralized API_BASE_URL
         method: 'DELETE',
       });
 
@@ -156,17 +182,20 @@ const AnnouncementsPage: React.FC = () => {
 
       if (response.ok && data.success) {
         await fetchAnnouncements(); // Refresh the list
+        // TODO: Add success toast notification
       } else {
         console.error('Failed to delete announcement:', data.message);
+        alert(`Failed to delete: ${data.message}`); // Fallback for error notification
       }
     } catch (error) {
       console.error('Error deleting announcement:', error);
+      alert('An error occurred while deleting the announcement.'); // Fallback for error notification
     }
-  };
+  }, [fetchAnnouncements]); // Added dependencies
 
-  const toggleActive = async (id: string) => {
+  const toggleActive = useCallback(async (id: string) => {
     try {
-      const response = await fetch(`https://appteam-website-1.onrender.com/api/announcements/${id}/toggle`, {
+      const response = await fetch(`${API_BASE_URL}/${id}/toggle`, { // Using centralized API_BASE_URL
         method: 'PATCH',
       });
 
@@ -174,29 +203,27 @@ const AnnouncementsPage: React.FC = () => {
 
       if (response.ok && data.success) {
         await fetchAnnouncements(); // Refresh the list
+        // TODO: Add success toast notification
       } else {
         console.error('Failed to toggle announcement:', data.message);
+        // TODO: Add error toast notification
       }
     } catch (error) {
       console.error('Error toggling announcement:', error);
+      // TODO: Add error toast notification
     }
-  };
+  }, [fetchAnnouncements]); // Added dependencies
 
-  const resetForm = () => {
-    setFormData({
-      type: 'General',
-      title: '',
-      description: '',
-      date: '',
-      time: '',
-      location: '',
-      link: '',
-      priority: 'medium',
-      isActive: true
-    });
-    setShowForm(false);
-    setEditingId(null);
-  };
+  const formatDisplayDate = useCallback((isoDateString: string) => {
+    try {
+      const date = new Date(isoDateString);
+      const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+      return date.toLocaleDateString(undefined, options);
+    } catch (e) {
+      console.error("Error formatting date:", e);
+      return isoDateString;
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -238,7 +265,11 @@ const AnnouncementsPage: React.FC = () => {
         {/* Add Announcement Button */}
         <div className="flex justify-center mb-8 md:mb-12">
           <GlowButton
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              setEditingId(null); // Ensure no editing is active
+              resetForm(); // Reset form data for a new announcement
+              setShowForm(true);
+            }}
             className="group text-sm md:text-base"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -277,7 +308,7 @@ const AnnouncementsPage: React.FC = () => {
                       
                       <div className="flex items-center space-x-2 text-secondary-text text-sm">
                         <Calendar className="w-4 h-4" />
-                        <span className="font-inter">{new Date(announcement.date).toLocaleDateString()}</span>
+                        <span className="font-inter">{formatDisplayDate(announcement.date)}</span>
                       </div>
                       
                       {announcement.time && (
@@ -304,7 +335,7 @@ const AnnouncementsPage: React.FC = () => {
                     </h3>
                     
                     <p className="text-secondary-text font-inter leading-relaxed mb-4 text-sm md:text-base">
-                      {announcement.description}
+                      {announcement.content} {/* Displaying content */}
                     </p>
 
                     {/* Additional Info */}
@@ -422,13 +453,13 @@ const AnnouncementsPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-inter text-secondary-text mb-2">Description *</label>
+                      <label className="block text-sm font-inter text-secondary-text mb-2">Description / Content *</label>
                       <textarea
-                        value={formData.description}
-                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        value={formData.content} // Changed to content
+                        onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))} // Changed to content
                         rows={4}
                         className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300 resize-vertical"
-                        placeholder="Enter announcement description"
+                        placeholder="Enter announcement description or content"
                         required
                       />
                     </div>

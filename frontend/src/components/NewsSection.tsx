@@ -1,229 +1,129 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Trophy, Users, Sparkles, Calendar, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Plus } from 'lucide-react';
 import GlassCard from './GlassCard';
+import GlowButton from './GlowButton';
+import { Link } from 'react-router-dom'; // Make sure react-router-dom is installed and configured
 
 interface Announcement {
-  id: string | number;
-  type: string;
+  _id: string; // Assuming your backend uses _id for the unique identifier
   title: string;
-  description: string;
-  date?: string;
-  time?: string;
-  icon?: JSX.Element;
-  color?: string;
-  bgGradient?: string;
-  link?: string;
-  details?: Record<string, string>;
-  isActive?: boolean;
+  content: string; // Changed from description to content to match NewsSection's usage
+  date: string; // Assuming date is a string from the backend
+  author?: string; // Optional author field
 }
 
-const defaultNewsItems: Announcement[] = [
-  {
-    id: 1,
-    type: 'Major Event',
-    title: 'HackOnHills 7.0 - Registration Opens Soon!',
-    description:
-      'Get ready for the biggest hackathon of the year! HackOnHills 7.0 is coming with exciting challenges, amazing prizes, and opportunities to showcase your innovation.',
-    date: 'Coming Soon 2025',
-    icon: <Trophy className="w-6 h-6" />,
-    color: 'accent-blue',
-    bgGradient: 'from-accent-blue/10 to-accent-purple/5',
-    link: '#',
-    details: {
-      duration: '48 Hours',
-      location: 'NIT Hamirpur',
-      participants: '500+ Expected',
-      prizes: '₹2L+ Prize Pool'
-    }
-  },
-  {
-    id: 2,
-    type: 'Workshop Series',
-    title: 'Full-Stack Development Bootcamp',
-    description:
-      'Join our comprehensive 8-week bootcamp covering React, Node.js, MongoDB, and deployment strategies. Perfect for beginners and intermediate developers.',
-    date: 'March 2025',
-    icon: <Users className="w-6 h-6" />,
-    color: 'accent-purple',
-    bgGradient: 'from-accent-purple/10 to-accent-teal/5',
-    link: '#workshops',
-    details: {
-      duration: '8 Weeks',
-      location: 'Online + Offline',
-      participants: '50 Seats',
-      level: 'Beginner-Friendly'
-    }
-  },
-  {
-    id: 3,
-    type: 'Achievement',
-    title: 'AppTeam Wins Best Innovation Award',
-    description:
-      'Our team has been recognized for outstanding innovation in mobile app development and our contribution to the tech community at NITH.',
-    date: 'February 2025',
-    icon: <Sparkles className="w-6 h-6" />,
-    color: 'accent-teal',
-    bgGradient: 'from-accent-teal/10 to-success-green/5',
-    link: '#achievements',
-    details: {
-      category: 'Innovation',
-      level: 'Institute Level',
-      recognition: 'Best Team',
-      impact: 'Community'
-    }
-  }
-];
-
 const NewsSection: React.FC = () => {
-  const [newsItems, setNewsItems] = useState<Announcement[]>(defaultNewsItems);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    axios.get('https://appteam-website-1.onrender.com/api/announcements')
-      .then((res) => {
-        // --- START OF MODIFICATION ---
-        // Inspect res.data to determine the correct path to the array of announcements.
-        // For example, if the array is directly in res.data, use res.data.
-        // If it's res.data.announcements, use res.data.announcements.
-        // Assuming it might be res.data.data based on the error, but adding a safe check.
-        const apiAnnouncements = Array.isArray(res.data.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []);
-
-        const active = apiAnnouncements.filter((a: Announcement) => a.isActive);
-        const formatted = active.map((item: Announcement, index: number) => ({
-          ...item,
-          id: `fetched-${index}`,
-          color: 'accent-success',
-          bgGradient: 'from-accent-success/10 to-accent-success/5',
-          icon: <Sparkles className="w-6 h-6" />
-        }));
-
-        setNewsItems([...defaultNewsItems, ...formatted]);
-        // --- END OF MODIFICATION ---
-      })
-      .catch((err) => {
-        console.error('Error fetching announcements:', err);
-        // Fallback to default items if API call fails
-        setNewsItems(defaultNewsItems);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (newsItems.length > 1) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % newsItems.length);
-      }, 5000);
-      return () => clearInterval(interval);
+  const fetchAnnouncements = useCallback(async () => {
+    setLoading(true);
+    setError(null); // Clear previous errors
+    try {
+      // Ensure this URL is correct for your backend API
+      const response = await fetch('https://appteam-website-1.onrender.com/api/announcements');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      
+      // Assuming your API returns { success: true, data: [...] }
+      if (data.success && Array.isArray(data.data)) {
+        // Sort by date in descending order (newest first)
+        const sortedData = data.data.sort((a: Announcement, b: Announcement) => {
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        });
+        setAnnouncements(sortedData);
+      } else {
+        setAnnouncements([]); // If API returns success but no data or wrong format
+      }
+    } catch (err) {
+      console.error("Failed to fetch announcements:", err);
+      setError("Failed to load announcements. Please try again later.");
+      setAnnouncements([]); // Fallback to empty array on error
+    } finally {
+      setLoading(false);
     }
-  }, [newsItems]);
+  }, []); // Empty dependency array means this function is created once
 
-  const current = newsItems[currentIndex];
+  useEffect(() => {
+    fetchAnnouncements();
+  }, [fetchAnnouncements]); // Re-run effect if fetchAnnouncements changes (due to useCallback, it won't)
+
+  // Helper function to format the date for display
+  const formatDate = (dateString: string) => {
+    try {
+      const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    } catch (e) {
+      console.error("Error formatting date:", e);
+      return dateString; // Return original string if formatting fails
+    }
+  };
 
   return (
-    <section className="py-8 relative">
+    <section id="news" className="py-16 md:py-24 relative">
       <div className="container mx-auto px-4 md:px-6">
-        <GlassCard
-          className={`p-6 md:p-8 border-l-4 border-${current.color} bg-gradient-to-r ${current.bgGradient} overflow-hidden relative`}
-        >
-          <div className="relative z-10">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-8">
-              <div className="flex-1">
-                <div className="flex items-start space-x-4 mb-4">
-                  <div className="flex-shrink-0">
-                    <div
-                      className={`w-12 h-12 bg-${current.color}/20 rounded-full flex items-center justify-center text-${current.color}`}
-                    >
-                      {current.icon}
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-3 mb-3">
-                      <span
-                        className={`bg-${current.color}/20 text-${current.color} px-3 py-1 rounded-full text-sm font-inter font-medium border border-${current.color}/30`}
-                      >
-                        {current.type}
-                      </span>
-                      <div className="flex items-center text-primary-text text-sm">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        <span className="font-inter">
-                          {current.date && current.time
-                            ? `${current.date} at ${current.time}`
-                            : current.date || 'Coming Soon'}
-                        </span>
-                      </div>
-                    </div>
-                    <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-3">
-                      {current.title}
-                    </h3>
-                    <p className="text-primary-text/80 font-inter leading-relaxed mb-4">
-                      {current.description}
-                    </p>
-                  </div>
-                </div>
+        {/* Header - Preserved UI */}
+        <div className="text-center mb-8 md:mb-12">
+          <h2 className="text-3xl lg:text-4xl font-space font-bold text-primary-text mb-2">
+            Latest <span className="text-accent-primary">Announcements</span>
+          </h2>
+          <p className="text-secondary-text max-w-2xl mx-auto">
+            Stay updated with the latest news, events, and updates from AppTeam.
+          </p>
+        </div>
 
-                {/* Details Section */}
-                {current.details && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    {Object.entries(current.details).map(([label, value], i) => (
-                      <div
-                        key={i}
-                        className="text-center p-3 bg-glass-white/50 rounded-lg border border-glass-border"
-                      >
-                        <div className="text-primary-text/60 text-xs font-inter uppercase tracking-wide mb-1">
-                          {label}
-                        </div>
-                        <div className="text-primary-text font-space font-medium text-sm">
-                          {value}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+        {/* Action Button (Link to announcements management page) - Preserved UI */}
+        {/* This link assumes you have a route set up for /manage-announcements */}
+        <div className="flex justify-center mb-8 md:mb-12">
+          <Link to="/manage-announcements">
+            <GlowButton>
+              <Plus className="w-4 h-4 mr-2" />
+              Manage Announcements
+            </GlowButton>
+          </Link>
+        </div>
 
-                {current.link && (
-                  <a
-                    href={current.link}
-                    className={`inline-flex items-center text-${current.color} hover:text-${current.color}/80 transition-colors duration-300 font-inter font-medium group`}
-                    target="_blank"
-                  >
-                    Learn More
-                    <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
-                  </a>
-                )}
-              </div>
-
-              {/* Dots */}
-              <div className="mt-6 lg:mt-0 lg:ml-8">
-                <div className="flex lg:flex-col space-x-2 lg:space-x-0 lg:space-y-2">
-                  {newsItems.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentIndex(idx)}
-                      className={`w-3 h-3 rounded-full transition-all duration-300 ${idx === currentIndex
-                          ? `bg-${current.color} scale-125`
-                          : 'bg-primary-text/30 hover:bg-primary-text/50'
-                        }`}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Progress bar */}
-            <div className="mt-6 w-full bg-glass-border rounded-full h-1 overflow-hidden">
-              <div
-                className={`h-full bg-${current.color}`}
-                style={{
-                  width: `${((currentIndex + 1) / newsItems.length) * 100}%`,
-                  transition: 'width 500ms ease'
-                }}
-              />
-            </div>
+        {/* Conditional Rendering based on loading, error, and data presence */}
+        {loading ? (
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-accent-primary mx-auto"></div>
+            <p className="text-secondary-text mt-4">Loading announcements...</p>
           </div>
-        </GlassCard>
+        ) : error ? (
+          <div className="text-center text-red-500">
+            <p>{error}</p>
+          </div>
+        ) : announcements.length === 0 ? (
+          <div className="text-center text-secondary-text">
+            <p>No announcements found.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {announcements.map((announcement) => (
+              <GlassCard key={announcement._id} className="p-6 md:p-8 flex flex-col justify-between">
+                <div>
+                  <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-3 line-clamp-2">
+                    {announcement.title}
+                  </h3>
+                  <p className="text-sm md:text-base text-muted-text font-inter leading-relaxed mb-4 line-clamp-4">
+                    {announcement.content} {/* Displaying content from fetched data */}
+                  </p>
+                </div>
+                <div className="flex items-center justify-between text-xs text-accent-tertiary font-inter">
+                  <span>{formatDate(announcement.date)}</span>
+                  {announcement.author && <span>By {announcement.author}</span>}
+                </div>
+              </GlassCard>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
 };
 
-export default NewsSection;
+export default React.memo(NewsSection);
