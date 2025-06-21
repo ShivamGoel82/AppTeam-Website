@@ -82,7 +82,14 @@ const NewsSection: React.FC = () => {
   useEffect(() => {
     axios.get('https://appteam-website-1.onrender.com/api/announcements')
       .then((res) => {
-        const active = res.data.data.filter((a: Announcement) => a.isActive);
+        // --- START OF MODIFICATION ---
+        // Inspect res.data to determine the correct path to the array of announcements.
+        // For example, if the array is directly in res.data, use res.data.
+        // If it's res.data.announcements, use res.data.announcements.
+        // Assuming it might be res.data.data based on the error, but adding a safe check.
+        const apiAnnouncements = Array.isArray(res.data.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []);
+
+        const active = apiAnnouncements.filter((a: Announcement) => a.isActive);
         const formatted = active.map((item: Announcement, index: number) => ({
           ...item,
           id: `fetched-${index}`,
@@ -92,9 +99,12 @@ const NewsSection: React.FC = () => {
         }));
 
         setNewsItems([...defaultNewsItems, ...formatted]);
+        // --- END OF MODIFICATION ---
       })
       .catch((err) => {
         console.error('Error fetching announcements:', err);
+        // Fallback to default items if API call fails
+        setNewsItems(defaultNewsItems);
       });
   }, []);
 
