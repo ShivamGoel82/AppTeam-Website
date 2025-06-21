@@ -5,7 +5,7 @@ import GlassCard from '../components/GlassCard';
 import GlowButton from '../components/GlowButton';
 
 interface Announcement {
-  _id: string;
+  id: string;
   type: 'Event' | 'Workshop' | 'Achievement' | 'General' | 'Urgent';
   title: string;
   description: string;
@@ -16,17 +16,13 @@ interface Announcement {
   priority: 'low' | 'medium' | 'high';
   isActive: boolean;
   createdAt: string;
-  updatedAt: string;
 }
 
 const AnnouncementsPage: React.FC = () => {
   const navigate = useNavigate();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Announcement>>({
     type: 'General',
     title: '',
@@ -39,27 +35,59 @@ const AnnouncementsPage: React.FC = () => {
     isActive: true
   });
 
-  // Fetch announcements from backend
+  // Sample announcements data
   useEffect(() => {
-    fetchAnnouncements();
-  }, []);
-
-  const fetchAnnouncements = async () => {
-    try {
-      const response = await fetch('https://appteam-website-1.onrender.com/api/announcements?isActive=all');
-      const data = await response.json();
-
-      if (data.success) {
-        setAnnouncements(data.data.announcements);
-      } else {
-        console.error('Failed to fetch announcements:', data.message);
+    const sampleAnnouncements: Announcement[] = [
+      {
+        id: '1',
+        type: 'Event',
+        title: 'HackOnHills 7.0 Registration Opens',
+        description: 'Get ready for the biggest hackathon of the year! Registration for HackOnHills 7.0 is now open. Join us for 48 hours of innovation, coding, and networking.',
+        date: '2025-03-15',
+        time: '10:00 AM',
+        location: 'NIT Hamirpur',
+        link: '#',
+        priority: 'high',
+        isActive: true,
+        createdAt: '2025-01-15T10:00:00Z'
+      },
+      {
+        id: '2',
+        type: 'Workshop',
+        title: 'Full-Stack Development Bootcamp',
+        description: 'Join our comprehensive 8-week bootcamp covering React, Node.js, MongoDB, and deployment strategies. Limited seats available.',
+        date: '2025-03-01',
+        time: '2:00 PM',
+        location: 'Online + Offline',
+        priority: 'medium',
+        isActive: true,
+        createdAt: '2025-01-10T14:00:00Z'
+      },
+      {
+        id: '3',
+        type: 'Achievement',
+        title: 'AppTeam Wins Best Innovation Award',
+        description: 'We are proud to announce that AppTeam has been recognized for outstanding innovation in mobile app development at the institute level.',
+        date: '2025-02-20',
+        priority: 'medium',
+        isActive: true,
+        createdAt: '2025-01-08T09:00:00Z'
+      },
+      {
+        id: '4',
+        type: 'Urgent',
+        title: 'Team Meeting - Project Updates',
+        description: 'Mandatory team meeting to discuss ongoing projects and upcoming deadlines. All core members must attend.',
+        date: '2025-01-18',
+        time: '6:00 PM',
+        location: 'Conference Room A',
+        priority: 'high',
+        isActive: true,
+        createdAt: '2025-01-16T18:00:00Z'
       }
-    } catch (error) {
-      console.error('Error fetching announcements:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    ];
+    setAnnouncements(sampleAnnouncements);
+  }, []);
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -102,91 +130,27 @@ const AnnouncementsPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setErrorMsg(null);
-
-    try {
-      const url = editingId
-        ? `https://appteam-website-1.onrender.com/api/announcements/${editingId}`
-        : 'https://appteam-website-1.onrender.com/api/announcements';
-
-      const method = editingId ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        await fetchAnnouncements(); // Refresh the list
-        resetForm();
-      } else {
-        setErrorMsg(data.message || 'Failed to save announcement.');
-        console.error('Failed to save announcement:', data.message);
-      }
-    } catch (error) {
-      setErrorMsg('Network or server error.');
-      console.error('Error saving announcement:', error);
-    } finally {
-      setIsSubmitting(false);
+    
+    if (editingId) {
+      // Update existing announcement
+      setAnnouncements(prev => prev.map(ann => 
+        ann.id === editingId 
+          ? { ...ann, ...formData, id: editingId }
+          : ann
+      ));
+    } else {
+      // Add new announcement
+      const newAnnouncement: Announcement = {
+        ...formData as Announcement,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString()
+      };
+      setAnnouncements(prev => [newAnnouncement, ...prev]);
     }
-  };
-
-  const handleEdit = (announcement: Announcement) => {
-    setFormData({
-      ...announcement,
-      date: announcement.date.split('T')[0] // Format date for input
-    });
-    setEditingId(announcement._id);
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this announcement?')) return;
-
-    try {
-      const response = await fetch(`https://appteam-website-1.onrender.com/api/announcements/${id}`, {
-        method: 'DELETE',
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        await fetchAnnouncements(); // Refresh the list
-      } else {
-        console.error('Failed to delete announcement:', data.message);
-      }
-    } catch (error) {
-      console.error('Error deleting announcement:', error);
-    }
-  };
-
-  const toggleActive = async (id: string) => {
-    try {
-      const response = await fetch(`https://appteam-website-1.onrender.com/api/announcements/${id}/toggle`, {
-        method: 'PATCH',
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        await fetchAnnouncements(); // Refresh the list
-      } else {
-        console.error('Failed to toggle announcement:', data.message);
-      }
-    } catch (error) {
-      console.error('Error toggling announcement:', error);
-    }
-  };
-
-  const resetForm = () => {
+    
+    // Reset form
     setFormData({
       type: 'General',
       title: '',
@@ -202,18 +166,21 @@ const AnnouncementsPage: React.FC = () => {
     setEditingId(null);
   };
 
-  if (loading) {
-    return (
-      <section className="py-16 md:py-24 relative min-h-screen">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-accent-primary mx-auto"></div>
-            <p className="text-secondary-text mt-4">Loading announcements...</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  const handleEdit = (announcement: Announcement) => {
+    setFormData(announcement);
+    setEditingId(announcement.id);
+    setShowForm(true);
+  };
+
+  const handleDelete = (id: string) => {
+    setAnnouncements(prev => prev.filter(ann => ann.id !== id));
+  };
+
+  const toggleActive = (id: string) => {
+    setAnnouncements(prev => prev.map(ann => 
+      ann.id === id ? { ...ann, isActive: !ann.isActive } : ann
+    ));
+  };
 
   return (
     <section className="py-16 md:py-24 relative min-h-screen">
@@ -252,119 +219,110 @@ const AnnouncementsPage: React.FC = () => {
 
         {/* Announcements List */}
         <div className="space-y-4 md:space-y-6">
-          {announcements.length === 0 ? (
-            <GlassCard className="p-8 text-center">
-              <Bell className="w-12 h-12 text-muted-text mx-auto mb-4" />
-              <h3 className="text-xl font-space font-semibold text-primary-text mb-2">
-                No Announcements Yet
-              </h3>
-              <p className="text-secondary-text font-inter">
-                Create your first announcement to get started.
-              </p>
-            </GlassCard>
-          ) : (
-            announcements.map((announcement) => (
-              <GlassCard
-                key={announcement._id}
-                className={`p-4 md:p-6 border-l-4 ${getPriorityColor(announcement.priority)} ${!announcement.isActive ? 'opacity-60' : ''
-                  }`}
-              >
-                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                  <div className="flex-1">
-                    {/* Header */}
-                    <div className="flex flex-wrap items-center gap-3 mb-3 md:mb-4">
-                      <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-inter border ${getTypeColor(announcement.type)}`}>
-                        {getTypeIcon(announcement.type)}
-                        <span>{announcement.type}</span>
-                      </div>
-
+          {announcements.map((announcement) => (
+            <GlassCard 
+              key={announcement.id} 
+              className={`p-4 md:p-6 border-l-4 ${getPriorityColor(announcement.priority)} ${
+                !announcement.isActive ? 'opacity-60' : ''
+              }`}
+            >
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                <div className="flex-1">
+                  {/* Header */}
+                  <div className="flex flex-wrap items-center gap-3 mb-3 md:mb-4">
+                    <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-inter border ${getTypeColor(announcement.type)}`}>
+                      {getTypeIcon(announcement.type)}
+                      <span>{announcement.type}</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2 text-secondary-text text-sm">
+                      <Calendar className="w-4 h-4" />
+                      <span className="font-inter">{new Date(announcement.date).toLocaleDateString()}</span>
+                    </div>
+                    
+                    {announcement.time && (
                       <div className="flex items-center space-x-2 text-secondary-text text-sm">
-                        <Calendar className="w-4 h-4" />
-                        <span className="font-inter">{new Date(announcement.date).toLocaleDateString()}</span>
+                        <Clock className="w-4 h-4" />
+                        <span className="font-inter">{announcement.time}</span>
                       </div>
-
-                      {announcement.time && (
-                        <div className="flex items-center space-x-2 text-secondary-text text-sm">
-                          <Clock className="w-4 h-4" />
-                          <span className="font-inter">{announcement.time}</span>
-                        </div>
-                      )}
-
-                      <span className={`px-2 py-1 text-xs font-inter rounded-full ${announcement.priority === 'high'
-                          ? 'bg-accent-error/20 text-accent-error'
-                          : announcement.priority === 'medium'
-                            ? 'bg-accent-warning/20 text-accent-warning'
-                            : 'bg-accent-success/20 text-accent-success'
-                        }`}>
-                        {announcement.priority.toUpperCase()}
-                      </span>
-                    </div>
-
-                    {/* Content */}
-                    <h3 className="text-lg md:text-xl font-space font-semibold text-primary-text mb-3">
-                      {announcement.title}
-                    </h3>
-
-                    <p className="text-secondary-text font-inter leading-relaxed mb-4 text-sm md:text-base">
-                      {announcement.description}
-                    </p>
-
-                    {/* Additional Info */}
-                    <div className="flex flex-wrap gap-4 text-sm">
-                      {announcement.location && (
-                        <div className="flex items-center space-x-2 text-muted-text">
-                          <Users className="w-4 h-4" />
-                          <span className="font-inter">{announcement.location}</span>
-                        </div>
-                      )}
-
-                      {announcement.link && (
-                        <a
-                          href={announcement.link}
-                          className="flex items-center space-x-2 text-accent-primary hover:text-accent-primary/80 transition-colors duration-300"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                          <span className="font-inter">Learn More</span>
-                        </a>
-                      )}
-                    </div>
+                    )}
+                    
+                    <span className={`px-2 py-1 text-xs font-inter rounded-full ${
+                      announcement.priority === 'high' 
+                        ? 'bg-accent-error/20 text-accent-error' 
+                        : announcement.priority === 'medium'
+                        ? 'bg-accent-warning/20 text-accent-warning'
+                        : 'bg-accent-success/20 text-accent-success'
+                    }`}>
+                      {announcement.priority.toUpperCase()}
+                    </span>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex flex-row lg:flex-col gap-2">
-                    <button
-                      onClick={() => handleEdit(announcement)}
-                      className="p-2 text-accent-secondary hover:text-accent-secondary/80 hover:bg-accent-secondary/10 rounded-lg transition-colors duration-300"
-                      title="Edit"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
+                  {/* Content */}
+                  <h3 className="text-lg md:text-xl font-space font-semibold text-primary-text mb-3">
+                    {announcement.title}
+                  </h3>
+                  
+                  <p className="text-secondary-text font-inter leading-relaxed mb-4 text-sm md:text-base">
+                    {announcement.description}
+                  </p>
 
-                    <button
-                      onClick={() => toggleActive(announcement._id)}
-                      className={`p-2 rounded-lg transition-colors duration-300 ${announcement.isActive
-                          ? 'text-accent-success hover:text-accent-success/80 hover:bg-accent-success/10'
-                          : 'text-muted-text hover:text-accent-success hover:bg-accent-success/10'
-                        }`}
-                      title={announcement.isActive ? 'Deactivate' : 'Activate'}
-                    >
-                      <Bell className="w-4 h-4" />
-                    </button>
-
-                    <button
-                      onClick={() => handleDelete(announcement._id)}
-                      className="p-2 text-accent-error hover:text-accent-error/80 hover:bg-accent-error/10 rounded-lg transition-colors duration-300"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  {/* Additional Info */}
+                  <div className="flex flex-wrap gap-4 text-sm">
+                    {announcement.location && (
+                      <div className="flex items-center space-x-2 text-muted-text">
+                        <Users className="w-4 h-4" />
+                        <span className="font-inter">{announcement.location}</span>
+                      </div>
+                    )}
+                    
+                    {announcement.link && (
+                      <a
+                        href={announcement.link}
+                        className="flex items-center space-x-2 text-accent-primary hover:text-accent-primary/80 transition-colors duration-300"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span className="font-inter">Learn More</span>
+                      </a>
+                    )}
                   </div>
                 </div>
-              </GlassCard>
-            ))
-          )}
+
+                {/* Actions */}
+                <div className="flex flex-row lg:flex-col gap-2">
+                  <button
+                    onClick={() => handleEdit(announcement)}
+                    className="p-2 text-accent-secondary hover:text-accent-secondary/80 hover:bg-accent-secondary/10 rounded-lg transition-colors duration-300"
+                    title="Edit"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  
+                  <button
+                    onClick={() => toggleActive(announcement.id)}
+                    className={`p-2 rounded-lg transition-colors duration-300 ${
+                      announcement.isActive 
+                        ? 'text-accent-success hover:text-accent-success/80 hover:bg-accent-success/10' 
+                        : 'text-muted-text hover:text-accent-success hover:bg-accent-success/10'
+                    }`}
+                    title={announcement.isActive ? 'Deactivate' : 'Activate'}
+                  >
+                    <Bell className="w-4 h-4" />
+                  </button>
+                  
+                  <button
+                    onClick={() => handleDelete(announcement.id)}
+                    className="p-2 text-accent-error hover:text-accent-error/80 hover:bg-accent-error/10 rounded-lg transition-colors duration-300"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </GlassCard>
+          ))}
         </div>
 
         {/* Add/Edit Form Modal */}
@@ -376,7 +334,7 @@ const AnnouncementsPage: React.FC = () => {
                   <h2 className="text-xl md:text-2xl font-space font-bold text-primary-text mb-6">
                     {editingId ? 'Edit Announcement' : 'Add New Announcement'}
                   </h2>
-
+                  
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -394,7 +352,7 @@ const AnnouncementsPage: React.FC = () => {
                           <option value="Urgent">Urgent</option>
                         </select>
                       </div>
-
+                      
                       <div>
                         <label className="block text-sm font-inter text-secondary-text mb-2">Priority *</label>
                         <select
@@ -445,7 +403,7 @@ const AnnouncementsPage: React.FC = () => {
                           required
                         />
                       </div>
-
+                      
                       <div>
                         <label className="block text-sm font-inter text-secondary-text mb-2">Time (Optional)</label>
                         <input
@@ -468,7 +426,7 @@ const AnnouncementsPage: React.FC = () => {
                           placeholder="Event location"
                         />
                       </div>
-
+                      
                       <div>
                         <label className="block text-sm font-inter text-secondary-text mb-2">Link (Optional)</label>
                         <input
@@ -494,35 +452,30 @@ const AnnouncementsPage: React.FC = () => {
                       </label>
                     </div>
 
-                    {errorMsg && (
-                      <div className="text-accent-error text-sm font-inter">
-                        {errorMsg}
-                      </div>
-                    )}
-
                     <div className="flex justify-end space-x-4">
                       <button
                         type="button"
-                        onClick={resetForm}
+                        onClick={() => {
+                          setShowForm(false);
+                          setEditingId(null);
+                          setFormData({
+                            type: 'General',
+                            title: '',
+                            description: '',
+                            date: '',
+                            time: '',
+                            location: '',
+                            link: '',
+                            priority: 'medium',
+                            isActive: true
+                          });
+                        }}
                         className="px-6 py-3 bg-glass-white border border-glass-border text-secondary-text rounded-lg font-inter font-medium hover:bg-hover-bg transition-colors duration-300"
                       >
                         Cancel
                       </button>
-                      <GlowButton
-                        type="submit"
-                        disabled={isSubmitting}
-                        className={isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            {editingId ? 'Updating...' : 'Creating...'}
-                          </>
-                        ) : (
-                          <>
-                            {editingId ? 'Update' : 'Create'} Announcement
-                          </>
-                        )}
+                      <GlowButton type="submit">
+                        {editingId ? 'Update' : 'Create'} Announcement
                       </GlowButton>
                     </div>
                   </form>
