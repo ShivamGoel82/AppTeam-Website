@@ -99,7 +99,7 @@ function App() {
               } 
             />
             <Route 
-              path="/google" 
+              path="/mnue29dd" 
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <AnnouncementsPage />
