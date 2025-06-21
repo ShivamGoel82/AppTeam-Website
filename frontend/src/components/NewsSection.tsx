@@ -4,10 +4,10 @@ import { Trophy, Users, Sparkles, Calendar, ArrowRight } from 'lucide-react';
 import GlassCard from './GlassCard';
 
 interface Announcement {
-  id: string | number;
+  _id: string; // Changed from 'id' to '_id' to match backend
   type: string;
   title: string;
-  content: string;
+  description: string;
   date?: string;
   time?: string;
   icon?: JSX.Element;
@@ -15,15 +15,15 @@ interface Announcement {
   bgGradient?: string;
   link?: string;
   details?: Record<string, string>;
-  isActive?: boolean; // Ensure isActive is part of the interface
+  isActive?: boolean;
 }
 
 const defaultNewsItems: Announcement[] = [
   {
-    id: 1,
+    _id: 'default-1', // Changed from 'id' to '_id'
     type: 'Major Event',
     title: 'HackOnHills 7.0 - Registration Opens Soon!',
-    content:
+    description:
       'Get ready for the biggest hackathon of the year! HackOnHills 7.0 is coming with exciting challenges, amazing prizes, and opportunities to showcase your innovation.',
     date: 'Coming Soon 2025',
     icon: <Trophy className="w-6 h-6" />,
@@ -38,10 +38,10 @@ const defaultNewsItems: Announcement[] = [
     }
   },
   {
-    id: 2,
+    _id: 'default-2', // Changed from 'id' to '_id'
     type: 'Workshop Series',
     title: 'Full-Stack Development Bootcamp',
-    content:
+    description:
       'Join our comprehensive 8-week bootcamp covering React, Node.js, MongoDB, and deployment strategies. Perfect for beginners and intermediate developers.',
     date: 'March 2025',
     icon: <Users className="w-6 h-6" />,
@@ -56,10 +56,10 @@ const defaultNewsItems: Announcement[] = [
     }
   },
   {
-    id: 3,
+    _id: 'default-3', // Changed from 'id' to '_id'
     type: 'Achievement',
     title: 'AppTeam Wins Best Innovation Award',
-    content:
+    description:
       'Our team has been recognized for outstanding innovation in mobile app development and our contribution to the tech community at NITH.',
     date: 'February 2025',
     icon: <Sparkles className="w-6 h-6" />,
@@ -82,20 +82,20 @@ const NewsSection: React.FC = () => {
   useEffect(() => {
     const axiosInstance = (axios as any).default || axios; 
     
-    // Changed API call to include ?isActive=all
     axiosInstance.get('https://appteam-website-1.onrender.com/api/announcements?isActive=all')
-      .then((res: { data: { data: any; }; }) => {
-        const apiAnnouncements = Array.isArray(res.data.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []);
+      .then((res: { data: { data: { announcements: never[]; }; }; }) => {
+        // CORRECTED: Accessing 'announcements' array from 'res.data.data'
+        const apiAnnouncements: Announcement[] = res.data.data.announcements || [];
         
-        console.log('API Announcements (before filter):', apiAnnouncements); // Log fetched data
+        console.log('API Announcements (before filter):', apiAnnouncements);
 
         const active = apiAnnouncements.filter((a: Announcement) => a.isActive);
         
-        console.log('Active Announcements (after filter):', active); // Log filtered data
+        console.log('Active Announcements (after filter):', active);
 
-        const formatted = active.map((item: Announcement, index: number) => ({
+        const formatted = active.map((item: Announcement) => ({ // Removed index as it's not needed for id
           ...item,
-          id: `fetched-${index}`,
+          _id: item._id, // Use the backend's _id
           color: 'accent-success', // API fetched items will use accent-success
           bgGradient: 'from-accent-success/10 to-accent-success/5',
           icon: <Sparkles className="w-6 h-6" />
@@ -148,8 +148,8 @@ const NewsSection: React.FC = () => {
                         <Calendar className="w-4 h-4 mr-1" />
                         <span className="font-inter">
                           {current.date && current.time
-                            ? `${current.date} at ${current.time}`
-                            : current.date || 'Coming Soon'}
+                            ? `${new Date(current.date).toLocaleDateString()} at ${current.time}` // Format date
+                            : current.date ? new Date(current.date).toLocaleDateString() : 'Coming Soon'}
                         </span>
                       </div>
                     </div>
@@ -157,7 +157,7 @@ const NewsSection: React.FC = () => {
                       {current.title}
                     </h3>
                     <p className="text-primary-text/80 font-inter leading-relaxed mb-4">
-                      {current.content}
+                      {current.description} {/* Changed from 'content' to 'description' */}
                     </p>
                   </div>
                 </div>
@@ -186,6 +186,7 @@ const NewsSection: React.FC = () => {
                     href={current.link}
                     className={`inline-flex items-center text-${current.color} hover:text-${current.color}/80 transition-colors duration-300 font-inter font-medium group`}
                     target="_blank"
+                    rel="noopener noreferrer"
                   >
                     Learn More
                     <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
