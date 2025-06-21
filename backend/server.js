@@ -1,8 +1,8 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+import express, { json, urlencoded } from 'express';
+import { connect } from 'mongoose';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 require('dotenv').config();
 
 const app = express();
@@ -29,15 +29,15 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // Parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(json({ limit: '10mb' }));
+app.use(urlencoded({ extended: true, limit: '10mb' }));
 
 // MongoDB connection
 const connectDB = async () => {
   try {
     const uri = process.env.MONGODB_URI;
     if (!uri) throw new Error('MONGODB_URI is not defined');
-    const conn = await mongoose.connect(uri, {
+    const conn = await connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
