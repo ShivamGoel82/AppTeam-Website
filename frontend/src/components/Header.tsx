@@ -41,7 +41,7 @@ const Header: React.FC = () => {
           <div className="flex items-center space-x-3">
             <div className="w-15 h-15 flex items-center justify-center">
               <img
-                src="/AppTeam.png"
+                src="/https://res.cloudinary.com/dofzziyna/image/upload/v1742722926/Ellipse_390_xilfq3.png"
                 alt="AppTeam Logo"
                 className="w-12 h-12 rounded-full ring-2 ring-accent-primary/20"
               />
