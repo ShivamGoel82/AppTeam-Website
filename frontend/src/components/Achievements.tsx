@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import GlassCard from "./GlassCard";
 import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
 
@@ -7,7 +7,10 @@ const Achievements: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const pauseTimeoutRef = useRef<number | null>(null);
-  const animationRef = useRef<number | null>(null);
+  const animationFrameId = useRef<number | null>(null);
+
+  // Updated scroll speed: both mobile and desktop set to 1 for the slowest smooth speed
+  const scrollSpeed = useRef(isMobile ? 1 : 1);
 
   // Achievement Gallery Images
   const achievementGallery = [
@@ -131,81 +134,99 @@ const Achievements: React.FC = () => {
     }
   ];
 
-  // Duplicate gallery for seamless looping
-  const duplicatedGallery = [...achievementGallery, ...achievementGallery];
+  // Duplicate gallery for seamless looping (minimum of 2 sets, more for long lists)
+  const duplicatedGallery = [...achievementGallery, ...achievementGallery, ...achievementGallery];
+  const numOriginalItems = achievementGallery.length;
+
 
   // Detect mobile
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+      // Set both mobile and desktop speeds to 1
+      scrollSpeed.current = 1;
+    };
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Clean up on unmount
-  useEffect(() => {
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-      if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
-    };
-  }, []);
-
-  // Smooth auto-scroll with loop
-  useEffect(() => {
-    const scrollContainer = scrollRef.current;
-    if (!scrollContainer || !isAutoScrolling) return;
-
-    if (animationRef.current) cancelAnimationFrame(animationRef.current);
-
-    const card = scrollContainer.querySelector(
-      "div.flex-shrink-0"
-    ) as HTMLElement;
-    const cardWidth = card ? card.offsetWidth + 16 : 400;
-
-    const scrollStep = isMobile ? 1 : 2;
-
-    let lastTimestamp = 0;
-    const frameDelay = isMobile ? 12 : 8;
-
-    function autoScroll(timestamp: number) {
-      if (!scrollContainer) return;
-
-      if (timestamp - lastTimestamp > frameDelay) {
-        scrollContainer.scrollLeft += scrollStep;
-
-        if (
-          scrollContainer.scrollLeft >=
-          cardWidth * achievementGallery.length
-        ) {
-          scrollContainer.scrollLeft -= cardWidth * achievementGallery.length;
-        }
-
-        lastTimestamp = timestamp;
-      }
-
-      animationRef.current = requestAnimationFrame(autoScroll);
-    }
-
-    animationRef.current = requestAnimationFrame(autoScroll);
-
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-    };
-  }, [isAutoScrolling, isMobile, achievementGallery.length]);
-
-  // Pause/resume handlers
-  const handlePause = () => {
+  // Pause/resume handlers using useCallback for stability
+  const handlePause = useCallback(() => {
     setIsAutoScrolling(false);
     if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
-  };
+  }, []);
 
-  const handleResume = () => {
+  const handleResume = useCallback(() => {
     if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
     pauseTimeoutRef.current = window.setTimeout(
       () => setIsAutoScrolling(true),
       1500
     );
-  };
+  }, []);
+
+  // Smooth auto-scroll with loop
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer || !isAutoScrolling) {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
+      return;
+    }
+
+    if (animationFrameId.current) {
+      cancelAnimationFrame(animationFrameId.current);
+    }
+
+    const getCardWidth = () => {
+      const card = scrollContainer.querySelector(
+        "div.flex-shrink-0"
+      ) as HTMLElement;
+      // Add gap-x-4 (16px) or gap-x-6 (24px) based on md:gap-6
+      const gap = window.innerWidth < 768 ? 16 : 24;
+      return card ? card.offsetWidth + gap : 400;
+    };
+
+    let cardWidth = getCardWidth(); // Initial calculation
+
+    // The point at which we jump back
+    // This is the width of the *original* set of items
+    const resetPoint = cardWidth * numOriginalItems;
+
+    const autoScroll = () => {
+      if (!scrollContainer) return;
+
+      // Update cardWidth if it changes (e.g., due to responsive layout changes)
+      cardWidth = getCardWidth(); // Recalculate each frame for responsiveness
+
+      scrollContainer.scrollLeft += scrollSpeed.current;
+
+      // If we scroll past the end of the first set of items (the resetPoint),
+      // instantly jump back to the start of the second set of items.
+      if (scrollContainer.scrollLeft >= resetPoint) {
+        scrollContainer.scrollLeft -= resetPoint; // Effectively jumps back to the start of the next 'copy'
+      }
+
+      animationFrameId.current = requestAnimationFrame(autoScroll);
+    };
+
+    animationFrameId.current = requestAnimationFrame(autoScroll);
+
+    return () => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
+    };
+  }, [isAutoScrolling, isMobile, numOriginalItems]);
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+      if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    };
+  }, []);
 
   // Attach event listeners for pause/resume
   useEffect(() => {
@@ -235,47 +256,58 @@ const Achievements: React.FC = () => {
         scrollContainer.removeEventListener("mouseleave", onMouseLeave);
       };
     }
-  }, [isMobile]);
+  }, [isMobile, handlePause, handleResume]);
 
   // Navigation buttons
   const scrollLeft = () => {
     if (scrollRef.current) {
+      handlePause(); // Pause auto-scroll immediately
+
       const card = scrollRef.current.querySelector(
         "div.flex-shrink-0"
       ) as HTMLElement;
-      const scrollAmount = card ? card.offsetWidth + 16 : 400;
-      const maxScroll = card.offsetWidth * achievementGallery.length;
+      const gap = window.innerWidth < 768 ? 16 : 24;
+      const scrollAmount = card ? card.offsetWidth + gap : 400;
+      const originalContentWidth = card.offsetWidth * numOriginalItems + (numOriginalItems - 1) * gap;
 
-      if (scrollRef.current.scrollLeft <= 0) {
-        scrollRef.current.scrollLeft += maxScroll;
+
+      // If we are near the beginning of the *current* set of items,
+      // instantly jump back to the start of the *previous* complete set of items (a duplicate).
+      if (scrollRef.current.scrollLeft < scrollAmount) {
+        scrollRef.current.scrollLeft += originalContentWidth;
       }
 
+      // Now perform the smooth scroll from the new position
       scrollRef.current.scrollBy({ left: -scrollAmount, behavior: "smooth" });
-      handlePause();
-      handleResume();
+      handleResume(); // Resume after a short delay
     }
   };
 
   const scrollRight = () => {
     if (scrollRef.current) {
+      handlePause(); // Pause auto-scroll immediately
+
       const card = scrollRef.current.querySelector(
         "div.flex-shrink-0"
       ) as HTMLElement;
-      const scrollAmount = card ? card.offsetWidth + 16 : 400;
+      const gap = window.innerWidth < 768 ? 16 : 24;
+      const scrollAmount = card ? card.offsetWidth + gap : 400;
+      const originalContentWidth = card.offsetWidth * numOriginalItems + (numOriginalItems - 1) * gap;
+
+
+      // If we are near the end of a duplicated set of items, jump back.
+      // This ensures smooth looping when manually scrolling right.
+      const threshold = originalContentWidth * (duplicatedGallery.length / numOriginalItems - 1) - scrollAmount;
+      if (scrollRef.current.scrollLeft >= threshold) {
+         scrollRef.current.scrollLeft -= originalContentWidth;
+      }
+
+
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-      setTimeout(() => {
-        if (
-          scrollRef.current &&
-          scrollRef.current.scrollLeft >=
-            card.offsetWidth * achievementGallery.length
-        ) {
-          scrollRef.current.scrollLeft = 0;
-        }
-      }, 400);
-      handlePause();
-      handleResume();
+      handleResume(); // Resume after a short delay
     }
   };
+
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -359,7 +391,7 @@ const Achievements: React.FC = () => {
             {/* Scrolling Gallery */}
             <div
               ref={scrollRef}
-              className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
+              className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4"
               style={{
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
@@ -440,13 +472,10 @@ const Achievements: React.FC = () => {
                     isAutoScrolling ? "animate-pulse scale-110" : "opacity-50"
                   }`}
                 ></div>
-                <span className="hidden sm:inline">
+                <span>
                   {isAutoScrolling
                     ? "Auto-scrolling gallery • Hover to pause"
                     : "Auto-scroll paused • Will resume shortly"}
-                </span>
-                <span className="sm:hidden">
-                  {isAutoScrolling ? "Auto-scrolling" : "Paused"}
                 </span>
               </div>
             </div>
@@ -475,7 +504,7 @@ const Achievements: React.FC = () => {
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    
+
                     {/* Overlay Info */}
                     <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                       <h4 className="text-white font-space font-semibold text-sm mb-1">
