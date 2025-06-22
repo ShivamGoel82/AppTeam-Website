@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import GlassCard from "./GlassCard";
-import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
+import { ChevronLeft, ChevronRight, Camera, X } from "lucide-react"; // Added X for close icon
 
 const Achievements: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -8,6 +8,9 @@ const Achievements: React.FC = () => {
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const pauseTimeoutRef = useRef<number | null>(null);
   const animationFrameId = useRef<number | null>(null);
+
+  // State for the full-screen image modal
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Updated scroll speed: both mobile and desktop set to 1 for the slowest smooth speed
   const scrollSpeed = useRef(isMobile ? 1 : 1);
@@ -348,6 +351,20 @@ const Achievements: React.FC = () => {
     },
   ];
 
+  // Effect to handle body scroll lock when modal is open
+  useEffect(() => {
+    if (selectedImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    // Cleanup on unmount or if selectedImage changes
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedImage]);
+
+
   return (
     <section id="achievements" className="py-16 md:py-24 relative">
       <div className="container mx-auto px-4 md:px-6">
@@ -495,17 +512,18 @@ const Achievements: React.FC = () => {
                 <div
                   key={memory.id}
                   className="group cursor-pointer overflow-hidden rounded-lg border border-glass-border bg-secondary-dark/30 hover:border-accent-primary/30 transition-all duration-300"
+                  onClick={() => setSelectedImage(memory.image)} // Open modal on click
                 >
-                  <div className="relative aspect-square overflow-hidden">
+                  <div className="relative aspect-video overflow-hidden">
                     <img
                       src={memory.image}
                       alt={memory.title}
+                      // Changed to object-cover to make images "clearly seen or zoom them" by filling the container
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                    {/* Overlay Info */}
+                    {/* Removed overlay info (title and description) as requested */}
+                    {/* <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                       <h4 className="text-white font-space font-semibold text-sm mb-1">
                         {memory.title}
@@ -513,7 +531,7 @@ const Achievements: React.FC = () => {
                       <p className="text-neutral-200 font-inter text-xs">
                         {memory.description}
                       </p>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               ))}
@@ -562,6 +580,29 @@ const Achievements: React.FC = () => {
           </div>
         </GlassCard>
       </div>
+
+      {/* Full-screen Image Modal */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedImage(null)} // Close when clicking outside the image
+        >
+          <button
+            className="absolute top-4 right-4 text-white hover:text-accent-primary transition-colors duration-200"
+            onClick={() => setSelectedImage(null)}
+            aria-label="Close image"
+          >
+            <X className="w-8 h-8 md:w-10 md:h-10" />
+          </button>
+          <img
+            src={selectedImage}
+            alt="Full-screen memory"
+            className="max-w-full max-h-full object-contain" // Use object-contain here to show the full image without cropping in the modal
+            loading="eager" // Load this image immediately
+            onClick={(e) => e.stopPropagation()} // Prevent modal from closing when clicking the image itself
+          />
+        </div>
+      )}
     </section>
   );
 };
