@@ -3,7 +3,12 @@ import { User, Mail, Phone, Code, Send, CheckCircle, AlertCircle, Edit, X } from
 import GlassCard from './GlassCard';
 import GlowButton from './GlowButton';
 
-const API_BASE = 'https://appteam-website-1.onrender.com/api/members';
+// API_BASE - CONDITIONAL FOR DEVELOPMENT VS. PRODUCTION
+const LOCAL_BACKEND_PORT = '5000'; // Make sure this matches your backend's running port
+const API_BASE =
+  process.env.NODE_ENV === 'production'
+    ? 'https://appteam-website-1.onrender.com/api/members'
+    : `http://localhost:${LOCAL_BACKEND_PORT}/api/members`;
 
 
 interface MemberFormData {
@@ -40,8 +45,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onClose, editingEmail }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-  const [isEditing, setIsEditing] = useState(!!editingEmail);
-  
+  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<MemberFormData>({
     personalInfo: {
       fullName: '',
@@ -49,8 +53,8 @@ const MemberForm: React.FC<MemberFormProps> = ({ onClose, editingEmail }) => {
       phone: '',
       rollNumber: '',
       branch: '',
-      year: '',
-      profileImage: ''
+      year: '1st',
+      profileImage: 'https://placehold.co/150x150/e0e0e0/000000?text=Profile', // Default placeholder
     },
     professionalInfo: {
       role: '',
@@ -59,437 +63,430 @@ const MemberForm: React.FC<MemberFormProps> = ({ onClose, editingEmail }) => {
       portfolioUrl: '',
       githubUrl: '',
       linkedinUrl: '',
-      twitterUrl: ''
+      twitterUrl: '',
     },
     membershipInfo: {
       memberType: 'active',
-      position: ''
-    }
+      position: '',
+    },
   });
+  const [skillsInput, setSkillsInput] = useState('');
 
-  // Load existing member data if editing
+
+  // Fetch member data if in editing mode
   useEffect(() => {
-  if (editingEmail) {
-    const fetchMemberData = async () => {
-      try {
-        const response = await fetch(`${API_BASE}/profile/${encodeURIComponent(editingEmail)}`);
-        const data = await response.json();
-
-        if (data.success) {
-          setFormData(data.data);
-        } else {
-          setErrorMessage('Failed to load member data');
+    if (editingEmail) {
+      setIsEditing(true);
+      const fetchMemberData = async () => {
+        try {
+          const response = await fetch(`${API_BASE}/profile/${encodeURIComponent(editingEmail)}`);
+          const data = await response.json();
+          if (data.success && data.data) {
+            setFormData({
+              ...data.data,
+              // Ensure skills are handled correctly (might be a string array from backend)
+              professionalInfo: {
+                ...data.data.professionalInfo,
+                skills: Array.isArray(data.data.professionalInfo.skills)
+                  ? data.data.professionalInfo.skills
+                  : [],
+              },
+            });
+            setSkillsInput(data.data.professionalInfo.skills.join(', '));
+          } else {
+            setErrorMessage(data.message || 'Failed to fetch member data for editing.');
+            setSubmitStatus('error');
+          }
+        } catch (error) {
+          console.error('Error fetching member data:', error);
+          setErrorMessage('Network error or failed to fetch member data.');
+          setSubmitStatus('error');
         }
-      } catch (error) {
-        setErrorMessage('Failed to load member data');
-      }
-    };
+      };
+      fetchMemberData();
+    } else {
+      setIsEditing(false);
+      // Reset form for new member creation
+      setFormData({
+        personalInfo: {
+          fullName: '',
+          email: '',
+          phone: '',
+          rollNumber: '',
+          branch: '',
+          year: '1st',
+          profileImage: 'https://placehold.co/150x150/e0e0e0/000000?text=Profile',
+        },
+        professionalInfo: {
+          role: '',
+          bio: '',
+          skills: [],
+          portfolioUrl: '',
+          githubUrl: '',
+          linkedinUrl: '',
+          twitterUrl: '',
+        },
+        membershipInfo: {
+          memberType: 'active',
+          position: '',
+        },
+      });
+      setSkillsInput('');
+    }
+  }, [editingEmail]);
 
-    fetchMemberData();
-  }
-}, [editingEmail]);
 
-  const skillOptions = [
-    'JavaScript', 'Python', 'Java', 'C++', 'React', 'Node.js', 'Flutter', 'React Native',
-    'UI/UX Design', 'Machine Learning', 'Data Science', 'DevOps', 'Blockchain', 'Cybersecurity',
-    'Mobile Development', 'Web Development', 'Backend Development', 'Frontend Development'
-  ];
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    // Handle nested state updates
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setFormData((prev) => ({
+        ...prev,
+        [parent]: {
+          ...(prev as any)[parent], // Cast to any to access dynamically
+          [child]: value,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        membershipInfo: {
+            ...prev.membershipInfo,
+            [name]: value,
+        }
+      }));
+    }
+  };
 
-  const roleOptions = [
-    'Team Lead', 'Frontend Developer', 'Backend Developer', 'Full-Stack Developer', 
-    'Mobile Developer', 'UI/UX Designer', 'DevOps Engineer', 'AI/ML Engineer',
-    'Data Scientist', 'Product Manager', 'Technical Writer'
-  ];
-
-  const handleInputChange = (section: keyof MemberFormData, field: string, value: any) => {
-    setFormData(prev => ({
+  const handleSkillsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSkillsInput(e.target.value);
+    setFormData((prev) => ({
       ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: value
-      }
+      professionalInfo: {
+        ...prev.professionalInfo,
+        skills: e.target.value.split(',').map((skill) => skill.trim()).filter(Boolean),
+      },
     }));
   };
 
-  const handleSkillToggle = (skill: string) => {
-    setFormData(prev => {
-      const currentSkills = prev.professionalInfo.skills;
-      const newSkills = currentSkills.includes(skill)
-        ? currentSkills.filter(s => s !== skill)
-        : [...currentSkills, skill];
-      
-      return {
-        ...prev,
-        professionalInfo: {
-          ...prev.professionalInfo,
-          skills: newSkills
-        }
-      };
-    });
-  };
-
-  const validateForm = (): boolean => {
-    const { personalInfo, professionalInfo } = formData;
-    
-    if (!personalInfo.fullName || !personalInfo.email || !personalInfo.phone || 
-        !personalInfo.rollNumber || !personalInfo.branch || !personalInfo.year) {
-      setErrorMessage('Please fill in all personal information fields');
-      return false;
-    }
-    
-    if (!professionalInfo.role || !professionalInfo.bio || professionalInfo.skills.length === 0) {
-      setErrorMessage('Please fill in all professional information fields');
-      return false;
-    }
-    
-    if (professionalInfo.bio.length > 300) {
-      setErrorMessage('Bio must be 300 characters or less');
-      return false;
-    }
-    
-    return true;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
 
-  if (!validateForm()) return;
-
-  setIsSubmitting(true);
-  setErrorMessage('');
-
-  try {
-    const url = isEditing
-      ? `${API_BASE}/profile/${encodeURIComponent(editingEmail || '')}`
-      : `${API_BASE}`;
-
-    const method = isEditing ? 'PUT' : 'POST';
-
-    const response = await fetch(url, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await response.json();
-
-    if (response.ok && data.success) {
-      setSubmitStatus('success');
-      setTimeout(() => {
-        onClose();
-      }, 2000);
-    } else {
-      setSubmitStatus('error');
-      setErrorMessage(data.message || 'Something went wrong. Please try again.');
+    // Basic validation
+    if (!formData.personalInfo.fullName || !formData.personalInfo.email || !formData.personalInfo.rollNumber || !formData.professionalInfo.role || !formData.professionalInfo.bio) {
+        setErrorMessage('Please fill in all required fields (Full Name, Email, Roll Number, Role, Bio).');
+        setIsSubmitting(false);
+        setSubmitStatus('error');
+        return;
     }
-  } catch (error) {
-    setSubmitStatus('error');
-    setErrorMessage('Network error. Please check your connection.');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
 
-  if (submitStatus === 'success') {
-    return (
-      <div className="fixed inset-0 bg-primary-dark/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <GlassCard className="p-8 text-center max-w-md mx-auto">
-          <CheckCircle className="w-16 h-16 text-accent-success mx-auto mb-4" />
-          <h3 className="text-2xl font-space font-bold text-primary-text mb-4">
-            {isEditing ? 'Profile Updated!' : 'Profile Created!'}
-          </h3>
-          <p className="text-secondary-text font-inter leading-relaxed">
-            {isEditing 
-              ? 'Your profile has been updated successfully and will be visible on the team page.'
-              : 'Your profile has been created successfully and will be visible on the team page.'
-            }
-          </p>
-        </GlassCard>
-      </div>
-    );
-  }
+    try {
+      const url = isEditing ? `${API_BASE}/profile/${encodeURIComponent(editingEmail || '')}` : API_BASE;
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setSubmitStatus('success');
+        setErrorMessage(isEditing ? 'Profile updated successfully!' : 'Member created successfully!');
+        // Optionally, reset form or close after success
+        setTimeout(() => onClose(), 1500); // Close after showing success
+      } else {
+        setErrorMessage(data.message || 'Something went wrong. Please try again.');
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      setErrorMessage('Network error. Please check your connection.');
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Helper for dynamic input classes
+  const inputClass = "w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300";
+
 
   return (
-    
-    <div className="fixed inset-0 bg-primary-dark/90 backdrop-blur-sm z-50 overflow-y-auto">
-      <div className="min-h-screen flex items-start justify-center p-4 pt-8 pb-8">
-        <div className="w-full max-w-4xl">
-          <GlassCard className="p-6 md:p-8">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl font-space font-bold text-primary-text">
-                {isEditing ? 'Edit Profile' : 'Add Member Profile'}
-              </h2>
-              <button
-                onClick={onClose}
-                className="text-muted-text hover:text-primary-text transition-colors duration-300"
-              >
-                <X className="w-6 h-6" />
-              </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-md p-4">
+      <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <GlassCard className="p-6 md:p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl md:text-2xl font-space font-bold text-primary-text">
+              {isEditing ? 'Edit Member Profile' : 'Add New Member'}
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-muted-text hover:text-primary-text transition-colors duration-300"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Personal Info */}
+            <h3 className="text-lg font-space font-semibold text-accent-primary border-b border-glass-border pb-2 mb-4">Personal Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">Full Name *</label>
+                <input
+                  type="text"
+                  name="personalInfo.fullName"
+                  value={formData.personalInfo.fullName}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="John Doe"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">Email *</label>
+                <input
+                  type="email"
+                  name="personalInfo.email"
+                  value={formData.personalInfo.email}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="john.doe@example.com"
+                  required
+                  disabled={isEditing} // Email should not be editable
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">Phone *</label>
+                <input
+                  type="tel"
+                  name="personalInfo.phone"
+                  value={formData.personalInfo.phone}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="+91-1234567890"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">Roll Number *</label>
+                <input
+                  type="text"
+                  name="personalInfo.rollNumber"
+                  value={formData.personalInfo.rollNumber}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="21XXXXXX"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">Branch *</label>
+                <input
+                  type="text"
+                  name="personalInfo.branch"
+                  value={formData.personalInfo.branch}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="Computer Science Engineering"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">Year *</label>
+                <select
+                  name="personalInfo.year"
+                  value={formData.personalInfo.year}
+                  onChange={handleChange}
+                  className={inputClass}
+                  required
+                >
+                  <option value="1st">1st Year</option>
+                  <option value="2nd">2nd Year</option>
+                  <option value="3rd">3rd Year</option>
+                  <option value="4th">4th Year</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">Profile Image URL</label>
+                <input
+                  type="url"
+                  name="personalInfo.profileImage"
+                  value={formData.personalInfo.profileImage}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="https://example.com/profile.jpg"
+                />
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Personal Information */}
+            {/* Professional Info */}
+            <h3 className="text-lg font-space font-semibold text-accent-primary border-b border-glass-border pb-2 mb-4 pt-6">Professional Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <h3 className="text-xl font-space font-semibold text-primary-text mb-4 flex items-center">
-                  <User className="w-5 h-5 mr-2 text-accent-primary" />
-                  Personal Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-inter text-secondary-text mb-2">Full Name *</label>
-                    <input
-                      type="text"
-                      value={formData.personalInfo.fullName}
-                      onChange={(e) => handleInputChange('personalInfo', 'fullName', e.target.value)}
-                      className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                      placeholder="Enter your full name"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-inter text-secondary-text mb-2">Email *</label>
-                    <input
-                      type="email"
-                      value={formData.personalInfo.email}
-                      onChange={(e) => handleInputChange('personalInfo', 'email', e.target.value)}
-                      className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                      placeholder="your.email@example.com"
-                      disabled={isEditing}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-inter text-secondary-text mb-2">Phone Number *</label>
-                    <input
-                      type="tel"
-                      value={formData.personalInfo.phone}
-                      onChange={(e) => handleInputChange('personalInfo', 'phone', e.target.value)}
-                      className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                      placeholder="+91 98765 43210"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-inter text-secondary-text mb-2">Roll Number *</label>
-                    <input
-                      type="text"
-                      value={formData.personalInfo.rollNumber}
-                      onChange={(e) => handleInputChange('personalInfo', 'rollNumber', e.target.value)}
-                      className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                      placeholder="21XXXXX"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-inter text-secondary-text mb-2">Branch *</label>
-                    <select
-                      value={formData.personalInfo.branch}
-                      onChange={(e) => handleInputChange('personalInfo', 'branch', e.target.value)}
-                      className="w-full px-4 py-3 bg-tertiary-dark text-primary-text border border-accent-primary rounded-md font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                      required
-                    >
-                      <option value="">Select Branch</option>
-                      <option value="CSE">Computer Science Engineering</option>
-                      <option value="ECE">Electronics & Communication</option>
-                      <option value="EE">Electrical Engineering</option>
-                      <option value="ME">Mechanical Engineering</option>
-                      <option value="CE">Civil Engineering</option>
-                      <option value="CHE">Chemical Engineering</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-inter text-secondary-text mb-2">Year *</label>
-                    <select
-                      value={formData.personalInfo.year}
-                      onChange={(e) => handleInputChange('personalInfo', 'year', e.target.value)}
-                      className="w-full px-4 py-3 bg-tertiary-dark text-primary-text border border-accent-primary rounded-md font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                      required
-                    >
-                      <option value="">Select Year</option>
-                      <option value="1st">1st Year</option>
-                      <option value="2nd">2nd Year</option>
-                      <option value="3rd">3rd Year</option>
-                      <option value="4th">4th Year</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <label className="block text-sm font-inter text-secondary-text mb-2">Profile Image URL (Optional)</label>
-                  <input
-                    type="url"
-                    value={formData.personalInfo.profileImage}
-                    onChange={(e) => handleInputChange('personalInfo', 'profileImage', e.target.value)}
-                    className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                    placeholder="https://example.com/your-photo.jpg"
-                  />
-                </div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">Role *</label>
+                <input
+                  type="text"
+                  name="professionalInfo.role"
+                  value={formData.professionalInfo.role}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="Frontend Developer / UI/UX Designer"
+                  required
+                />
               </div>
-
-              {/* Professional Information */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-inter text-secondary-text mb-2">Bio *</label>
+                <textarea
+                  name="professionalInfo.bio"
+                  value={formData.professionalInfo.bio}
+                  onChange={handleChange}
+                  rows={3}
+                  className={inputClass}
+                  placeholder="A passionate developer skilled in React and Node.js..."
+                  required
+                ></textarea>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-inter text-secondary-text mb-2">Skills (comma-separated)</label>
+                <input
+                  type="text"
+                  name="professionalInfo.skills" // Note: name property here is just for onChange context
+                  value={skillsInput}
+                  onChange={handleSkillsChange}
+                  className={inputClass}
+                  placeholder="React, Node.js, MongoDB, Figma, Python"
+                />
+              </div>
               <div>
-                <h3 className="text-xl font-space font-semibold text-primary-text mb-4 flex items-center">
-                  <Code className="w-5 h-5 mr-2 text-accent-secondary" />
-                  Professional Information
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-inter text-secondary-text mb-2">Role *</label>
-                    <select
-                      value={formData.professionalInfo.role}
-                      onChange={(e) => handleInputChange('professionalInfo', 'role', e.target.value)}
-                      className="w-full px-4 py-3 bg-tertiary-dark text-primary-text border border-accent-primary rounded-md font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                      required
-                    >
-                      <option value="">Select Role</option>
-                      {roleOptions.map((role) => (
-                        <option key={role} value={role}>{role}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-inter text-secondary-text mb-2">Member Type</label>
-                    <select
-                      value={formData.membershipInfo.memberType}
-                      onChange={(e) => handleInputChange('membershipInfo', 'memberType', e.target.value)}
-                      className="w-full px-4 py-3 bg-tertiary-dark text-primary-text border border-accent-primary rounded-md font-inter focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                    >
-                      <option value="active">Active Member</option>
-                      <option value="core">Core Team</option>
-                      <option value="alumni">Alumni</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-inter text-secondary-text mb-2">Bio * (Max 300 characters)</label>
-                  <textarea
-                    value={formData.professionalInfo.bio}
-                    onChange={(e) => handleInputChange('professionalInfo', 'bio', e.target.value)}
-                    maxLength={300}
-                    rows={3}
-                    className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300 resize-vertical"
-                    placeholder="Brief description about yourself and your expertise..."
-                    required
-                  />
-                  <div className="text-right text-xs text-muted-text mt-1">
-                    {formData.professionalInfo.bio.length}/300
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-inter text-secondary-text mb-3">Skills * (Select all that apply)</label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                    {skillOptions.map((skill) => (
-                      <label key={skill} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={formData.professionalInfo.skills.includes(skill)}
-                          onChange={() => handleSkillToggle(skill)}
-                          className="w-4 h-4 text-accent-primary bg-glass-white border-glass-border rounded focus:ring-accent-primary focus:ring-2"
-                        />
-                        <span className="text-sm font-inter text-secondary-text">{skill}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-inter text-secondary-text mb-2">Portfolio URL</label>
-                    <input
-                      type="url"
-                      value={formData.professionalInfo.portfolioUrl}
-                      onChange={(e) => handleInputChange('professionalInfo', 'portfolioUrl', e.target.value)}
-                      className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                      placeholder="https://yourportfolio.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-inter text-secondary-text mb-2">GitHub URL</label>
-                    <input
-                      type="url"
-                      value={formData.professionalInfo.githubUrl}
-                      onChange={(e) => handleInputChange('professionalInfo', 'githubUrl', e.target.value)}
-                      className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                      placeholder="https://github.com/yourusername"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-inter text-secondary-text mb-2">LinkedIn URL</label>
-                    <input
-                      type="url"
-                      value={formData.professionalInfo.linkedinUrl}
-                      onChange={(e) => handleInputChange('professionalInfo', 'linkedinUrl', e.target.value)}
-                      className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                      placeholder="https://linkedin.com/in/yourusername"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-inter text-secondary-text mb-2">Twitter URL</label>
-                    <input
-                      type="url"
-                      value={formData.professionalInfo.twitterUrl}
-                      onChange={(e) => handleInputChange('professionalInfo', 'twitterUrl', e.target.value)}
-                      className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                      placeholder="https://twitter.com/yourusername"
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <label className="block text-sm font-inter text-secondary-text mb-2">Position (Optional)</label>
-                  <input
-                    type="text"
-                    value={formData.membershipInfo.position}
-                    onChange={(e) => handleInputChange('membershipInfo', 'position', e.target.value)}
-                    className="w-full px-4 py-3 bg-glass-white border border-glass-border rounded-lg text-primary-text font-inter placeholder-muted-text focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-colors duration-300"
-                    placeholder="e.g., Technical Lead, Project Manager"
-                  />
-                </div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">Portfolio URL</label>
+                <input
+                  type="url"
+                  name="professionalInfo.portfolioUrl"
+                  value={formData.professionalInfo.portfolioUrl}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="https://yourportfolio.com"
+                />
               </div>
-
-              {/* Error Message */}
-              {errorMessage && (
-                <div className="p-4 bg-accent-error/10 border border-accent-error/30 rounded-lg flex items-center space-x-2">
-                  <AlertCircle className="w-5 h-5 text-accent-error flex-shrink-0" />
-                  <span className="text-accent-error font-inter text-sm">{errorMessage}</span>
-                </div>
-              )}
-
-              {/* Submit Button */}
-              <div className="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-6 py-3 bg-glass-white border border-glass-border text-secondary-text rounded-lg font-inter font-medium hover:bg-hover-bg transition-colors duration-300"
-                >
-                  Cancel
-                </button>
-                <GlowButton
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      {isEditing ? 'Updating...' : 'Creating...'}
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4 mr-2" />
-                      {isEditing ? 'Update Profile' : 'Create Profile'}
-                    </>
-                  )}
-                </GlowButton>
+              <div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">GitHub URL</label>
+                <input
+                  type="url"
+                  name="professionalInfo.githubUrl"
+                  value={formData.professionalInfo.githubUrl}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="https://github.com/yourusername"
+                />
               </div>
-            </form>
-          </GlassCard>
-        </div>
+              <div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">LinkedIn URL</label>
+                <input
+                  type="url"
+                  name="professionalInfo.linkedinUrl"
+                  value={formData.professionalInfo.linkedinUrl}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="https://linkedin.com/in/yourprofile"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">Twitter URL</label>
+                <input
+                  type="url"
+                  name="professionalInfo.twitterUrl"
+                  value={formData.professionalInfo.twitterUrl}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="https://twitter.com/yourusername"
+                />
+              </div>
+            </div>
+
+            {/* Membership Info */}
+            <h3 className="text-lg font-space font-semibold text-accent-primary border-b border-glass-border pb-2 mb-4 pt-6">Membership Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">Member Type *</label>
+                <select
+                  name="memberType" // This directly maps to membershipInfo.memberType
+                  value={formData.membershipInfo.memberType}
+                  onChange={handleChange}
+                  className={inputClass}
+                  required
+                >
+                  <option value="active">Active Member</option>
+                  <option value="core">Core Member</option>
+                  <option value="alumni">Alumni</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-inter text-secondary-text mb-2">Position (e.g., Lead, Coordinator)</label>
+                <input
+                  type="text"
+                  name="position" // This directly maps to membershipInfo.position
+                  value={formData.membershipInfo.position}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="Technical Lead"
+                />
+              </div>
+            </div>
+
+
+            {/* Submission Status */}
+            {submitStatus === 'success' && (
+              <div className="flex items-center bg-accent-success/10 text-accent-success px-4 py-3 rounded-lg">
+                <CheckCircle className="w-5 h-5 mr-2 flex-shrink-0" />
+                <span className="font-inter text-sm">{errorMessage}</span>
+              </div>
+            )}
+            {submitStatus === 'error' && (
+              <div className="flex items-center bg-accent-error/10 text-accent-error px-4 py-3 rounded-lg">
+                <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
+                <span className="text-accent-error font-inter text-sm">{errorMessage}</span>
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-6 py-3 bg-glass-white border border-glass-border text-secondary-text rounded-lg font-inter font-medium hover:bg-hover-bg transition-colors duration-300"
+              >
+                Cancel
+              </button>
+              <GlowButton
+                type="submit"
+                disabled={isSubmitting}
+                className={`${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    {isEditing ? 'Updating...' : 'Creating...'}
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 mr-2" />
+                    {isEditing ? 'Update Profile' : 'Create Profile'}
+                  </>
+                )}
+              </GlowButton>
+            </div>
+          </form>
+        </GlassCard>
       </div>
     </div>
   );

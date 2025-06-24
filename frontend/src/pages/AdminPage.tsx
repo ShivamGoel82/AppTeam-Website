@@ -74,26 +74,7 @@ const AdminPage: React.FC = () => {
   const [editingMemberEmail, setEditingMemberEmail] = useState<string | undefined>();
   const [memberEmailInput, setMemberEmailInput] = useState(''); // For searching member to edit
 
-  // --- Announcement Management States ---
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
-  const [showAnnouncementForm, setShowAnnouncementForm] = useState(false);
-  const [editingAnnouncementId, setEditingAnnouncementId] = useState<string | null>(null);
-  const [isSubmittingAnnouncement, setIsSubmittingAnnouncement] = useState(false);
-  const [announcementFormData, setAnnouncementFormData] = useState<Partial<Announcement>>({
-    type: 'General',
-    title: '',
-    description: '',
-    date: '',
-    time: '',
-    location: '',
-    link: '',
-    priority: 'medium',
-    isActive: true, // Default to true here
-  });
-  const [announcementErrorMessage, setAnnouncementErrorMessage] = useState('');
-
-  // --- Member Management Functions ---
+  // --- Announcement Management Functions ---
   const fetchMembers = useCallback(async () => {
     setLoadingMembers(true);
     try {
@@ -175,6 +156,25 @@ const AdminPage: React.FC = () => {
     }
   };
 
+
+  // --- Announcement Management States ---
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
+  const [showAnnouncementForm, setShowAnnouncementForm] = useState(false);
+  const [editingAnnouncementId, setEditingAnnouncementId] = useState<string | null>(null);
+  const [isSubmittingAnnouncement, setIsSubmittingAnnouncement] = useState(false);
+  const [announcementFormData, setAnnouncementFormData] = useState<Partial<Announcement>>({
+    type: 'General',
+    title: '',
+    description: '',
+    date: '',
+    time: '',
+    location: '',
+    link: '',
+    priority: 'medium',
+    isActive: true, // Default to true here
+  });
+  const [announcementErrorMessage, setAnnouncementErrorMessage] = useState('');
 
   // --- Announcement Management Functions ---
   const fetchAnnouncements = useCallback(async () => {

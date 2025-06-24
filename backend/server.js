@@ -17,7 +17,7 @@ const limiter = rateLimit({
   max: 100, // Limit each IP to 100 requests per windowMs
   message: 'Too many requests from this IP, please try again later.'
 });
-app.use('/api/', limiter); // Apply rate limiting to all /api routes
+app.use('/api/', limiter); // Apply to all /api routes
 
 // CORS Configuration - ***THIS IS THE CRITICAL FIX FOR YOUR ERROR***
 // In development, we allow all origins ('*') to prevent CORS issues.
@@ -84,7 +84,7 @@ app.use((err, req, res, next) => {
   console.error(err.stack); // Log the full error stack for debugging
   res.status(err.statusCode || 500).json({ // Send appropriate status code
     success: false,
-    message: err.message || 'Something went wrong on the server. Please try again later.'
+    message: err.message || 'Something went wrong on the server.'
   });
 });
 
