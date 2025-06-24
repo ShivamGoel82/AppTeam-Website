@@ -1,4 +1,3 @@
-// src/App.tsx
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
@@ -6,8 +5,9 @@ import Hero from './components/Hero';
 import AnimatedBackground from './components/AnimatedBackground';
 import CodeRain from './components/CodeRain';
 
-// Import AdminPage directly
+// Import AdminPage and NoMatch directly
 import AdminPage from './pages/AdminPage'; // Assuming AdminPage is in src/pages
+import NoMatch from './pages/NoMatch';     // Import the new 404 page
 
 // Lazy load components that are not immediately visible
 const NewsSection = lazy(() => import('./components/NewsSection'));
@@ -65,6 +65,7 @@ function App() {
 
           <Routes>
             <Route path="/" element={<HomePage />} />
+
             {/* Admin Page - Only accessible in development environment */}
             {process.env.NODE_ENV === 'development' && (
               <Route
@@ -76,8 +77,9 @@ function App() {
                 }
               />
             )}
-            {/* Removed the separate AnnouncementsPage route as AdminPage covers it */}
-            {/* The path /mnue29dd is now effectively unused unless another component is assigned to it */}
+
+            {/* Catch-all route for 404 - MUST BE THE LAST ROUTE */}
+            <Route path="*" element={<NoMatch />} />
           </Routes>
         </div>
       </div>
