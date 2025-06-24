@@ -1,61 +1,69 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
+const cors = require('cors'); // Ensure 'cors' is installed (npm install cors)
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-require('dotenv').config();
+require('dotenv').config(); // Loads environment variables from .env file
 
 const app = express();
-app.set('trust proxy', true);
+app.set('trust proxy', true); // Essential if deployed behind a proxy like Vercel
 
-// Security
+// Security Middleware
 app.use(helmet());
 
-// Rate limiting
+// Rate Limiting Middleware
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
   message: 'Too many requests from this IP, please try again later.'
 });
-app.use('/api/', limiter);
+app.use('/api/', limiter); // Apply rate limiting to all /api routes
 
-// CORS
+// CORS Configuration - ***THIS IS THE CRITICAL FIX FOR YOUR ERROR***
+// In development, we allow all origins ('*') to prevent CORS issues.
+// In production, it remains restricted to your Vercel deployment domains for security.
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
     ? ['https://appteamwebsite.vercel.app', 'https://appteam-nith.vercel.app']
-    : ['http://localhost:3000', 'http://localhost:5173'],
-  credentials: true
+    // For local development, explicitly use '*' to allow any local frontend port.
+    // This is the most reliable way to avoid 'Access-Control-Allow-Origin' errors locally.
+    // IMPORTANT: NEVER use '*' in production for security reasons.
+    : '*',
+  credentials: true // Allow cookies, authorization headers, etc.
 }));
 
-// Parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Body Parsing Middleware
+app.use(express.json({ limit: '10mb' })); // To parse JSON request bodies
+app.use(express.urlencoded({ extended: true, limit: '10mb' })); // To parse URL-encoded request bodies
 
-// MongoDB connection
+
+// MongoDB Connection
 const connectDB = async () => {
   try {
     const uri = process.env.MONGODB_URI;
-    if (!uri) throw new Error('MONGODB_URI is not defined');
-    const conn = await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
+    if (!uri) {
+      console.error('❌ MONGODB_URI is not defined in environment variables.');
+      process.exit(1); // Exit if URI is not found, as database connection is essential
+    }
+    const conn = await mongoose.connect(uri);
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (err) {
-    console.error('❌ MongoDB Error:', err.message);
-    process.exit(1);
+    console.error('❌ MongoDB Connection Error:', err.message);
+    process.exit(1); // Exit process with failure if unable to connect to MongoDB
   }
 };
-connectDB();
+connectDB(); // Initiate the database connection when the server starts
 
-// Routes
+
+// API Routes
+// These routes must match the fetch requests from your frontend
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/team', require('./routes/team'));
-app.use('/api/admin', require('./routes/admin'));
+app.use('/api/admin', require('./routes/admin')); // Make sure this route is also defined if used
 app.use('/api/members', require('./routes/members'));
 app.use('/api/announcements', require('./routes/announcements'));
 
-// Health check
+// Health Check Endpoint (useful for monitoring server status)
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'Server is running',
@@ -64,22 +72,24 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// 404
-app.use('*', (req, res) => {
-  res.status(404).json({ success: false, message: 'Route not found' });
+// 404 Route for API Endpoints (handles requests to /api/* that don't match other routes)
+// This is separate from frontend 404s handled by React Router
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ success: false, message: 'API Route not found' });
 });
 
-// Error handler
+// Global Error Handler Middleware
+// Catches errors thrown by other middleware or route handlers
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
+  console.error(err.stack); // Log the full error stack for debugging
+  res.status(err.statusCode || 500).json({ // Send appropriate status code
     success: false,
-    message: 'Something went wrong!',
-    ...(process.env.NODE_ENV === 'development' && { error: err.message })
+    message: err.message || 'Something went wrong on the server. Please try again later.'
   });
 });
 
-const PORT = process.env.PORT || 5000;
+// Server Listening
+const PORT = process.env.PORT || 5000; // Use port from environment variable or default to 5000
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
 });

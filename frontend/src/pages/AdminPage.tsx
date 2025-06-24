@@ -3,14 +3,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   User, Mail, Phone, Code, Send, CheckCircle, AlertCircle, Edit, X,
   ArrowLeft, Calendar, Clock, Trophy, Sparkles, Bell, Plus, Trash2, ExternalLink,
-  Users
+  Users, MapPin // <-- add this
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
 import GlowButton from '../components/GlowButton';
 import MemberForm from '../components/MemberForm'; // Assuming MemberForm is in components
 
-// Interfaces
+// Interfaces (Ensure consistency across all files using these interfaces)
 interface Member {
   _id: string;
   personalInfo: {
@@ -31,7 +31,7 @@ interface Member {
     memberType: string;
     position?: string;
   };
-  isVisible?: boolean; // Add this property to the Member interface
+  isVisible?: boolean; // Crucial: Add this property for visibility toggle
 }
 
 interface Announcement {
@@ -49,9 +49,19 @@ interface Announcement {
   updatedAt: string;
 }
 
-// API Bases
-const MEMBERS_API_BASE = 'https://appteam-website-1.onrender.com/api/members';
-const ANNOUNCEMENTS_API_BASE = 'https://appteam-website-1.onrender.com/api/announcements';
+// API Bases - CONDITIONAL FOR DEVELOPMENT VS. PRODUCTION
+const LOCAL_BACKEND_PORT = '5000'; // Make sure this matches your backend's running port
+
+const MEMBERS_API_BASE =
+  process.env.NODE_ENV === 'production'
+    ? 'https://appteam-website-1.onrender.com/api/members'
+    : `http://localhost:${LOCAL_BACKEND_PORT}/api/members`;
+
+const ANNOUNCEMENTS_API_BASE =
+  process.env.NODE_ENV === 'production'
+    ? 'https://appteam-website-1.onrender.com/api/announcements'
+    : `http://localhost:${LOCAL_BACKEND_PORT}/api/announcements`;
+
 
 const AdminPage: React.FC = () => {
   const navigate = useNavigate();
@@ -87,7 +97,8 @@ const AdminPage: React.FC = () => {
   const fetchMembers = useCallback(async () => {
     setLoadingMembers(true);
     try {
-      const response = await fetch(`${MEMBERS_API_BASE}/?isVisible=all`);
+      // Fetch all members, including hidden ones, for admin view
+      const response = await fetch(`${MEMBERS_API_BASE}/?isVisible=all`); // Modified to fetch all members for admin
       const data = await response.json();
       if (data.success) {
         setMembers(data.data);
@@ -110,7 +121,7 @@ const AdminPage: React.FC = () => {
     setShowMemberForm(false);
     setEditingMemberEmail(undefined);
     setMemberEmailInput('');
-    fetchMembers();
+    fetchMembers(); // Refresh member list after form close
   };
 
   const handleEditMemberProfile = () => {
@@ -129,7 +140,7 @@ const AdminPage: React.FC = () => {
         const data = await response.json();
         if (data.success) {
           alert('Member deleted successfully!');
-          fetchMembers();
+          fetchMembers(); // Refresh list
         } else {
           alert(`Failed to delete member: ${data.message}`);
         }
@@ -141,6 +152,8 @@ const AdminPage: React.FC = () => {
   };
 
   const handleToggleMemberVisibility = async (email: string, isCurrentlyVisible: boolean | undefined) => {
+    // If isVisible is undefined (e.g., old data without the field), assume it's visible or treat as false for toggle purpose.
+    // The backend default should handle setting it to true if missing on first save.
     const targetVisibility = isCurrentlyVisible === undefined ? false : !isCurrentlyVisible;
 
     try {
@@ -152,7 +165,7 @@ const AdminPage: React.FC = () => {
       const data = await response.json();
       if (data.success) {
         alert(`Member profile ${targetVisibility ? 'shown' : 'hidden'} successfully!`);
-        fetchMembers();
+        fetchMembers(); // Refresh list
       } else {
         alert(`Failed to update visibility: ${data.message}`);
       }
@@ -167,7 +180,7 @@ const AdminPage: React.FC = () => {
   const fetchAnnouncements = useCallback(async () => {
     setLoadingAnnouncements(true);
     try {
-      const response = await fetch(`${ANNOUNCEMENTS_API_BASE}?isActive=all`);
+      const response = await fetch(`${ANNOUNCEMENTS_API_BASE}?isActive=all`); // Fetch all announcements for admin view
       const data = await response.json();
       if (data.success) {
         setAnnouncements(data.data.announcements);
@@ -206,21 +219,12 @@ const AdminPage: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
-
     setAnnouncementFormData((prev) => {
       if (name === 'isActive' && type === 'checkbox') {
-        // Only access checked if it's a checkbox
         const checked = (e.target as HTMLInputElement).checked;
-        return {
-          ...prev,
-          isActive: checked,
-        };
+        return { ...prev, isActive: checked };
       }
-      // Generic handling for all other inputs
-      return {
-        ...prev,
-        [name]: value,
-      };
+      return { ...prev, [name]: value };
     });
   };
 
@@ -235,30 +239,19 @@ const AdminPage: React.FC = () => {
         : ANNOUNCEMENTS_API_BASE;
       const method = editingAnnouncementId ? 'PUT' : 'POST';
 
-      let payload: Partial<Announcement> = { ...announcementFormData };
-
-      // Clean payload for API request (remove _id, createdAt, updatedAt for POST/PUT)
-      if (editingAnnouncementId) {
-        const { createdAt, updatedAt, ...rest } = payload;
-        payload = rest;
-      } else {
-        const { _id, createdAt, updatedAt, ...rest } = payload;
-        payload = rest;
-      }
-
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(announcementFormData), // Use announcementFormData directly
       });
 
       const data = await response.json();
 
       if (response.ok && data.success) {
         alert(`Announcement ${editingAnnouncementId ? 'updated' : 'created'} successfully!`);
-        fetchAnnouncements();
+        fetchAnnouncements(); // Refresh the list
         resetAnnouncementForm();
       } else {
         setAnnouncementErrorMessage(data.message || 'Something went wrong. Please try again.');
@@ -487,7 +480,7 @@ const AdminPage: React.FC = () => {
               {/* Member Form - Adjusted max-w for larger display */}
               {showMemberForm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-md">
-                  <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scrollbar"> {/* Increased max-w-xl to max-w-3xl */}
+                  <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar">
                     <MemberForm onClose={handleMemberFormClose} editingEmail={editingMemberEmail} />
                   </div>
                 </div>
@@ -498,7 +491,7 @@ const AdminPage: React.FC = () => {
           {activeTab === 'announcements' && (
             <div>
               {/* Add New Announcement - Centered */}
-              <div className="flex justify-center mb-6"> {/* Changed from justify-end */}
+              <div className="flex justify-center mb-6">
                 <GlowButton onClick={() => setShowAnnouncementForm(true)} className="group text-sm md:text-base">
                   <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform duration-300" />
                   Create New Announcement
@@ -733,7 +726,7 @@ const AdminPage: React.FC = () => {
                         )}
                         {announcement.location && !announcement.link && (
                           <span className="flex items-center">
-                            <ExternalLink className="w-3 h-3 mr-1" /> {announcement.location}
+                            <MapPin className="w-3 h-3 mr-1" /> {announcement.location}
                           </span>
                         )}
                       </div>
