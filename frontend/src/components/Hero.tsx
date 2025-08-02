@@ -16,8 +16,11 @@ const Hero: React.FC = () => {
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 z-20 relative">
+        
         <div className="text-center">
           {/* Main Heading */}
+      <div style={{height:'40px'}}></div>
+          
           <h1 className="break-words leading-tight pt-6 text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-space font-bold text-primary-text mb-3 sm:mb-4 md:mb-6 animate-fade-in relative z-30">
             AppTeam
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-accent-primary via-accent-secondary to-accent-tertiary">
