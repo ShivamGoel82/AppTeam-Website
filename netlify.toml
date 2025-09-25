@@ -13,5 +13,5 @@
 
 
 [build.environment]
-  NODE_VERSION = "18"         # lock Node.js version
-  NPM_VERSION = "9"           # optional: lock npm version
+  # This tells Netlify to skip the Next.js plugin entirely
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
