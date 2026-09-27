@@ -24,11 +24,12 @@ app.use('/api/', limiter); // Apply to all /api routes
 // In production, it remains restricted to your Vercel deployment domains for security.
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? ['https://appteamwebsite.vercel.app', 'https://appteam-nith.vercel.app']
-    // For local development, explicitly use '*' to allow any local frontend port.
-    // This is the most reliable way to avoid 'Access-Control-Allow-Origin' errors locally.
-    // IMPORTANT: NEVER use '*' in production for security reasons.
-    : '*',
+    ? [
+        'https://appteamwebsite.vercel.app',
+        'https://appteam-nith.vercel.app',
+        ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL.replace(/\/$/, '')] : [])
+      ]
+    : true,
   credentials: true // Allow cookies, authorization headers, etc.
 }));
 

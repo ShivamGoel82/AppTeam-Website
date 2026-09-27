@@ -9,7 +9,7 @@
     "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "postinstall": "chmod +x node_modules/.bin/vite"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "axios": "^1.10.0",

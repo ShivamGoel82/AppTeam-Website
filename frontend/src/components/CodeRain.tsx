@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 
 const CodeRain: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const intervalRef = useRef<number>();
-  const dropsRef = useRef<Set<HTMLElement>>(new Set());
+  const containerRef  = useRef<HTMLDivElement>(null);
+  const intervalRef   = useRef<number>();
+  const dropsRef      = useRef<Set<HTMLElement>>(new Set());
+  const timeoutsRef   = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+  const pausedRef     = useRef(false);
 
   const createRainDrop = useCallback((x: number) => {
     const container = containerRef.current;
@@ -28,13 +30,14 @@ const CodeRain: React.FC = () => {
     container.appendChild(drop);
     dropsRef.current.add(drop);
 
-    // Remove drop after animation with cleanup
-    setTimeout(() => {
+    const tid = setTimeout(() => {
       if (container.contains(drop)) {
         container.removeChild(drop);
         dropsRef.current.delete(drop);
       }
+      timeoutsRef.current.delete(tid);
     }, isMobile ? 8000 : 12000);
+    timeoutsRef.current.add(tid);
   }, []);
 
   useEffect(() => {
@@ -52,6 +55,8 @@ const CodeRain: React.FC = () => {
     const intervalTime = isMobile ? 800 : 400;
 
     intervalRef.current = window.setInterval(() => {
+      // Skip entirely when tab hidden
+      if (pausedRef.current) return;
       // Limit total drops for performance
       if (dropsRef.current.size > (isMobile ? 8 : 20)) return;
 
@@ -62,15 +67,19 @@ const CodeRain: React.FC = () => {
       }
     }, intervalTime);
 
+    // Pause when tab not visible
+    const handleVisibility = () => { pausedRef.current = document.hidden; };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      // Clean up all drops
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      // Clear all pending timeouts to prevent memory leaks
+      timeoutsRef.current.forEach(clearTimeout);
+      timeoutsRef.current.clear();
+      // Remove all DOM drops
       dropsRef.current.forEach(drop => {
-        if (container.contains(drop)) {
-          container.removeChild(drop);
-        }
+        if (container.contains(drop)) container.removeChild(drop);
       });
       dropsRef.current.clear();
     };
@@ -80,6 +89,7 @@ const CodeRain: React.FC = () => {
     <div
       ref={containerRef}
       className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 overflow-hidden"
+      aria-hidden="true"
       style={{ willChange: 'auto' }}
     />
   );

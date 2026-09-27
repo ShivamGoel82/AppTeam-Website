@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 
 const AnimatedBackground: React.FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef   = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
-  const nodesRef = useRef<{ x: number; y: number; vx: number; vy: number }[]>([]);
+  const nodesRef    = useRef<{ x: number; y: number; vx: number; vy: number }[]>([]);
+  const pausedRef   = useRef(false); // paused when tab is hidden
 
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -43,6 +44,11 @@ const AnimatedBackground: React.FC = () => {
     const frameInterval = 1000 / targetFPS;
 
     const animate = (currentTime: number) => {
+      // Skip frames when tab is hidden
+      if (pausedRef.current) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
       if (currentTime - lastTime < frameInterval) {
         animationRef.current = requestAnimationFrame(animate);
         return;
@@ -105,22 +111,23 @@ const AnimatedBackground: React.FC = () => {
 
     animationRef.current = requestAnimationFrame(animate);
 
+    // Pause when tab is not visible — saves CPU/battery
+    const handleVisibility = () => { pausedRef.current = document.hidden; };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     const handleResize = () => {
       resizeCanvas();
-      // Update node positions to stay within bounds
       nodesRef.current.forEach(node => {
         node.x = Math.min(node.x, canvas.width);
         node.y = Math.min(node.y, canvas.height);
       });
     };
-
     window.addEventListener('resize', handleResize, { passive: true });
-    
+
     return () => {
       window.removeEventListener('resize', handleResize);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
+      document.removeEventListener('visibilitychange', handleVisibility);
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
   }, [resizeCanvas]);
 
@@ -128,9 +135,12 @@ const AnimatedBackground: React.FC = () => {
     <canvas
       ref={canvasRef}
       className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
-      style={{ 
+      aria-hidden="true"
+      style={{
         background: 'transparent',
-        willChange: 'auto'
+        // GPU compositing layer — prevents repaints affecting the rest of the page
+        willChange: 'transform',
+        transform: 'translateZ(0)',
       }}
     />
   );

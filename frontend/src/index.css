@@ -10,6 +10,8 @@
   
   html {
     scroll-behavior: smooth;
+    /* Offset for sticky header so section headings aren't hidden under it */
+    scroll-padding-top: 72px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -22,17 +24,13 @@
     color: #FFFFFF;
     line-height: 1.6;
     overflow-x: hidden;
-    /* Optimize for mobile */
+    /* Optimize for mobile touch */
     -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
   }
   
-  /* Re-enable text selection for content */
-  p, h1, h2, h3, h4, h5, h6, span, div[class*="text"], input, textarea {
+  /* Re-enable text selection for all readable content */
+  p, h1, h2, h3, h4, h5, h6, span, li, td, th,
+  input, textarea, [role="article"], [role="main"] {
     -webkit-user-select: text;
     -moz-user-select: text;
     -ms-user-select: text;
@@ -125,9 +123,14 @@
       min-width: 44px;
     }
     
-    /* Improve mobile scrolling */
+    /* Improve mobile scrolling performance */
     * {
       -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Reduce scroll-padding on mobile proportionally */
+    html {
+      scroll-padding-top: 64px;
     }
   }
 }

@@ -67,7 +67,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
 
             {/* Admin Page - Only accessible in development environment */}
-            {process.env.NODE_ENV === 'development' && (
+            {import.meta.env.DEV && (
               <Route
                 path="/xjfhe839" // Using the existing hidden path for consistency
                 element={

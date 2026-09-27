@@ -70,7 +70,7 @@ cp .env.example .env
 3. Edit the `.env` file and add your actual values:
 ```bash
 # Required: Add your MongoDB connection string
-MONGODB_URI=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/your-database
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>?retryWrites=true&w=majority
 
 # Optional: Customize other settings
 PORT=5000
