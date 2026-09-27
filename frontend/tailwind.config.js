@@ -4,22 +4,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Minimalistic Black + White + Blue Palette
+        // Minimalistic Black + White + Blue Palette (WCAG Compliant)
         'primary-dark': '#000000',
         'secondary-dark': '#060913',
         'tertiary-dark': '#0C1222',
         'primary-text': '#FFFFFF',
         'secondary-text': '#E2E8F0',
-        'muted-text': '#94A3B8',
-        'accent-primary': '#3B82F6',
-        'accent-secondary': '#3B82F6', // Unified to Blue
-        'accent-tertiary': '#60A5FA',  // Lighter Blue tint
-        'accent-success': '#3B82F6',   // Unified to Blue
-        'accent-warning': '#3B82F6',   // Unified to Blue
+        'muted-text': '#CBD5E1', // High contrast (11.8:1 on black)
+        'accent-primary': '#60A5FA', // Accessible Electric Blue (8.2:1 contrast on black)
+        'accent-secondary': '#60A5FA',
+        'accent-tertiary': '#93C5FD',
+        'accent-success': '#60A5FA',
+        'accent-warning': '#60A5FA',
         'accent-error': '#EF4444',
         'glass-white': 'rgba(255, 255, 255, 0.04)',
         'glass-border': 'rgba(255, 255, 255, 0.10)',
-        'hover-bg': 'rgba(59, 130, 246, 0.08)',
+        'hover-bg': 'rgba(96, 165, 250, 0.08)',
         'neutral-50': '#F8FAFC',
         'neutral-100': '#F1F5F9',
         'neutral-200': '#E2E8F0',
@@ -90,8 +90,8 @@ export default {
           '100%': { transform: 'translateY(100vh)', opacity: '0' },
         },
         pulseGlow: {
-          '0%, 100%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)' },
-          '50%': { boxShadow: '0 0 40px rgba(59, 130, 246, 0.6)' },
+          '0%, 100%': { opacity: '0.6', transform: 'scale(1)' },
+          '50%': { opacity: '1', transform: 'scale(1.05)' },
         },
         rotateSlow: {
           '0%': { transform: 'rotate(0deg)' },

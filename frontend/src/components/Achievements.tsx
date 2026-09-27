@@ -381,17 +381,17 @@ const Achievements: React.FC = () => {
               <div className="flex space-x-2">
                 <button
                   onClick={scrollLeft}
-                  className="p-2 md:p-3 bg-accent-primary/10 hover:bg-accent-primary/20 active:bg-accent-primary/30 border border-accent-primary/30 rounded-lg transition-all duration-200 group touch-manipulation"
+                  className="p-3 min-w-[48px] min-h-[48px] flex items-center justify-center bg-accent-primary/10 hover:bg-accent-primary/20 active:bg-accent-primary/30 border border-accent-primary/30 rounded-lg transition-all duration-200 group touch-manipulation"
                   aria-label="Scroll left"
                 >
-                  <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-accent-primary group-hover:scale-110 transition-transform duration-200" />
+                  <ChevronLeft className="w-5 h-5 text-accent-primary group-hover:scale-110 transition-transform duration-200" />
                 </button>
                 <button
                   onClick={scrollRight}
-                  className="p-2 md:p-3 bg-accent-primary/10 hover:bg-accent-primary/20 active:bg-accent-primary/30 border border-accent-primary/30 rounded-lg transition-all duration-200 group touch-manipulation"
+                  className="p-3 min-w-[48px] min-h-[48px] flex items-center justify-center bg-accent-primary/10 hover:bg-accent-primary/20 active:bg-accent-primary/30 border border-accent-primary/30 rounded-lg transition-all duration-200 group touch-manipulation"
                   aria-label="Scroll right"
                 >
-                  <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-accent-primary group-hover:scale-110 transition-transform duration-200" />
+                  <ChevronRight className="w-5 h-5 text-accent-primary group-hover:scale-110 transition-transform duration-200" />
                 </button>
               </div>
             </div>

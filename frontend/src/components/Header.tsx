@@ -85,10 +85,10 @@ const Header: React.FC = () => {
             ))}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Accessible 48x48 touch target */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-primary-text hover:text-accent-primary transition-colors duration-300 p-1"
+            className="md:hidden text-primary-text hover:text-accent-primary transition-colors duration-300 min-w-[48px] min-h-[48px] flex items-center justify-center -mr-2"
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"

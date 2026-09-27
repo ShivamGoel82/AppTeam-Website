@@ -66,7 +66,7 @@ const Hero: React.FC = () => {
           {/* CTA Buttons */}
           <div className="flex flex-col xs:flex-row gap-3 md:gap-4 justify-center items-center relative z-30 px-2">
             <GlowButton 
-              className="group text-xs sm:text-sm md:text-base w-full xs:w-auto px-4 py-2.5 md:px-6 md:py-3"
+              className="group text-xs sm:text-sm md:text-base w-full xs:w-auto px-4 py-3 md:px-6 md:py-3.5 min-h-[48px] flex items-center justify-center"
               onClick={() => scrollToSection('projects')}
             >
               View Our Projects
@@ -74,7 +74,7 @@ const Hero: React.FC = () => {
             </GlowButton>
             <GlowButton 
               variant="secondary" 
-              className="group text-xs sm:text-sm md:text-base w-full xs:w-auto px-4 py-2.5 md:px-6 md:py-3"
+              className="group text-xs sm:text-sm md:text-base w-full xs:w-auto px-4 py-3 md:px-6 md:py-3.5 min-h-[48px] flex items-center justify-center"
               onClick={() => scrollToSection('achievements')}
             >
               <Trophy className="inline-block mr-2 w-3 h-3 md:w-4 md:h-4" />
@@ -82,18 +82,18 @@ const Hero: React.FC = () => {
             </GlowButton>
           </div>
 
-          {/* Floating Background Accent Elements - Fully responsive with pointer-events-none */}
-          <div className="absolute top-12 left-4 sm:top-20 sm:left-10 animate-float pointer-events-none z-10">
-            <div className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 border border-accent-primary/35 rounded-xl rotate-45 backdrop-blur-sm shadow-[0_0_20px_rgba(59,130,246,0.2)]"></div>
+          {/* Floating Background Accent Elements - Clean, subtle, non-glaring with pointer-events-none */}
+          <div className="absolute top-12 left-4 sm:top-20 sm:left-10 animate-float pointer-events-none z-10 opacity-40">
+            <div className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 border border-white/15 rounded-xl rotate-45 backdrop-blur-xs"></div>
           </div>
-          <div className="absolute top-28 right-6 sm:top-40 sm:right-16 md:right-20 animate-float pointer-events-none z-10" style={{ animationDelay: '2s' }}>
-            <Users className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-accent-primary/40" />
+          <div className="absolute top-28 right-6 sm:top-40 sm:right-16 md:right-20 animate-float pointer-events-none z-10 opacity-30" style={{ animationDelay: '2s' }}>
+            <Users className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white/40" />
           </div>
-          <div className="absolute bottom-20 left-6 sm:bottom-36 sm:left-14 md:left-20 animate-float pointer-events-none z-10" style={{ animationDelay: '4s' }}>
-            <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-accent-primary/15 border border-accent-primary/30 rounded-full backdrop-blur-sm shadow-[0_0_20px_rgba(59,130,246,0.25)]"></div>
+          <div className="absolute bottom-20 left-6 sm:bottom-36 sm:left-14 md:left-20 animate-float pointer-events-none z-10 opacity-30" style={{ animationDelay: '4s' }}>
+            <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 border border-white/15 rounded-full backdrop-blur-xs"></div>
           </div>
-          <div className="absolute top-48 right-3 sm:top-60 sm:right-8 md:right-12 animate-pulse-glow pointer-events-none z-10">
-            <div className="p-1.5 sm:p-2.5 rounded-xl bg-accent-primary/15 border border-accent-primary/30 backdrop-blur-sm shadow-[0_0_25px_rgba(59,130,246,0.3)]">
+          <div className="absolute top-48 right-3 sm:top-60 sm:right-8 md:right-12 animate-pulse-glow pointer-events-none z-10 opacity-40">
+            <div className="p-1.5 sm:p-2 rounded-xl bg-white/[0.03] border border-white/15 backdrop-blur-xs">
               <Zap className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-accent-primary" />
             </div>
           </div>

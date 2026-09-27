@@ -67,8 +67,8 @@ function App() {
       <div className="min-h-screen bg-primary-dark text-primary-text overflow-x-hidden">
         {/* Enhanced Animated Backgrounds */}
         <div className="fixed inset-0 z-0 bg-black pointer-events-none overflow-hidden">
-          {/* Subtle deep ambient radial glow */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_25%,rgba(59,130,246,0.10),transparent_75%)] pointer-events-none" />
+          {/* Subtle deep ambient radial glow (minimal and non-intrusive) */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_20%,rgba(59,130,246,0.03),transparent)] pointer-events-none" />
           <AnimatedBackground />
           <CodeRain />
         </div>
@@ -77,24 +77,26 @@ function App() {
         <div className="relative z-10">
           <Header />
 
-          <Routes>
-            <Route path="/" element={<HomePage />} />
+          <main id="main-content" role="main">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
 
-            {/* Admin Page - Only accessible in development environment */}
-            {import.meta.env.DEV && (
-              <Route
-                path="/xjfhe839" // Using the existing hidden path for consistency
-                element={
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <AdminPage />
-                  </Suspense>
-                }
-              />
-            )}
+              {/* Admin Page - Only accessible in development environment */}
+              {import.meta.env.DEV && (
+                <Route
+                  path="/xjfhe839" // Using the existing hidden path for consistency
+                  element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminPage />
+                    </Suspense>
+                  }
+                />
+              )}
 
-            {/* Catch-all route for 404 - MUST BE THE LAST ROUTE */}
-            <Route path="*" element={<NoMatch />} />
-          </Routes>
+              {/* Catch-all route for 404 - MUST BE THE LAST ROUTE */}
+              <Route path="*" element={<NoMatch />} />
+            </Routes>
+          </main>
         </div>
       </div>
     </Router>

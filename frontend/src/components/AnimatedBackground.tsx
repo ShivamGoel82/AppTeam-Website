@@ -79,14 +79,14 @@ const AnimatedBackground: React.FC = () => {
       lastTime = currentTime;
 
       // Subtle trail effect on pure black background
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const nodes = nodesRef.current;
       const particles = particlesRef.current;
-      const maxDistance = isMobile ? 90 : 130;
+      const maxDistance = isMobile ? 80 : 110;
 
-      // 1. Draw and update nodes
+      // 1. Draw and update nodes (subtle, delicate, non-glaring)
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
 
@@ -103,36 +103,18 @@ const AnimatedBackground: React.FC = () => {
           node.y = Math.max(0, Math.min(canvas.height, node.y));
         }
 
-        // Breathing pulse effect
-        node.pulsePhase += 0.025;
-        const pulse = 0.8 + 0.4 * Math.sin(node.pulsePhase);
-        const currentSize = node.size * pulse;
+        // Gentle breathing pulse
+        node.pulsePhase += 0.02;
+        const pulse = 0.9 + 0.2 * Math.sin(node.pulsePhase);
+        const currentSize = (isMobile ? 1.0 : 1.4) * pulse;
 
-        // Outer radial glow
-        const gradient = ctx.createRadialGradient(
-          node.x,
-          node.y,
-          0,
-          node.x,
-          node.y,
-          currentSize * 3
-        );
-        gradient.addColorStop(0, `rgba(59, 130, 246, ${node.opacity * pulse * 0.7})`);
-        gradient.addColorStop(0.5, `rgba(59, 130, 246, ${node.opacity * pulse * 0.25})`);
-        gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
-
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, currentSize * 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Core bright center node
-        ctx.fillStyle = `rgba(147, 197, 253, ${Math.min(1, node.opacity * pulse * 1.2)})`;
+        // Clean, subtle node without glaring bright halo
+        ctx.fillStyle = `rgba(96, 165, 250, ${node.opacity * pulse * 0.45})`;
         ctx.beginPath();
         ctx.arc(node.x, node.y, currentSize, 0, Math.PI * 2);
         ctx.fill();
 
-        // 2. Draw connections between nearby nodes
+        // 2. Draw hairline connections between nearby nodes
         for (let j = i + 1; j < nodes.length; j++) {
           const other = nodes[j];
           const dx = node.x - other.x;
@@ -140,35 +122,27 @@ const AnimatedBackground: React.FC = () => {
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < maxDistance) {
-            const lineOpacity = (1 - dist / maxDistance) * (isMobile ? 0.18 : 0.28) * node.opacity * other.opacity;
+            const lineOpacity = (1 - dist / maxDistance) * (isMobile ? 0.06 : 0.10);
 
-            // Connection line
-            ctx.strokeStyle = `rgba(59, 130, 246, ${lineOpacity})`;
-            ctx.lineWidth = isMobile ? 0.8 : 1.2;
+            ctx.strokeStyle = `rgba(96, 165, 250, ${lineOpacity})`;
+            ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);
             ctx.lineTo(other.x, other.y);
             ctx.stroke();
-
-            // Subtle outer glow line on desktop
-            if (!isMobile) {
-              ctx.strokeStyle = `rgba(96, 165, 250, ${lineOpacity * 0.35})`;
-              ctx.lineWidth = 2.5;
-              ctx.stroke();
-            }
           }
         }
       }
 
-      // 3. Upward floating ambient spark particles
-      if (Math.random() < (isMobile ? 0.03 : 0.05) && particles.length < (isMobile ? 8 : 16)) {
+      // 3. Upward floating subtle ambient dust particles
+      if (Math.random() < 0.02 && particles.length < (isMobile ? 5 : 10)) {
         particles.push({
           x: Math.random() * canvas.width,
           y: canvas.height + 10,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: -Math.random() * 1.4 - 0.6,
-          size: Math.random() * 1.8 + 0.8,
-          opacity: Math.random() * 0.4 + 0.25,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: -Math.random() * 1.0 - 0.4,
+          size: Math.random() * 1.0 + 0.6,
+          opacity: Math.random() * 0.2 + 0.1,
         });
       }
 
@@ -176,12 +150,12 @@ const AnimatedBackground: React.FC = () => {
         const pt = particles[p];
         pt.x += pt.vx;
         pt.y += pt.vy;
-        pt.opacity *= 0.994;
+        pt.opacity *= 0.995;
 
-        if (pt.y < -10 || pt.opacity < 0.02) {
+        if (pt.y < -10 || pt.opacity < 0.015) {
           particles.splice(p, 1);
         } else {
-          ctx.fillStyle = `rgba(96, 165, 250, ${pt.opacity})`;
+          ctx.fillStyle = `rgba(96, 165, 250, ${pt.opacity * 0.5})`;
           ctx.beginPath();
           ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
           ctx.fill();

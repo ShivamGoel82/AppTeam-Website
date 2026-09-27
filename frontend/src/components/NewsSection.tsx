@@ -153,9 +153,9 @@ const NewsSection: React.FC = () => {
                         </span>
                       </div>
                     </div>
-                    <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-3">
+                    <h2 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-3">
                       {current.title}
-                    </h3>
+                    </h2>
                     <p className="text-primary-text/80 font-inter leading-relaxed mb-4">
                       {current.description} {/* Changed from 'content' to 'description' */}
                     </p>

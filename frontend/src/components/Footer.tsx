@@ -54,14 +54,14 @@ const Footer: React.FC = () => {
               competitive programming, app development, and cutting-edge technology solutions.
             </p>
             
-            {/* Social Links */}
-            <div className="flex space-x-4">
+            {/* Social Links - Accessible 48x48 touch targets */}
+            <div className="flex flex-wrap gap-2">
               {socialLinks.map((social, index) => (
                 <a
                   key={index}
                   href={social.href}
                   aria-label={social.label}
-                  className="text-muted-text hover:text-accent-primary transition-colors duration-300 transform hover:scale-110"
+                  className="w-12 h-12 flex items-center justify-center rounded-lg text-secondary-text hover:text-accent-primary hover:bg-white/5 transition-all duration-300"
                 >
                   {social.icon}
                 </a>
@@ -74,12 +74,12 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-space font-semibold text-primary-text mb-4">
               Quick Links
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-1">
               {quickLinks.map((link, index) => (
                 <li key={index}>
                   <a
                     href={link.href}
-                    className="text-secondary-text font-inter hover:text-accent-primary transition-colors duration-300"
+                    className="text-secondary-text font-inter hover:text-accent-primary transition-colors duration-300 py-2 block"
                   >
                     {link.name}
                   </a>
@@ -93,12 +93,12 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-space font-semibold text-primary-text mb-4">
               Events
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-1">
               {events.map((event, index) => (
                 <li key={index}>
                   <a
                     href={event.href}
-                    className="text-secondary-text font-inter hover:text-accent-primary transition-colors duration-300"
+                    className="text-secondary-text font-inter hover:text-accent-primary transition-colors duration-300 py-2 block"
                   >
                     {event.name}
                   </a>
