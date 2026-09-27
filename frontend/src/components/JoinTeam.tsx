@@ -18,19 +18,19 @@ const JoinTeam: React.FC = () => {
       icon: <Users className="w-6 h-6" />,
       title: 'Networking',
       description: 'Connect with like-minded peers and industry professionals',
-      color: 'text-accent-secondary'
+      color: 'text-accent-primary'
     },
     {
       icon: <Star className="w-6 h-6" />,
       title: 'Recognition',
       description: 'Get recognized for your contributions and achievements',
-      color: 'text-accent-tertiary'
+      color: 'text-accent-primary'
     },
     {
       icon: <Brain className="w-6 h-6" />,
       title: 'Mentorship',
       description: 'Learn from experienced developers and get career guidance',
-      color: 'text-accent-success'
+      color: 'text-accent-primary'
     }
   ];
 
@@ -135,7 +135,7 @@ const JoinTeam: React.FC = () => {
         {/* Available Roles */}
         <GlassCard className="p-6 md:p-8 mb-12 md:mb-16">
           <h3 className="text-2xl md:text-3xl font-space font-bold text-primary-text mb-6 md:mb-8 text-center">
-            Available <span className="text-accent-secondary">Roles</span>
+            Available <span className="text-accent-primary">Roles</span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {roles.map((role, index) => (
@@ -155,7 +155,7 @@ const JoinTeam: React.FC = () => {
                       {role.skills.map((skill, skillIndex) => (
                         <span
                           key={skillIndex}
-                          className="px-3 py-1 bg-accent-tertiary/15 text-accent-tertiary text-xs font-inter rounded-full border border-accent-tertiary/30"
+                          className="px-3 py-1 bg-accent-primary/10 text-accent-primary text-xs font-inter rounded-full border border-accent-primary/30"
                         >
                           {skill}
                         </span>

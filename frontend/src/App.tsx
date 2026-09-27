@@ -20,6 +20,8 @@ const JoinTeam = lazy(() => import('./components/JoinTeam'));
 const Contact = lazy(() => import('./components/Contact'));
 const Footer = lazy(() => import('./components/Footer'));
 
+import LazySection from './components/LazySection';
+
 // Loading component with better mobile optimization
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center py-8 md:py-16">
@@ -34,13 +36,27 @@ const HomePage = () => (
     <Suspense fallback={<LoadingSpinner />}>
       <NewsSection />
       <About />
-      <Projects />
-      <Workshops />
-      <Achievements />
-      <Team />
-      <JoinTeam />
-      <Contact />
-      <Footer />
+      <LazySection minHeight="400px">
+        <Projects />
+      </LazySection>
+      <LazySection minHeight="400px">
+        <Workshops />
+      </LazySection>
+      <LazySection minHeight="500px">
+        <Achievements />
+      </LazySection>
+      <LazySection minHeight="500px">
+        <Team />
+      </LazySection>
+      <LazySection minHeight="400px">
+        <JoinTeam />
+      </LazySection>
+      <LazySection minHeight="300px">
+        <Contact />
+      </LazySection>
+      <LazySection minHeight="200px">
+        <Footer />
+      </LazySection>
     </Suspense>
   </>
 );
@@ -49,14 +65,12 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-primary-dark text-primary-text overflow-x-hidden">
-        {/* Enhanced Animated Backgrounds - Lower z-index, optimized for mobile */}
-        <div className="fixed inset-0 z-0">
+        {/* Enhanced Animated Backgrounds */}
+        <div className="fixed inset-0 z-0 bg-black pointer-events-none overflow-hidden">
+          {/* Subtle deep ambient radial glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_25%,rgba(59,130,246,0.10),transparent_75%)] pointer-events-none" />
           <AnimatedBackground />
           <CodeRain />
-
-          {/* Reduced ambient effects for mobile performance */}
-          <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/3 via-transparent to-accent-secondary/3 pointer-events-none" />
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-radial from-transparent via-transparent to-primary-dark/10 pointer-events-none" />
         </div>
 
         {/* Main Content - Higher z-index */}

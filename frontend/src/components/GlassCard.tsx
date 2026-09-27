@@ -28,8 +28,8 @@ const GlassCard: React.FC<GlassCardProps> = ({ children, className = '', hover =
       
       {/* Animated border glow on hover */}
       {hover && (
-        <div className="absolute inset-0 rounded-xl opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-accent-primary/20 via-accent-secondary/20 to-accent-tertiary/20 blur-sm" />
+        <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+          <div className="absolute inset-0 rounded-xl bg-accent-primary/10 blur-sm" />
         </div>
       )}
     </div>

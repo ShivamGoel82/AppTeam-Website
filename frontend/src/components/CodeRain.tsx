@@ -16,15 +16,17 @@ const CodeRain: React.FC = () => {
     drop.textContent = codeChars[Math.floor(Math.random() * codeChars.length)];
     
     const isMobile = window.innerWidth < 768;
-    drop.className = `absolute font-mono pointer-events-none ${
+    drop.className = `absolute font-mono pointer-events-none select-none ${
       isMobile 
-        ? 'text-xs opacity-8 animate-code-rain-mobile' 
-        : 'text-sm opacity-15 animate-code-rain'
+        ? 'text-xs animate-code-rain-mobile' 
+        : 'text-sm animate-code-rain'
     }`;
     
     drop.style.left = `${x}px`;
     drop.style.top = '-20px';
-    drop.style.color = '#3B82F6';
+    drop.style.color = '#60A5FA';
+    drop.style.opacity = isMobile ? '0.18' : '0.28';
+    drop.style.textShadow = '0 0 8px rgba(59, 130, 246, 0.4)';
     drop.style.willChange = 'transform';
     
     container.appendChild(drop);

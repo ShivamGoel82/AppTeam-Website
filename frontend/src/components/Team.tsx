@@ -80,6 +80,8 @@ const Team: React.FC = () => {
         <img
           src={member.personalInfo.profileImage || '/AppTeam.png'}
           alt={member.personalInfo.fullName}
+          width={128}
+          height={128}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
           loading="lazy"
           decoding="async"
@@ -98,12 +100,12 @@ const Team: React.FC = () => {
         </h3>
       </div>
 
-      <p className="text-accent-secondary font-inter font-medium mb-2 text-xs md:text-sm line-clamp-2">
+      <p className="text-accent-primary font-inter font-medium mb-2 text-xs md:text-sm line-clamp-2">
         {member.professionalInfo.role}
       </p>
 
       {member.membershipInfo.position && (
-        <p className="text-accent-tertiary font-inter text-xs mb-3 md:mb-4">
+        <p className="text-muted-text font-inter text-xs mb-3 md:mb-4">
           {member.membershipInfo.position}
         </p>
       )}
@@ -114,7 +116,7 @@ const Team: React.FC = () => {
 
       <div className="flex flex-wrap justify-center gap-1 md:gap-2 mb-4 md:mb-6">
         {member.professionalInfo.skills.slice(0, 3).map((skill, index) => (
-          <span key={index} className="px-2 md:px-3 py-1 bg-accent-tertiary/10 text-accent-tertiary text-xs font-inter rounded-full border border-accent-tertiary/30">
+          <span key={index} className="px-2 md:px-3 py-1 bg-accent-primary/10 text-accent-primary text-xs font-inter rounded-full border border-accent-primary/30">
             {skill}
           </span>
         ))}

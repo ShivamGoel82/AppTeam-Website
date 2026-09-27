@@ -20,7 +20,7 @@ const Achievements: React.FC = () => {
     {
       id: 1,
       title: "HOH 6.0",
-      image: "/img9.jpeg",
+      image: "/img9.webp",
       description: "Successfully organized HackOnHills-6.0.",
       event: "HOH 6.0",
       year: "2025",
@@ -29,7 +29,7 @@ const Achievements: React.FC = () => {
     {
       id: 2,
       title: "Our Team",
-      image: "/img12.jpeg",
+      image: "/img12.webp",
       description: "Our whole team in one frame.",
       event: "Photo shoot",
       year: "2025",
@@ -38,7 +38,7 @@ const Achievements: React.FC = () => {
     {
       id: 3,
       title: "Innovation Award",
-      image: "/img5.jpeg",
+      image: "/img5.webp",
       description: "Best Techno Innovation Team.",
       event: "Tech Innovation",
       year: "2025",
@@ -47,7 +47,7 @@ const Achievements: React.FC = () => {
     {
       id: 4,
       title: "Leadership Award",
-      image: "/img11.jpeg",
+      image: "/img11.webp",
       description: "Organized standout tech initiatives.",
       event: "Leadership",
       year: "2025",
@@ -59,79 +59,79 @@ const Achievements: React.FC = () => {
   const galleryMemories = [
     {
       id: 2,
-      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (3).jpeg",
+      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (3).webp",
       title: "Workshop Moments",
       description: "Learning and sharing knowledge together",
     },
     {
       id: 3,
-      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (4).jpeg",
+      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (4).webp",
       title: "Celebration Time",
       description: "Celebrating our achievements and milestones",
     },
     {
       id: 4,
-      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (6).jpeg",
+      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (6).webp",
       title: "Project Showcase",
       description: "Presenting our innovative projects",
     },
     {
       id: 5,
-      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (7).jpeg",
+      image: "/WhatsApp Image 2025-06-12 at 11.47.39 AM (7).webp",
       title: "Coding Sessions",
       description: "Collaborative coding and problem solving",
     },
     {
       id: 7,
-      image: "/img12.jpeg",
+      image: "/img12.webp",
       title: "Complete Team",
       description: "Our amazing team together",
     },
     {
       id: 8,
-      image: "/img5.jpeg",
+      image: "/img5.webp",
       title: "Award Ceremony",
       description: "Receiving innovation awards",
     },
     {
       id: 9,
-      image: "/IMG-1.jpg",
+      image: "/IMG-1.webp",
       title: "Award Ceremony",
       description: "Receiving innovation awards",
     },
     {
       id: 10,
-      image: "/IMG-2.jpg",
+      image: "/IMG-2.webp",
       title: "Award Ceremony",
       description: "Receiving innovation awards",
     },
     {
       id: 11,
-      image: "/IMG-3.jpg",
+      image: "/IMG-3.webp",
       title: "Award Ceremony",
       description: "Receiving innovation awards",
     },
     {
       id: 12,
-      image: "/IMG-4.jpg",
+      image: "/IMG-4.webp",
       title: "Award Ceremony",
       description: "Receiving innovation awards",
     },
     {
       id: 13,
-      image: "/IMG-5.jpg",
+      image: "/IMG-5.webp",
       title: "Award Ceremony",
       description: "Receiving innovation awards",
     },
     {
       id: 14,
-      image: "/IMG-6.jpg",
+      image: "/IMG-6.webp",
       title: "Award Ceremony",
       description: "Receiving innovation awards",
     },
     {
       id: 15,
-      image: "/IMG-7.jpg",
+      image: "/IMG-7.webp",
       title: "Award Ceremony",
       description: "Receiving innovation awards",
     }
@@ -168,47 +168,47 @@ const Achievements: React.FC = () => {
     );
   }, []);
 
-  // Smooth auto-scroll with loop
+  // Smooth auto-scroll with loop - optimized to eliminate forced reflow
   useEffect(() => {
     const scrollContainer = scrollRef.current;
-    if (!scrollContainer || !isAutoScrolling) {
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
-      }
-      return;
-    }
+    if (!scrollContainer) return;
 
-    if (animationFrameId.current) {
-      cancelAnimationFrame(animationFrameId.current);
-    }
+    let isVisible = false;
 
-    const getCardWidth = () => {
-      const card = scrollContainer.querySelector(
-        "div.flex-shrink-0"
-      ) as HTMLElement;
-      // Add gap-x-4 (16px) or gap-x-6 (24px) based on md:gap-6
+    // Only scroll when gallery is actually visible on screen
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(scrollContainer);
+
+    let cardWidth = 384;
+    const updateDimensions = () => {
+      const card = scrollContainer.querySelector("div.flex-shrink-0") as HTMLElement;
       const gap = window.innerWidth < 768 ? 16 : 24;
-      return card ? card.offsetWidth + gap : 400;
+      cardWidth = card ? card.offsetWidth + gap : (window.innerWidth < 768 ? 320 : 384);
     };
 
-    let cardWidth = getCardWidth(); // Initial calculation
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions, { passive: true });
 
-    // The point at which we jump back
-    // This is the width of the *original* set of items
-    const resetPoint = cardWidth * numOriginalItems;
+    let lastScrollTime = 0;
+    const autoScroll = (timestamp: number) => {
+      if (!isAutoScrolling || !isVisible || document.hidden) {
+        animationFrameId.current = requestAnimationFrame(autoScroll);
+        return;
+      }
 
-    const autoScroll = () => {
-      if (!scrollContainer) return;
+      if (timestamp - lastScrollTime >= 16) {
+        lastScrollTime = timestamp;
+        const resetPoint = cardWidth * numOriginalItems;
+        scrollContainer.scrollLeft += scrollSpeed.current;
 
-      // Update cardWidth if it changes (e.g., due to responsive layout changes)
-      cardWidth = getCardWidth(); // Recalculate each frame for responsiveness
-
-      scrollContainer.scrollLeft += scrollSpeed.current;
-
-      // If we scroll past the end of the first set of items (the resetPoint),
-      // instantly jump back to the start of the second set of items.
-      if (scrollContainer.scrollLeft >= resetPoint) {
-        scrollContainer.scrollLeft -= resetPoint; // Effectively jumps back to the start of the next 'copy'
+        if (scrollContainer.scrollLeft >= resetPoint) {
+          scrollContainer.scrollLeft -= resetPoint;
+        }
       }
 
       animationFrameId.current = requestAnimationFrame(autoScroll);
@@ -217,11 +217,13 @@ const Achievements: React.FC = () => {
     animationFrameId.current = requestAnimationFrame(autoScroll);
 
     return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateDimensions);
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [isAutoScrolling, isMobile, numOriginalItems]);
+  }, [isAutoScrolling, numOriginalItems]);
 
   // Clean up on unmount
   useEffect(() => {
@@ -313,18 +315,7 @@ const Achievements: React.FC = () => {
 
 
   const getTypeColor = (type: string) => {
-    switch (type) {
-      case "Competition Organized":
-        return "text-white bg-accent-primary/20 border-accent-primary/30";
-      case "Recognition":
-        return "text-white bg-accent-secondary/20 border-accent-secondary/30";
-      case "Innovation":
-        return "text-white bg-accent-tertiary/20 border-accent-tertiary/30";
-      case "Leadership":
-        return "text-white bg-accent-success/20 border-accent-success/30";
-      default:
-        return "text-white bg-neutral-500/20 border-neutral-500/30";
-    }
+    return "text-accent-primary bg-accent-primary/10 border-accent-primary/30";
   };
 
   const timeline = [
@@ -340,14 +331,14 @@ const Achievements: React.FC = () => {
       title: "HackOnHills Announced",
       description:
         "Announced our first hackathon and successfully organized it, marking our entry in finding solutions to real-world problems.",
-      color: "border-accent-secondary",
+      color: "border-accent-primary",
     },
     {
       year: "2025",
       title: "Triple Crown",
       description:
         "Achieved success in HOH 6.0, Nimbus, and Hillfair, cementing our position as elite developers.",
-      color: "border-accent-tertiary",
+      color: "border-accent-primary",
     },
   ];
 
@@ -370,8 +361,8 @@ const Achievements: React.FC = () => {
       <div className="container mx-auto px-4 md:px-6">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-space font-bold text-primary-text mb-4 md:mb-6">
-            Our <span className="text-accent-tertiary">Achievements</span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-space font-bold text-white mb-4 md:mb-6">
+            Our <span className="text-accent-primary">Achievements</span>
           </h2>
           <p className="text-base md:text-xl font-inter text-secondary-text max-w-3xl mx-auto leading-relaxed">
             Celebrating our journey of excellence, innovation, and competitive
@@ -426,8 +417,11 @@ const Achievements: React.FC = () => {
                       <img
                         src={achievement.image}
                         alt={achievement.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        width={384}
+                        height={256}
                         loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-transparent to-transparent opacity-70"></div>
 
@@ -518,9 +512,11 @@ const Achievements: React.FC = () => {
                     <img
                       src={memory.image}
                       alt={memory.title}
-                      // Changed to object-cover to make images "clearly seen or zoom them" by filling the container
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      width={384}
+                      height={216}
                       loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     {/* Removed overlay info (title and description) as requested */}
                     {/* <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

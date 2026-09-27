@@ -4,16 +4,56 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="./favicon-32x32.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AppTeam | NITH</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2370539346172575"
-         crossorigin="anonymous"></script>
-    <meta name="google-adsense-account" content="ca-pub-2370539346172575">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>AppTeam | NIT Hamirpur</title>
+    <meta name="description" content="Official website of AppTeam NIT Hamirpur — building high-performance web, mobile, and intelligent applications." />
+    <meta name="google-adsense-account" content="ca-pub-2370539346172575" />
+
+    <!-- DNS Prefetch & Preconnect for Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Asynchronous Non-blocking Font Loading to eliminate Render-Blocking delay -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      />
+    </noscript>
+
+
+    <!-- Deferred AdSense to prevent Total Blocking Time (TBT) on mobile initial load -->
+    <script>
+      window.addEventListener('load', function() {
+        var loadAds = function() {
+          if (window._adsLoaded) return;
+          window._adsLoaded = true;
+          var s = document.createElement('script');
+          s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2370539346172575";
+          s.async = true;
+          s.crossOrigin = "anonymous";
+          document.head.appendChild(s);
+        };
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(loadAds, { timeout: 3500 });
+        } else {
+          setTimeout(loadAds, 2500);
+        }
+      }, { passive: true });
+    </script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./src/main.tsx"></script> <!-- ✅ updated -->
+    <script type="module" src="./src/main.tsx"></script>
   </body>
 </html>

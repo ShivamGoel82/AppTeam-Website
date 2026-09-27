@@ -28,7 +28,7 @@ const defaultNewsItems: Announcement[] = [
     date: 'Coming Soon 2025',
     icon: <Trophy className="w-6 h-6" />,
     color: 'accent-primary',
-    bgGradient: 'from-accent-primary/10 to-accent-secondary/5',
+    bgGradient: 'from-accent-primary/10 to-transparent',
     link: '#',
     details: {
       duration: '48 Hours',
@@ -45,8 +45,8 @@ const defaultNewsItems: Announcement[] = [
       'Join our comprehensive 8-week bootcamp covering React, Node.js, MongoDB, and deployment strategies. Perfect for beginners and intermediate developers.',
     date: 'March 2025',
     icon: <Users className="w-6 h-6" />,
-    color: 'accent-secondary',
-    bgGradient: 'from-accent-secondary/10 to-accent-tertiary/5',
+    color: 'accent-primary',
+    bgGradient: 'from-accent-primary/10 to-transparent',
     link: '#workshops',
     details: {
       duration: '8 Weeks',
@@ -63,8 +63,8 @@ const defaultNewsItems: Announcement[] = [
       'Our team has been recognized for outstanding innovation in mobile app development and our contribution to the tech community at NITH.',
     date: 'February 2025',
     icon: <Sparkles className="w-6 h-6" />,
-    color: 'accent-tertiary',
-    bgGradient: 'from-accent-tertiary/10 to-accent-success/5',
+    color: 'accent-primary',
+    bgGradient: 'from-accent-primary/10 to-transparent',
     link: '#achievements',
     details: {
       category: 'Innovation',

@@ -14,19 +14,19 @@ const About: React.FC = () => {
       icon: <Users className="w-8 h-8" />,
       title: 'Collaborative Spirit',
       description: 'Our diverse team brings together unique perspectives to create exceptional solutions.',
-      color: 'text-accent-secondary'
+      color: 'text-accent-primary'
     },
     {
       icon: <Trophy className="w-8 h-8" />,
       title: 'Excellence Driven',
       description: 'We strive for perfection in every project, from concept to deployment and beyond.',
-      color: 'text-accent-tertiary'
+      color: 'text-accent-primary'
     },
     {
       icon: <Target className="w-8 h-8" />,
       title: 'Impact Focused',
       description: 'Every app we build aims to solve real problems and make a meaningful difference.',
-      color: 'text-accent-success'
+      color: 'text-accent-primary'
     }
   ];
 
@@ -49,7 +49,7 @@ const About: React.FC = () => {
         {/* Mission Statement */}
         <GlassCard className="p-6 md:p-8 mb-12 md:mb-16 text-center">
           <h3 className="text-xl md:text-2xl font-space font-semibold text-primary-text mb-4">
-            Our <span className="text-accent-secondary">Mission</span>
+            Our <span className="text-accent-primary">Mission</span>
           </h3>
           <p className="text-base md:text-lg font-inter text-secondary-text leading-relaxed max-w-4xl mx-auto">
             To bridge the gap between academic learning and industry excellence by developing 
@@ -79,7 +79,7 @@ const About: React.FC = () => {
         <div className="mt-12 md:mt-16">
           <GlassCard className="p-6 md:p-8">
             <h3 className="text-xl font-space font-semibold text-primary-text mb-6 text-center">
-              Our Development <span className="text-accent-tertiary">Philosophy</span>
+              Our Development <span className="text-accent-primary">Philosophy</span>
             </h3>
             <div className="bg-secondary-dark/50 rounded-lg p-6 border border-glass-border">
               <pre className="text-sm font-mono text-secondary-text overflow-x-auto">

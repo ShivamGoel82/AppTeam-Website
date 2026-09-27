@@ -1,15 +1,34 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 
+interface Node {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  opacity: number;
+  pulsePhase: number;
+}
+
+interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  opacity: number;
+}
+
 const AnimatedBackground: React.FC = () => {
-  const canvasRef   = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
-  const nodesRef    = useRef<{ x: number; y: number; vx: number; vy: number }[]>([]);
-  const pausedRef   = useRef(false); // paused when tab is hidden
+  const nodesRef = useRef<Node[]>([]);
+  const particlesRef = useRef<Particle[]>([]);
+  const pausedRef = useRef(false);
 
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
   }, []);
@@ -24,53 +43,57 @@ const AnimatedBackground: React.FC = () => {
     resizeCanvas();
 
     const isMobile = window.innerWidth < 768;
-    const isLowEnd = navigator.hardwareConcurrency <= 4;
-    const nodeCount = isMobile ? (isLowEnd ? 6 : 8) : (isLowEnd ? 15 : 20);
+    const nodeCount = isMobile ? 18 : 32;
 
-    // Initialize nodes only once
+    // Initialize nodes with glowing properties
     if (nodesRef.current.length === 0) {
+      const nodes: Node[] = [];
       for (let i = 0; i < nodeCount; i++) {
-        nodesRef.current.push({
+        nodes.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * (isMobile ? 0.08 : 0.15),
-          vy: (Math.random() - 0.5) * (isMobile ? 0.08 : 0.15),
+          vx: (Math.random() - 0.5) * (isMobile ? 0.25 : 0.4),
+          vy: (Math.random() - 0.5) * (isMobile ? 0.25 : 0.4),
+          size: Math.random() * (isMobile ? 1.5 : 2.5) + 1.2,
+          opacity: Math.random() * 0.4 + 0.35,
+          pulsePhase: Math.random() * Math.PI * 2,
         });
       }
+      nodesRef.current = nodes;
     }
 
     let lastTime = 0;
-    const targetFPS = isMobile ? 24 : 45;
+    const targetFPS = isMobile ? 30 : 60;
     const frameInterval = 1000 / targetFPS;
 
     const animate = (currentTime: number) => {
-      // Skip frames when tab is hidden
       if (pausedRef.current) {
         animationRef.current = requestAnimationFrame(animate);
         return;
       }
+
       if (currentTime - lastTime < frameInterval) {
         animationRef.current = requestAnimationFrame(animate);
         return;
       }
-
       lastTime = currentTime;
 
-      // Clear with trail effect (increased for mobile)
-      ctx.fillStyle = isMobile ? 'rgba(10, 14, 26, 0.12)' : 'rgba(10, 14, 26, 0.08)';
+      // Subtle trail effect on pure black background
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const nodes = nodesRef.current;
-      const maxDistance = isMobile ? 50 : 70;
-      const nodeOpacity = isMobile ? 0.08 : 0.15;
-      const connectionOpacity = isMobile ? 0.03 : 0.06;
+      const particles = particlesRef.current;
+      const maxDistance = isMobile ? 90 : 130;
 
-      nodes.forEach((node, i) => {
-        // Update position
+      // 1. Draw and update nodes
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+
         node.x += node.vx;
         node.y += node.vy;
 
-        // Bounce off edges
+        // Bounce off canvas edges
         if (node.x < 0 || node.x > canvas.width) {
           node.vx *= -1;
           node.x = Math.max(0, Math.min(canvas.width, node.x));
@@ -80,44 +103,104 @@ const AnimatedBackground: React.FC = () => {
           node.y = Math.max(0, Math.min(canvas.height, node.y));
         }
 
-        // Draw node (smaller for mobile)
-        ctx.fillStyle = `rgba(59, 130, 246, ${nodeOpacity})`;
+        // Breathing pulse effect
+        node.pulsePhase += 0.025;
+        const pulse = 0.8 + 0.4 * Math.sin(node.pulsePhase);
+        const currentSize = node.size * pulse;
+
+        // Outer radial glow
+        const gradient = ctx.createRadialGradient(
+          node.x,
+          node.y,
+          0,
+          node.x,
+          node.y,
+          currentSize * 3
+        );
+        gradient.addColorStop(0, `rgba(59, 130, 246, ${node.opacity * pulse * 0.7})`);
+        gradient.addColorStop(0.5, `rgba(59, 130, 246, ${node.opacity * pulse * 0.25})`);
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+
+        ctx.fillStyle = gradient;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, isMobile ? 0.6 : 1, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, currentSize * 3, 0, Math.PI * 2);
         ctx.fill();
 
-        // Draw connections (further reduced for mobile)
-        if (!isMobile || i % 3 === 0) {
-          nodes.slice(i + 1).forEach((otherNode) => {
-            const dx = node.x - otherNode.x;
-            const dy = node.y - otherNode.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+        // Core bright center node
+        ctx.fillStyle = `rgba(147, 197, 253, ${Math.min(1, node.opacity * pulse * 1.2)})`;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, currentSize, 0, Math.PI * 2);
+        ctx.fill();
 
-            if (distance < maxDistance) {
-              const opacity = connectionOpacity * (1 - distance / maxDistance);
-              ctx.strokeStyle = `rgba(59, 130, 246, ${opacity})`;
-              ctx.lineWidth = 0.3;
-              ctx.beginPath();
-              ctx.moveTo(node.x, node.y);
-              ctx.lineTo(otherNode.x, otherNode.y);
+        // 2. Draw connections between nearby nodes
+        for (let j = i + 1; j < nodes.length; j++) {
+          const other = nodes[j];
+          const dx = node.x - other.x;
+          const dy = node.y - other.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < maxDistance) {
+            const lineOpacity = (1 - dist / maxDistance) * (isMobile ? 0.18 : 0.28) * node.opacity * other.opacity;
+
+            // Connection line
+            ctx.strokeStyle = `rgba(59, 130, 246, ${lineOpacity})`;
+            ctx.lineWidth = isMobile ? 0.8 : 1.2;
+            ctx.beginPath();
+            ctx.moveTo(node.x, node.y);
+            ctx.lineTo(other.x, other.y);
+            ctx.stroke();
+
+            // Subtle outer glow line on desktop
+            if (!isMobile) {
+              ctx.strokeStyle = `rgba(96, 165, 250, ${lineOpacity * 0.35})`;
+              ctx.lineWidth = 2.5;
               ctx.stroke();
             }
-          });
+          }
         }
-      });
+      }
+
+      // 3. Upward floating ambient spark particles
+      if (Math.random() < (isMobile ? 0.03 : 0.05) && particles.length < (isMobile ? 8 : 16)) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: canvas.height + 10,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: -Math.random() * 1.4 - 0.6,
+          size: Math.random() * 1.8 + 0.8,
+          opacity: Math.random() * 0.4 + 0.25,
+        });
+      }
+
+      for (let p = particles.length - 1; p >= 0; p--) {
+        const pt = particles[p];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        pt.opacity *= 0.994;
+
+        if (pt.y < -10 || pt.opacity < 0.02) {
+          particles.splice(p, 1);
+        } else {
+          ctx.fillStyle = `rgba(96, 165, 250, ${pt.opacity})`;
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
 
       animationRef.current = requestAnimationFrame(animate);
     };
 
     animationRef.current = requestAnimationFrame(animate);
 
-    // Pause when tab is not visible — saves CPU/battery
-    const handleVisibility = () => { pausedRef.current = document.hidden; };
+    const handleVisibility = () => {
+      pausedRef.current = document.hidden;
+    };
     document.addEventListener('visibilitychange', handleVisibility);
 
     const handleResize = () => {
       resizeCanvas();
-      nodesRef.current.forEach(node => {
+      nodesRef.current.forEach((node) => {
         node.x = Math.min(node.x, canvas.width);
         node.y = Math.min(node.y, canvas.height);
       });
@@ -138,7 +221,6 @@ const AnimatedBackground: React.FC = () => {
       aria-hidden="true"
       style={{
         background: 'transparent',
-        // GPU compositing layer — prevents repaints affecting the rest of the page
         willChange: 'transform',
         transform: 'translateZ(0)',
       }}

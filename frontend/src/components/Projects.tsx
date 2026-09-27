@@ -7,7 +7,7 @@ const Projects: React.FC = () => {
     {
       title: 'HackOnHills 6.0',
       description: 'Information platform for HackOnHills 6.0 held in April 2025. Complete event management and participant engagement system.',
-      image: '/img1.png',
+      image: '/img1.webp',
       type: 'app',
       status: 'Live',
       technologies: ['React Native', 'Firebase', 'Node.js', 'MongoDB'],
@@ -20,7 +20,7 @@ const Projects: React.FC = () => {
     {
       title: 'Hillfair 2K24',
       description: 'Comprehensive platform for our cultural festival Hillfair 2K24. Features event schedules, registrations, and live updates.',
-      image: '/img2.png',
+      image: '/img2.webp',
       type: 'mobile',
       status: 'Live',
       technologies: ['React Native', 'Firebase', 'Express.js', 'PostgreSQL'],
@@ -33,7 +33,7 @@ const Projects: React.FC = () => {
     {
       title: 'NIMBUS 2K25',
       description: 'Advanced platform for our technical festival NIMBUS 2K25. Includes competition management and real-time leaderboards.',
-      image: '/img3.png',
+      image: '/img3.webp',
       type: 'mobile',
       status: 'Live',
       technologies: ['Flutter', 'Dart', 'AWS', 'GraphQL'],
@@ -46,30 +46,11 @@ const Projects: React.FC = () => {
   ];
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Winner':
-      case 'Champion':
-        return 'text-accent-success bg-accent-success/10 border-accent-success/30';
-      case 'Live':
-        return 'text-accent-primary bg-accent-primary/10 border-accent-primary/30';
-      case 'Beta':
-        return 'text-accent-secondary bg-accent-secondary/10 border-accent-secondary/30';
-      default:
-        return 'text-muted-text bg-neutral-500/10 border-neutral-500/30';
-    }
+    return 'text-accent-primary bg-accent-primary/10 border-accent-primary/30';
   };
 
   const getEventColor = (event: string) => {
-    switch (event) {
-      case 'HOH 6.0':
-        return 'text-accent-primary';
-      case 'Nimbus':
-        return 'text-accent-secondary';
-      case 'Hillfair':
-        return 'text-accent-tertiary';
-      default:
-        return 'text-muted-text';
-    }
+    return 'text-accent-primary';
   };
 
   return (
@@ -77,8 +58,8 @@ const Projects: React.FC = () => {
       <div className="container mx-auto px-4 md:px-6">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-space font-bold text-primary-text mb-4 md:mb-6">
-            Our <span className="text-accent-secondary">Projects</span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-space font-bold text-white mb-4 md:mb-6">
+            Our <span className="text-accent-primary">Projects</span>
           </h2>
           <p className="text-base md:text-xl font-inter text-secondary-text max-w-3xl mx-auto leading-relaxed">
             Discover our innovative applications built for competitions and real-world impact.
@@ -95,6 +76,10 @@ const Projects: React.FC = () => {
                 <img
                   src={project.image}
                   alt={project.title}
+                  width={360}
+                  height={320}
+                  loading="lazy"
+                  decoding="async"
                   className="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-105"
                   style={{ 
                     filter: 'drop-shadow(0 10px 20px rgba(37, 99, 235, 0.15))',

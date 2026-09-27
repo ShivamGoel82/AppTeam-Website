@@ -11,9 +11,9 @@ const Workshops: React.FC = () => {
       duration: '8 weeks',
       level: 'Beginner to Intermediate',
       topics: ['React.js', 'Node.js', 'MongoDB', 'REST APIs'],
-      color: 'text-accent-blue',
-      bgColor: 'bg-accent-blue/10',
-      borderColor: 'border-accent-blue/30'
+      color: 'text-accent-primary',
+      bgColor: 'bg-accent-primary/10',
+      borderColor: 'border-accent-primary/30'
     },
     {
       title: 'Mobile App Development',
@@ -22,9 +22,9 @@ const Workshops: React.FC = () => {
       duration: '6 weeks',
       level: 'Intermediate',
       topics: ['Flutter', 'React Native', 'Firebase', 'App Store Deployment'],
-      color: 'text-accent-purple',
-      bgColor: 'bg-accent-purple/10',
-      borderColor: 'border-accent-purple/30'
+      color: 'text-accent-primary',
+      bgColor: 'bg-accent-primary/10',
+      borderColor: 'border-accent-primary/30'
     },
     {
       title: 'AI & Machine Learning',
@@ -33,9 +33,9 @@ const Workshops: React.FC = () => {
       duration: '10 weeks',
       level: 'Intermediate to Advanced',
       topics: ['Python', 'TensorFlow', 'Neural Networks', 'Computer Vision'],
-      color: 'text-accent-teal',
-      bgColor: 'bg-accent-teal/10',
-      borderColor: 'border-accent-teal/30'
+      color: 'text-accent-primary',
+      bgColor: 'bg-accent-primary/10',
+      borderColor: 'border-accent-primary/30'
     },
     {
       title: 'Database Design & Management',
@@ -44,9 +44,9 @@ const Workshops: React.FC = () => {
       duration: '4 weeks',
       level: 'Beginner',
       topics: ['SQL', 'MongoDB', 'Database Design', 'Performance Optimization'],
-      color: 'text-success-green',
-      bgColor: 'bg-success-green/10',
-      borderColor: 'border-success-green/30'
+      color: 'text-accent-primary',
+      bgColor: 'bg-accent-primary/10',
+      borderColor: 'border-accent-primary/30'
     }
   ];
 
@@ -77,9 +77,9 @@ const Workshops: React.FC = () => {
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-space font-bold text-white mb-4 md:mb-6">
-            Our <span className="text-accent-blue">Workshops</span>
+            Our <span className="text-accent-primary">Workshops</span>
           </h2>
-          <p className="text-base md:text-xl font-inter text-neutral-medium max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base md:text-xl font-inter text-secondary-text max-w-3xl mx-auto leading-relaxed">
             Enhance your skills with our comprehensive workshops designed to take you from beginner to expert. 
             Learn from industry professionals and work on real-world projects.
           </p>
@@ -93,23 +93,23 @@ const Workshops: React.FC = () => {
                 {workshop.icon}
               </div>
               
-              <h3 className="text-xl md:text-2xl font-space font-semibold text-white mb-3 group-hover:text-accent-blue transition-colors duration-300">
+              <h3 className="text-xl md:text-2xl font-space font-semibold text-white mb-3 group-hover:text-accent-primary transition-colors duration-300">
                 {workshop.title}
               </h3>
               
-              <p className="text-neutral-medium font-inter leading-relaxed mb-6">
+              <p className="text-secondary-text font-inter leading-relaxed mb-6">
                 {workshop.description}
               </p>
 
               {/* Workshop Details */}
               <div className="space-y-3 mb-6">
                 <div className="flex items-center space-x-2 text-sm">
-                  <Clock className="w-4 h-4 text-accent-blue" />
-                  <span className="text-neutral-medium font-inter">Duration: {workshop.duration}</span>
+                  <Clock className="w-4 h-4 text-accent-primary" />
+                  <span className="text-muted-text font-inter">Duration: {workshop.duration}</span>
                 </div>
                 <div className="flex items-center space-x-2 text-sm">
-                  <BookOpen className="w-4 h-4 text-accent-purple" />
-                  <span className="text-neutral-medium font-inter">Level: {workshop.level}</span>
+                  <BookOpen className="w-4 h-4 text-accent-primary" />
+                  <span className="text-muted-text font-inter">Level: {workshop.level}</span>
                 </div>
               </div>
 
@@ -131,9 +131,9 @@ const Workshops: React.FC = () => {
         {/* Upcoming Workshops */}
         <GlassCard className="p-6 md:p-8">
           <div className="flex items-center space-x-3 mb-6">
-            <Calendar className="w-6 h-6 text-accent-blue" />
+            <Calendar className="w-6 h-6 text-accent-primary" />
             <h3 className="text-xl md:text-2xl font-space font-semibold text-white">
-              Upcoming <span className="text-accent-blue">Sessions</span>
+              Upcoming <span className="text-accent-primary">Sessions</span>
             </h3>
           </div>
 
@@ -141,27 +141,23 @@ const Workshops: React.FC = () => {
             {upcomingWorkshops.map((session, index) => (
               <div
                 key={index}
-                className="p-4 md:p-6 bg-secondary-dark/50 rounded-lg border border-glass-border hover:border-accent-blue/30 transition-colors duration-300 group"
+                className="p-4 md:p-6 bg-secondary-dark/50 rounded-lg border border-glass-border hover:border-accent-primary/30 transition-colors duration-300 group"
               >
                 <div className="flex items-start justify-between mb-3">
-                  <h4 className="text-white font-space font-medium text-sm md:text-base group-hover:text-accent-blue transition-colors duration-300">
+                  <h4 className="text-white font-space font-medium text-sm md:text-base group-hover:text-accent-primary transition-colors duration-300">
                     {session.title}
                   </h4>
-                  <span className={`px-2 py-1 text-xs font-inter rounded-full ${
-                    session.type === 'Free Workshop' 
-                      ? 'bg-success-green/20 text-success-green border border-success-green/30' 
-                      : 'bg-warning-orange/20 text-warning-orange border border-warning-orange/30'
-                  }`}>
+                  <span className="px-2 py-1 text-xs font-inter rounded-full bg-accent-primary/10 text-accent-primary border border-accent-primary/30">
                     {session.type}
                   </span>
                 </div>
                 
                 <div className="space-y-2 text-sm">
-                  <div className="flex items-center space-x-2 text-neutral-medium">
+                  <div className="flex items-center space-x-2 text-muted-text">
                     <Calendar className="w-4 h-4" />
                     <span className="font-inter">{session.date}</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-neutral-medium">
+                  <div className="flex items-center space-x-2 text-muted-text">
                     <Clock className="w-4 h-4" />
                     <span className="font-inter">{session.time}</span>
                   </div>
@@ -171,10 +167,10 @@ const Workshops: React.FC = () => {
           </div>
 
           <div className="mt-8 text-center">
-            <p className="text-neutral-medium font-inter mb-4">
+            <p className="text-muted-text font-inter mb-4">
               Want to stay updated about our workshops and events?
             </p>
-            <button className="px-6 py-3 bg-accent-blue hover:bg-accent-blue/90 text-white font-inter font-medium rounded-lg transition-colors duration-300">
+            <button className="px-6 py-3 bg-accent-primary hover:bg-accent-primary/90 text-white font-inter font-medium rounded-lg transition-colors duration-300">
               Join Our Newsletter
             </button>
           </div>

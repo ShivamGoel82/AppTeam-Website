@@ -38,6 +38,10 @@ const Footer: React.FC = () => {
                 <img
                   src="/AppTeam.png"
                   alt="AppTeam Logo"
+                  width={48}
+                  height={48}
+                  loading="lazy"
+                  decoding="async"
                   className="w-12 h-12 rounded-full ring-2 ring-accent-primary/20"
                 />
               </div>
@@ -94,7 +98,7 @@ const Footer: React.FC = () => {
                 <li key={index}>
                   <a
                     href={event.href}
-                    className="text-secondary-text font-inter hover:text-accent-secondary transition-colors duration-300"
+                    className="text-secondary-text font-inter hover:text-accent-primary transition-colors duration-300"
                   >
                     {event.name}
                   </a>
@@ -107,8 +111,8 @@ const Footer: React.FC = () => {
               </h4>
               <div className="flex flex-wrap gap-2">
                 <span className="text-xs font-inter text-accent-primary bg-accent-primary/10 px-2 py-1 rounded border border-accent-primary/30">React</span>
-                <span className="text-xs font-inter text-accent-secondary bg-accent-secondary/10 px-2 py-1 rounded border border-accent-secondary/30">Flutter</span>
-                <span className="text-xs font-inter text-accent-tertiary bg-accent-tertiary/10 px-2 py-1 rounded border border-accent-tertiary/30">AI/ML</span>
+                <span className="text-xs font-inter text-accent-primary bg-accent-primary/10 px-2 py-1 rounded border border-accent-primary/30">Flutter</span>
+                <span className="text-xs font-inter text-accent-primary bg-accent-primary/10 px-2 py-1 rounded border border-accent-primary/30">AI/ML</span>
               </div>
             </div>
           </div>

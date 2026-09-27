@@ -21,50 +21,50 @@ const Hero: React.FC = () => {
           {/* Main Heading */}
       <div style={{height:'40px'}}></div>
           
-          <h1 className="break-words leading-tight pt-6 text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-space font-bold text-primary-text mb-3 sm:mb-4 md:mb-6 animate-fade-in relative z-30">
-            AppTeam
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-accent-primary via-accent-secondary to-accent-tertiary">
+          <h1 className="break-words leading-tight pt-6 text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-space font-bold text-white mb-3 sm:mb-4 md:mb-6 relative z-30">
+            AppTeam{' '}
+            <span className="text-accent-primary">
               NIT Hamirpur
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl font-inter text-secondary-text mb-4 sm:mb-6 md:mb-8 max-w-2xl mx-auto animate-fade-in relative z-30 px-2 leading-relaxed">
+          <p className="text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl font-inter text-secondary-text mb-4 sm:mb-6 md:mb-8 max-w-2xl mx-auto relative z-30 px-2 leading-relaxed">
             The premier technology innovation team of NIT Hamirpur. Building the future 
             through cutting-edge development, competitive excellence, and innovative solutions.
           </p>
 
           {/* Stats */}
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-12 mb-6 sm:mb-8 md:mb-12 animate-fade-in relative z-30 px-2">
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-12 mb-6 sm:mb-8 md:mb-12 relative z-30 px-2">
             <div className="text-center">
               <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-space font-bold text-accent-primary">6+</div>
               <div className="text-muted-text font-inter text-xs sm:text-sm">Years Active</div>
             </div>
             <div className="text-center">
-              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-space font-bold text-accent-secondary">3</div>
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-space font-bold text-accent-primary">3</div>
               <div className="text-muted-text font-inter text-xs sm:text-sm">Major Events</div>
             </div>
             <div className="text-center">
-              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-space font-bold text-accent-tertiary">40+</div>
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-space font-bold text-accent-primary">40+</div>
               <div className="text-muted-text font-inter text-xs sm:text-sm">Active Members</div>
             </div>
           </div>
 
           {/* Event Badges */}
-          <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-6 sm:mb-8 md:mb-12 animate-fade-in relative z-30 px-2">
+          <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-6 sm:mb-8 md:mb-12 relative z-30 px-2">
             <div className="px-3 py-1.5 md:px-4 md:py-2 bg-accent-primary/10 border border-accent-primary/30 rounded-full backdrop-blur-sm">
               <span className="text-xs sm:text-sm text-accent-primary font-inter font-medium">HackOnHills</span>
             </div>
-            <div className="px-3 py-1.5 md:px-4 md:py-2 bg-accent-secondary/10 border border-accent-secondary/30 rounded-full backdrop-blur-sm">
-              <span className="text-xs sm:text-sm text-accent-secondary font-inter font-medium">Nimbus</span>
+            <div className="px-3 py-1.5 md:px-4 md:py-2 bg-accent-primary/10 border border-accent-primary/30 rounded-full backdrop-blur-sm">
+              <span className="text-xs sm:text-sm text-accent-primary font-inter font-medium">Nimbus</span>
             </div>
-            <div className="px-3 py-1.5 md:px-4 md:py-2 bg-accent-tertiary/10 border border-accent-tertiary/30 rounded-full backdrop-blur-sm">
-              <span className="text-xs sm:text-sm text-accent-tertiary font-inter font-medium">Hillfair</span>
+            <div className="px-3 py-1.5 md:px-4 md:py-2 bg-accent-primary/10 border border-accent-primary/30 rounded-full backdrop-blur-sm">
+              <span className="text-xs sm:text-sm text-accent-primary font-inter font-medium">Hillfair</span>
             </div>
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col xs:flex-row gap-3 md:gap-4 justify-center items-center animate-fade-in relative z-30 px-2">
+          <div className="flex flex-col xs:flex-row gap-3 md:gap-4 justify-center items-center relative z-30 px-2">
             <GlowButton 
               className="group text-xs sm:text-sm md:text-base w-full xs:w-auto px-4 py-2.5 md:px-6 md:py-3"
               onClick={() => scrollToSection('projects')}
@@ -82,18 +82,20 @@ const Hero: React.FC = () => {
             </GlowButton>
           </div>
 
-          {/* Floating Elements - Hidden on mobile for performance */}
-          <div className="hidden lg:block absolute top-20 left-10 animate-float">
-            <div className="w-12 h-12 xl:w-16 xl:h-16 border border-accent-primary/20 rounded-lg rotate-45 backdrop-blur-sm"></div>
+          {/* Floating Background Accent Elements - Fully responsive with pointer-events-none */}
+          <div className="absolute top-12 left-4 sm:top-20 sm:left-10 animate-float pointer-events-none z-10">
+            <div className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 border border-accent-primary/35 rounded-xl rotate-45 backdrop-blur-sm shadow-[0_0_20px_rgba(59,130,246,0.2)]"></div>
           </div>
-          <div className="hidden lg:block absolute top-40 right-20 animate-float" style={{ animationDelay: '2s' }}>
-            <Users className="w-6 h-6 xl:w-8 xl:h-8 text-accent-secondary/40" />
+          <div className="absolute top-28 right-6 sm:top-40 sm:right-16 md:right-20 animate-float pointer-events-none z-10" style={{ animationDelay: '2s' }}>
+            <Users className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-accent-primary/40" />
           </div>
-          <div className="hidden lg:block absolute bottom-40 left-20 animate-float" style={{ animationDelay: '4s' }}>
-            <div className="w-8 h-8 xl:w-12 xl:h-12 bg-gradient-to-br from-accent-primary/10 to-accent-tertiary/10 rounded-full backdrop-blur-sm"></div>
+          <div className="absolute bottom-20 left-6 sm:bottom-36 sm:left-14 md:left-20 animate-float pointer-events-none z-10" style={{ animationDelay: '4s' }}>
+            <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-accent-primary/15 border border-accent-primary/30 rounded-full backdrop-blur-sm shadow-[0_0_20px_rgba(59,130,246,0.25)]"></div>
           </div>
-          <div className="hidden lg:block absolute top-60 right-10 animate-pulse-glow">
-            <Zap className="w-5 h-5 xl:w-6 xl:h-6 text-accent-tertiary/50" />
+          <div className="absolute top-48 right-3 sm:top-60 sm:right-8 md:right-12 animate-pulse-glow pointer-events-none z-10">
+            <div className="p-1.5 sm:p-2.5 rounded-xl bg-accent-primary/15 border border-accent-primary/30 backdrop-blur-sm shadow-[0_0_25px_rgba(59,130,246,0.3)]">
+              <Zap className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-accent-primary" />
+            </div>
           </div>
         </div>
       </div>
